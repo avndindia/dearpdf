@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "deploy": "pnpm build && npx wrangler pages deploy out --project-name=dearpdf"
   },
   "dependencies": {
     "fflate": "^0.8.3",
@@ -30,6 +31,6 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "DearPDF — private, in-browser PDF tools",
+  "description": "DearPDF \u2014 private, in-browser PDF tools",
   "packageManager": "pnpm@9.15.9"
 }
