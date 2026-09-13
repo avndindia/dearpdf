@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import MaterialIcon from "@/components/MaterialIcon";
@@ -17,6 +16,11 @@ type StitchToolShellProps = {
   related?: { href: string; label: string }[];
 };
 
+/**
+ * Tool chrome under the global SiteHeader.
+ * Brand / privacy live in SiteHeader — this shell only adds All-tools back,
+ * title, workspace body, and a calm trust footer.
+ */
 export default function StitchToolShell({
   title,
   subtitle,
@@ -29,26 +33,11 @@ export default function StitchToolShell({
     <div className={`pdf-page stitch-tool-shell ${className}`.trim()}>
       <div className="stitch-tool-topbar">
         <div className="stitch-tool-topbar-left">
-          <Link href="/" className="stitch-tool-mark" aria-label="DearPDF home">
-            <Image
-              src="/logo-dearpdf.png"
-              alt=""
-              width={24}
-              height={24}
-              className="h-6 w-auto object-contain"
-            />
-            <span>DearPDF</span>
-          </Link>
-          <span className="stitch-tool-topbar-divider" aria-hidden />
           <Link href="/pdf-tools" className="stitch-tool-back">
             <MaterialIcon name="arrow_back" className="text-[14px]" />
             <span>All tools</span>
           </Link>
         </div>
-        <span className="stitch-tool-privacy">
-          <span className="stitch-tool-privacy-dot" aria-hidden />
-          Files stay on this device
-        </span>
       </div>
 
       <header className="stitch-tool-heading">
