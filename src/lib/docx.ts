@@ -24,11 +24,12 @@ export type EditableDocxParagraph = {
   alignment?: "left" | "center" | "right" | "justify";
   leftIndent?: number;
   spacingAfter?: number;
+  list?: { type: "bullet" | "decimal" | "alpha" | "roman" };
 };
 
 export type EditableDocxTable = {
   kind: "table";
-  rows: Array<Array<{ runs: EditableDocxRun[] }>>;
+  rows: Array<Array<{ runs: EditableDocxRun[]; gridSpan?: number }>>;
   columnWidths?: number[];
   borders?: boolean;
 };
@@ -68,8 +69,11 @@ function runXml(run: EditableDocxRun) {
   return `<w:r>${properties ? `<w:rPr>${properties}</w:rPr>` : ""}${run.breakBefore ? "<w:br/>" : ""}<w:t${preserveSpace}>${xml(run.text)}</w:t></w:r>`;
 }
 
-function formattedParagraph(block: EditableDocxParagraph) {
+function formattedParagraph(block: EditableDocxParagraph, numId?: number) {
   const properties = [
+    block.list && numId
+      ? `<w:numPr><w:ilvl w:val="0"/><w:numId w:val="${numId}"/></w:numPr>`
+      : "",
     block.alignment && block.alignment !== "left" ? `<w:jc w:val="${block.alignment === "justify" ? "both" : block.alignment}"/>` : "",
     block.leftIndent && block.alignment !== "center" && block.alignment !== "right"
       ? `<w:ind w:left="${Math.max(0, Math.round(block.leftIndent * 20))}"/>`
@@ -80,7 +84,9 @@ function formattedParagraph(block: EditableDocxParagraph) {
 }
 
 function tableXml(block: EditableDocxTable, pageWidthPoints: number) {
-  const columns = Math.max(1, ...block.rows.map((row) => row.length));
+  const columns = Math.max(1, ...block.rows.map((row) =>
+    row.reduce((sum, cell) => sum + Math.max(1, cell.gridSpan || 1), 0)
+  ));
   const availableWidth = Math.max(72, pageWidthPoints - 72);
   const suppliedWidths = block.columnWidths?.length === columns
     ? block.columnWidths
@@ -91,11 +97,19 @@ function tableXml(block: EditableDocxTable, pageWidthPoints: number) {
     ? '<w:tblBorders><w:top w:val="single" w:sz="4" w:color="808080"/><w:left w:val="single" w:sz="4" w:color="808080"/><w:bottom w:val="single" w:sz="4" w:color="808080"/><w:right w:val="single" w:sz="4" w:color="808080"/><w:insideH w:val="single" w:sz="4" w:color="A0A0A0"/><w:insideV w:val="single" w:sz="4" w:color="A0A0A0"/></w:tblBorders>'
     : '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
   const rows = block.rows.map((row) => {
-    const cells = Array.from({ length: columns }, (_, index) => {
-      const cell = row[index];
-      return `<w:tc><w:tcPr><w:tcW w:w="${widths[index]}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr>${cell ? cell.runs.map(runXml).join("") : ""}</w:p></w:tc>`;
-    }).join("");
-    return `<w:tr>${cells}</w:tr>`;
+    const cells: string[] = [];
+    let columnIndex = 0;
+    row.forEach((cell) => {
+      const span = Math.max(1, Math.min(columns - columnIndex, cell.gridSpan || 1));
+      const width = widths.slice(columnIndex, columnIndex + span).reduce((sum, value) => sum + value, 0);
+      cells.push(`<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ""}<w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr>${cell.runs.map(runXml).join("")}</w:p></w:tc>`);
+      columnIndex += span;
+    });
+    while (columnIndex < columns) {
+      cells.push(`<w:tc><w:tcPr><w:tcW w:w="${widths[columnIndex]}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr><w:p/></w:tc>`);
+      columnIndex += 1;
+    }
+    return `<w:tr>${cells.join("")}</w:tr>`;
   }).join("");
   return `<w:tbl><w:tblPr><w:tblW w:w="${widths.reduce((sum, width) => sum + width, 0)}" w:type="dxa"/><w:tblLayout w:type="fixed"/>${borders}<w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map((width) => `<w:gridCol w:w="${width}"/>`).join("")}</w:tblGrid>${rows}</w:tbl>`;
 }
@@ -105,6 +119,52 @@ function sectionProperties(page: EditableDocxPage, type?: "nextPage") {
   const height = Math.round((page.heightPoints || 841.9) * 20);
   const orientation = width > height ? ' w:orient="landscape"' : "";
   return `<w:sectPr>${type ? `<w:type w:val="${type}"/>` : ""}<w:pgSz w:w="${width}" w:h="${height}"${orientation}/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="360" w:footer="360" w:gutter="0"/></w:sectPr>`;
+}
+
+const LIST_ABSTRACT: Record<"bullet" | "decimal" | "alpha" | "roman", number> = {
+  bullet: 0,
+  decimal: 1,
+  alpha: 2,
+  roman: 3,
+};
+
+function numberingXml(instances: Array<{ numId: number; abstractId: number }>) {
+  const abstracts = [
+    ["0", "bullet", "•"],
+    ["1", "decimal", "%1."],
+    ["2", "lowerLetter", "(%1)"],
+    ["3", "lowerRoman", "(%1)"],
+  ].map(([id, format, text]) => `<w:abstractNum w:abstractNumId="${id}">
+    <w:multiLevelType w:val="singleLevel"/>
+    <w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${xml(text)}"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl>
+  </w:abstractNum>`).join("");
+  const nums = instances.map((instance) =>
+    `<w:num w:numId="${instance.numId}"><w:abstractNumId w:val="${instance.abstractId}"/></w:num>`
+  ).join("");
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${abstracts}${nums}</w:numbering>`;
+}
+
+function assignListInstances(pages: EditableDocxPage[]) {
+  const instances: Array<{ numId: number; abstractId: number }> = [];
+  const ids = new Map<EditableDocxParagraph, number>();
+  let currentType: string | null = null;
+  let currentNumId = 0;
+  pages.forEach((page) => {
+    (page.blocks || []).forEach((block) => {
+      if (block.kind !== "paragraph" || !block.list) {
+        currentType = null;
+        return;
+      }
+      if (block.list.type !== currentType) {
+        currentNumId = instances.length + 1;
+        instances.push({ numId: currentNumId, abstractId: LIST_ABSTRACT[block.list.type] });
+        currentType = block.list.type;
+      }
+      ids.set(block, currentNumId);
+    });
+  });
+  return { instances, ids };
 }
 
 export function createEditableDocx(
@@ -123,11 +183,12 @@ export function createEditableDocx(
     throw new Error("No text was found for the Word document.");
   }
 
+  const lists = assignListInstances(pages);
   const body = pages.map((page, index) => {
     const pageWidth = page.widthPoints || 595.3;
     const blocks = page.blocks?.length
       ? page.blocks.map((block) => block.kind === "paragraph"
-          ? formattedParagraph(block)
+          ? formattedParagraph(block, lists.ids.get(block))
           : tableXml(block, pageWidth))
       : (page.lines || []).map((line) => paragraph(line));
     const content = [
@@ -171,6 +232,7 @@ export function createEditableDocx(
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
   <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
   <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
   <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
 </Types>`;
@@ -185,21 +247,22 @@ export function createEditableDocx(
   const documentRelationships = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
 </Relationships>`;
 
   const now = new Date().toISOString();
   const coreProperties = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <dc:title>${xml(options.title || "Converted PDF")}</dc:title>
-  <dc:creator>${xml(options.creator || "DearPDF")}</dc:creator>
-  <cp:lastModifiedBy>${xml(options.creator || "DearPDF")}</cp:lastModifiedBy>
+  <dc:creator>${xml(options.creator || "DearPDF PDF to Word")}</dc:creator>
+  <cp:lastModifiedBy>${xml(options.creator || "DearPDF PDF to Word")}</cp:lastModifiedBy>
   <dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created>
   <dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified>
 </cp:coreProperties>`;
 
   const appProperties = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
-  <Application>DearPDF</Application>
+  <Application>DearPDF PDF to Word</Application>
   <Pages>${pages.length}</Pages>
 </Properties>`;
 
@@ -208,6 +271,7 @@ export function createEditableDocx(
     "_rels/.rels": strToU8(relationships),
     "word/document.xml": strToU8(documentXml),
     "word/styles.xml": strToU8(stylesXml),
+    "word/numbering.xml": strToU8(numberingXml(lists.instances)),
     "word/_rels/document.xml.rels": strToU8(documentRelationships),
     "docProps/core.xml": strToU8(coreProperties),
     "docProps/app.xml": strToU8(appProperties),

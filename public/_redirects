@@ -1,0 +1,8 @@
+/tools /pdf-tools 301
+/tools/ /pdf-tools 301
+/tools/ocr /pdf-tools/pdf-to-text 301
+/tools/add-password /pdf-tools/lock 301
+/tools/remove-password /pdf-tools/unlock 301
+/tools/compress-split /pdf-tools/compress 301
+/tools/searchable-pdf /pdf-tools/pdf-to-text 301
+/tools/* /pdf-tools/:splat 301

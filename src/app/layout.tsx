@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import PdfToolsOfflineRoot from "@/components/pdf-tools-offline-root";
+import PdfToolCompletion from "@/components/pdf-tool-completion";
 import "./globals.css";
 
 const inter = Inter({
@@ -33,6 +35,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
+        <PdfToolsOfflineRoot />
+        <PdfToolCompletion />
       </body>
     </html>
   );

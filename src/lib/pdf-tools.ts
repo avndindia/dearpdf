@@ -80,6 +80,12 @@ export type SizedPdfPart = {
   pageCount: number;
 };
 
+export type PdfBytePart = {
+  bytes: Uint8Array;
+  pageStart: number;
+  pageEnd: number;
+};
+
 export type BinaryDownloadFile = {
   name: string;
   bytes: Uint8Array;
@@ -231,6 +237,25 @@ export function parsePageSelection(value: string, pageCount: number): number[] {
   return pages;
 }
 
+export function formatPageSelection(pageIndices: number[]): string {
+  if (!pageIndices.length) return "";
+  const pages = [...new Set(pageIndices.filter((index) => index >= 0))].sort((left, right) => left - right).map((index) => index + 1);
+  const parts: string[] = [];
+  let start = pages[0];
+  let prev = pages[0];
+  for (let index = 1; index < pages.length; index += 1) {
+    if (pages[index] === prev + 1) {
+      prev = pages[index];
+      continue;
+    }
+    parts.push(start === prev ? String(start) : `${start}-${prev}`);
+    start = pages[index];
+    prev = pages[index];
+  }
+  parts.push(start === prev ? String(start) : `${start}-${prev}`);
+  return parts.join(", ");
+}
+
 export async function extractPdfPages(
   bytes: ArrayBuffer | Uint8Array,
   pageIndices: number[],
@@ -245,6 +270,59 @@ export async function extractPdfPages(
   const pages = await output.copyPages(source, pageIndices);
   pages.forEach((page) => output.addPage(page));
   return output.save({ addDefaultPage: false, useObjectStreams: true });
+}
+
+export async function splitPdfByMaximumBytes(
+  bytes: ArrayBuffer | Uint8Array,
+  maximumBytes: number,
+): Promise<PdfBytePart[]> {
+  if (!Number.isFinite(maximumBytes) || maximumBytes < 1024) {
+    throw new Error("Choose a valid maximum part size.");
+  }
+  const source = await PDFDocument.load(bytes, { updateMetadata: false });
+  const pageCount = source.getPageCount();
+  if (!pageCount) throw new Error("The PDF has no pages to split.");
+
+  const parts: PdfBytePart[] = [];
+  let start = 0;
+  while (start < pageCount) {
+    const remaining = pageCount - start;
+    const rest = await extractPdfPages(
+      bytes,
+      Array.from({ length: remaining }, (_, index) => start + index),
+    );
+    if (rest.length <= maximumBytes) {
+      parts.push({ bytes: rest, pageStart: start + 1, pageEnd: pageCount });
+      break;
+    }
+    if (remaining === 1) {
+      throw new Error("One page is larger than the maximum part size. Use Balanced or Extreme, or raise the part size.");
+    }
+    let low = 1;
+    let high = remaining - 1;
+    let bestCount = 0;
+    let bestBytes: Uint8Array | null = null;
+    while (low <= high) {
+      const middle = Math.floor((low + high) / 2);
+      const candidate = await extractPdfPages(
+        bytes,
+        Array.from({ length: middle }, (_, index) => start + index),
+      );
+      if (candidate.length <= maximumBytes) {
+        bestCount = middle;
+        bestBytes = candidate;
+        low = middle + 1;
+      } else {
+        high = middle - 1;
+      }
+    }
+    if (!bestCount || !bestBytes) {
+      throw new Error("One page is larger than the maximum part size. Use Balanced or Extreme, or raise the part size.");
+    }
+    parts.push({ bytes: bestBytes, pageStart: start + 1, pageEnd: start + bestCount });
+    start += bestCount;
+  }
+  return parts;
 }
 
 export async function splitPdfIntoZip(
@@ -304,6 +382,48 @@ export async function splitPdfIntoEqualPartsZip(
   return zipSync(files, { level: 6 });
 }
 
+export async function splitPdfEveryNPagesZip(
+  bytes: ArrayBuffer | Uint8Array,
+  pagesPerFile: number,
+  baseName = "document",
+): Promise<Uint8Array> {
+  const source = await PDFDocument.load(bytes, { updateMetadata: false });
+  const pageCount = source.getPageCount();
+  if (!Number.isInteger(pagesPerFile) || pagesPerFile < 1) {
+    throw new Error("Choose at least 1 page per file.");
+  }
+  if (pageCount < 2) {
+    throw new Error("This PDF has only one page.");
+  }
+  if (pagesPerFile >= pageCount) {
+    throw new Error(`Choose fewer than ${pageCount} pages per file.`);
+  }
+
+  const files: Record<string, Uint8Array> = {};
+  const pageNumberWidth = Math.max(2, String(pageCount).length);
+
+  for (let firstPageIndex = 0, partIndex = 0; firstPageIndex < pageCount; partIndex += 1) {
+    const pagesInPart = Math.min(pagesPerFile, pageCount - firstPageIndex);
+    const pageIndices = Array.from({ length: pagesInPart }, (_, offset) => firstPageIndex + offset);
+    const output = await PDFDocument.create();
+    const copiedPages = await output.copyPages(source, pageIndices);
+    copiedPages.forEach((page) => output.addPage(page));
+    const start = firstPageIndex + 1;
+    const end = firstPageIndex + pagesInPart;
+    const label = start === end
+      ? String(start).padStart(pageNumberWidth, "0")
+      : `${String(start).padStart(pageNumberWidth, "0")}-${String(end).padStart(pageNumberWidth, "0")}`;
+    files[`${baseName}-pages-${label}.pdf`] =
+      await output.save({ addDefaultPage: false, useObjectStreams: true });
+    firstPageIndex += pagesInPart;
+  }
+
+  return zipSync(files, { level: 6 });
+}
+
+export const BLANK_PDF_PAGE_INDEX = -1;
+export const A4_PAGE_SIZE = { width: 595.28, height: 841.89 } as const;
+
 export async function organisePdfPages(
   bytes: ArrayBuffer | Uint8Array,
   operations: PdfPageOperation[],
@@ -312,18 +432,24 @@ export async function organisePdfPages(
   const source = await PDFDocument.load(bytes, { updateMetadata: false });
   const pageCount = source.getPageCount();
 
-  if (operations.some(({ pageIndex }) => pageIndex < 0 || pageIndex >= pageCount)) {
+  if (operations.some(({ pageIndex }) => pageIndex !== BLANK_PDF_PAGE_INDEX && (pageIndex < 0 || pageIndex >= pageCount))) {
     throw new Error("One or more selected pages are outside this PDF.");
   }
 
   const output = await PDFDocument.create();
-  const pages = await output.copyPages(source, operations.map(({ pageIndex }) => pageIndex));
-  pages.forEach((page, index) => {
+  for (const operation of operations) {
+    if (operation.pageIndex === BLANK_PDF_PAGE_INDEX) {
+      const blank = output.addPage([A4_PAGE_SIZE.width, A4_PAGE_SIZE.height]);
+      const addedRotation = ((operation.rotation % 360) + 360) % 360;
+      if (addedRotation) blank.setRotation(degrees(addedRotation));
+      continue;
+    }
+    const [page] = await output.copyPages(source, [operation.pageIndex]);
     const currentRotation = page.getRotation().angle;
-    const addedRotation = operations[index].rotation;
+    const addedRotation = operation.rotation;
     page.setRotation(degrees(((currentRotation + addedRotation) % 360 + 360) % 360));
     output.addPage(page);
-  });
+  }
 
   return output.save({ addDefaultPage: false, useObjectStreams: true });
 }
@@ -414,6 +540,24 @@ export async function imagesToPdf(
   }
 
   return output.save({ addDefaultPage: false, useObjectStreams: true });
+}
+
+export async function imageToSinglePagePdf(
+  bytes: ArrayBuffer | Uint8Array,
+  mimeType: "image/jpeg" | "image/png",
+  options: ImagesToPdfOptions = { pageSize: "a4", orientation: "auto", margin: 22.68 },
+): Promise<Uint8Array> {
+  const probe = await PDFDocument.create();
+  const image = mimeType === "image/jpeg"
+    ? await probe.embedJpg(bytes)
+    : await probe.embedPng(bytes);
+  return imagesToPdf([{
+    bytes,
+    mimeType,
+    width: image.width,
+    height: image.height,
+    rotation: 0,
+  }], options);
 }
 
 function parseHexColor(value: string) {
@@ -831,10 +975,17 @@ export async function updatePdfMetadata(
   document.setAuthor(metadata.author?.trim() ?? "");
   document.setSubject(metadata.subject?.trim() ?? "");
   document.setKeywords(metadata.keywords?.filter(Boolean) ?? []);
-  document.setCreator(metadata.creator?.trim() || "DearPDF");
-  document.setProducer("DearPDF");
+  document.setCreator(metadata.creator?.trim() || "DearPDF PDF Tools");
+  document.setProducer("DearPDF PDF Tools");
   document.setModificationDate(new Date());
   return document.save({ useObjectStreams: true });
+}
+
+export async function countPdfFormFields(
+  bytes: ArrayBuffer | Uint8Array,
+): Promise<number> {
+  const document = await PDFDocument.load(bytes, { updateMetadata: false });
+  return document.getForm().getFields().length;
 }
 
 export async function flattenPdfForms(

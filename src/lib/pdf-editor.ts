@@ -17,7 +17,7 @@ export type PdfEditorText = EditBase & {
 };
 
 export type PdfEditorShape = EditBase & {
-  kind: "highlight" | "rectangle" | "whiteout";
+  kind: "highlight" | "rectangle" | "redact";
   thickness: number;
 };
 
@@ -103,8 +103,8 @@ export async function applyPdfEdits(
       continue;
     }
 
-    if (annotation.kind === "whiteout") {
-      page.drawRectangle({ x, y, width, height, color: rgb(1, 1, 1) });
+    if (annotation.kind === "redact") {
+      page.drawRectangle({ x, y, width, height, color: rgb(0, 0, 0) });
       continue;
     }
 
@@ -122,19 +122,73 @@ export async function applyPdfEdits(
       continue;
     }
 
-    if (annotation.kind === "image") {
-      let embedded = embeddedImages.get(annotation.id);
-      if (!embedded) {
-        embedded = annotation.mimeType === "image/png"
-          ? await document.embedPng(annotation.bytes)
-          : await document.embedJpg(annotation.bytes);
-        embeddedImages.set(annotation.id, embedded);
-      }
-      page.drawImage(embedded, { x, y, width, height });
+    if (annotation.kind !== "image") continue;
+
+    let embedded = embeddedImages.get(annotation.id);
+    if (!embedded) {
+      embedded = annotation.mimeType === "image/png"
+        ? await document.embedPng(annotation.bytes)
+        : await document.embedJpg(annotation.bytes);
+      embeddedImages.set(annotation.id, embedded);
     }
+    page.drawImage(embedded, { x, y, width, height });
   }
 
   return document.save({
+    addDefaultPage: false,
+    updateFieldAppearances: false,
+    useObjectStreams: true,
+  });
+}
+
+export function pageIndexesNeedingRedaction(annotations: PdfEditorAnnotation[]) {
+  return [...new Set(
+    annotations
+      .filter((annotation) => annotation.kind === "redact" && annotation.width > 0.002 && annotation.height > 0.002)
+      .map((annotation) => annotation.pageIndex),
+  )];
+}
+
+export type RedactedPageImage = {
+  pageIndex: number;
+  bytes: Uint8Array;
+  width: number;
+  height: number;
+  mimeType: "image/jpeg" | "image/png";
+};
+
+export async function replacePdfPagesWithImages(
+  bytes: ArrayBuffer | Uint8Array,
+  replacements: RedactedPageImage[],
+): Promise<Uint8Array> {
+  if (!replacements.length) {
+    return bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  }
+
+  const source = await PDFDocument.load(bytes, { updateMetadata: false });
+  const output = await PDFDocument.create();
+  const byIndex = new Map(replacements.map((replacement) => [replacement.pageIndex, replacement]));
+
+  for (let pageIndex = 0; pageIndex < source.getPageCount(); pageIndex += 1) {
+    const replacement = byIndex.get(pageIndex);
+    if (!replacement) {
+      const [copied] = await output.copyPages(source, [pageIndex]);
+      output.addPage(copied);
+      continue;
+    }
+    const image = replacement.mimeType === "image/png"
+      ? await output.embedPng(replacement.bytes)
+      : await output.embedJpg(replacement.bytes);
+    const page = output.addPage([replacement.width, replacement.height]);
+    page.drawImage(image, {
+      x: 0,
+      y: 0,
+      width: replacement.width,
+      height: replacement.height,
+    });
+  }
+
+  return output.save({
     addDefaultPage: false,
     updateFieldAppearances: false,
     useObjectStreams: true,

@@ -1,0 +1,31 @@
+{
+  "name": "DearPDF",
+  "short_name": "DearPDF",
+  "description": "Private PDF tools in your browser. Files never leave this device.",
+  "start_url": "/pdf-tools",
+  "id": "/pdf-tools",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b7a75",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://dearpdf.in/pdf-tools.webmanifest"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icons/pdf-tools-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/pdf-tools-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

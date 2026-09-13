@@ -11,6 +11,9 @@ export default function SiteHeader() {
       </Link>
       <nav className="flex flex-wrap items-center gap-4 text-sm text-[var(--muted)]">
         <PrivacyChip />
+        <Link href="/pdf-tools" className="hover:text-[var(--ink)]">
+          Tools
+        </Link>
         <Link href="/about" className="hover:text-[var(--ink)]">
           About
         </Link>

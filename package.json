@@ -29,8 +29,9 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.25",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4"
   },
-  "description": "DearPDF \u2014 private, in-browser PDF tools",
+  "description": "DearPDF — private, in-browser PDF tools",
   "packageManager": "pnpm@9.15.9"
 }
