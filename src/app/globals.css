@@ -3,20 +3,20 @@
 @import "./pdf-tools.css";
 
 :root {
-  --ink: #0f172a;
-  --muted: #64748b;
-  --meta: #64748b;
-  --line: #e2e8f0;
-  --light-line: #e2e8f0;
-  --paper: #f8fafc;
-  --wash: #f8fafc;
-  --soft-wash: #f1f5f9;
+  --ink: #191c1e;
+  --muted: #434655;
+  --meta: #434655;
+  --line: #c3c6d7;
+  --light-line: #e0e3e5;
+  --paper: #f7f9fb;
+  --wash: #f7f9fb;
+  --soft-wash: #f2f4f6;
   --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #eff6ff;
+  --accent-hover: #004ac6;
+  --accent-soft: #dbe1ff;
   --site-shell-width: 1240px;
   --discuss-navy: #2563eb;
-  --discuss-navy-2: #1d4ed8;
+  --discuss-navy-2: #004ac6;
   --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-ui: var(--font-sans);
@@ -28,14 +28,119 @@
   --color-foreground: var(--ink);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --font-headline-lg: var(--font-sans);
+  --font-headline-md: var(--font-sans);
+  --font-headline-sm: var(--font-sans);
+  --font-body-lg: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-body-sm: var(--font-sans);
+  --font-label-lg: var(--font-sans);
+  --font-label-md: var(--font-sans);
+  --font-label-sm: var(--font-sans);
 
+  /* Brand (shared with home) */
   --color-brand-50: #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-300: #93c5fd;
   --color-brand-400: #60a5fa;
   --color-brand-500: #3b82f6;
   --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
+  --color-brand-700: #004ac6;
+
+  /* Material Design tokens from Stitch All Tools */
+  --color-primary: #004ac6;
+  --color-primary-container: #2563eb;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #eeefff;
+  --color-primary-fixed: #dbe1ff;
+  --color-primary-fixed-dim: #b4c5ff;
+  --color-on-primary-fixed: #00174b;
+  --color-on-primary-fixed-variant: #003ea8;
+  --color-surface: #f7f9fb;
+  --color-surface-bright: #f7f9fb;
+  --color-surface-dim: #d8dadc;
+  --color-surface-variant: #e0e3e5;
+  --color-surface-container: #eceef0;
+  --color-surface-container-low: #f2f4f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-high: #e6e8ea;
+  --color-surface-container-highest: #e0e3e5;
+  --color-on-surface: #191c1e;
+  --color-on-surface-variant: #434655;
+  --color-outline: #737686;
+  --color-outline-variant: #c3c6d7;
+  --color-secondary: #565e74;
+  --color-secondary-container: #dae2fd;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #5c647a;
+  --color-secondary-fixed: #dae2fd;
+  --color-secondary-fixed-dim: #bec6e0;
+  --color-on-secondary-fixed: #131b2e;
+  --color-on-secondary-fixed-variant: #3f465c;
+  --color-tertiary: #46566c;
+  --color-tertiary-container: #5e6e85;
+  --color-tertiary-fixed: #d3e4fe;
+  --color-tertiary-fixed-dim: #b7c8e1;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #e9f0ff;
+  --color-on-tertiary-fixed: #0b1c30;
+  --color-on-tertiary-fixed-variant: #38485d;
+  --color-inverse-surface: #2d3133;
+  --color-inverse-on-surface: #eff1f3;
+  --color-inverse-primary: #b4c5ff;
+  --color-surface-tint: #0053db;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-background-md: #f7f9fb;
+  --color-on-background: #191c1e;
+
+  /* Spacing tokens from Stitch */
+  --spacing-space-xs: 0.125rem;
+  --spacing-space-sm: 0.25rem;
+  --spacing-space-md: 0.5rem;
+  --spacing-space-lg: 0.75rem;
+  --spacing-space-xl: 1rem;
+  --spacing-gutter: 0.5rem;
+  --spacing-margin: 0.75rem;
+
+  /* Type scale */
+  --text-headline-lg: 20px;
+  --text-headline-lg--line-height: 28px;
+  --text-headline-lg--letter-spacing: -0.015em;
+  --text-headline-lg--font-weight: 600;
+  --text-headline-md: 16px;
+  --text-headline-md--line-height: 22px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 600;
+  --text-headline-sm: 14px;
+  --text-headline-sm--line-height: 20px;
+  --text-headline-sm--letter-spacing: -0.005em;
+  --text-headline-sm--font-weight: 600;
+  --text-body-lg: 14px;
+  --text-body-lg--line-height: 20px;
+  --text-body-md: 13px;
+  --text-body-md--line-height: 18px;
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 16px;
+  --text-label-lg: 12px;
+  --text-label-lg--line-height: 16px;
+  --text-label-lg--letter-spacing: 0.02em;
+  --text-label-lg--font-weight: 600;
+  --text-label-md: 11px;
+  --text-label-md--line-height: 14px;
+  --text-label-md--letter-spacing: 0.01em;
+  --text-label-md--font-weight: 500;
+  --text-label-sm: 10px;
+  --text-label-sm--line-height: 12px;
+  --text-label-sm--letter-spacing: 0.03em;
+  --text-label-sm--font-weight: 600;
+
+  --radius-DEFAULT: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
 }
 
 html,
@@ -44,13 +149,10 @@ body {
 }
 
 body {
-  background: #f8fafc;
-  color: #0f172a;
+  background: #f7f9fb;
+  color: #191c1e;
   font-family: var(--font-sans);
   overscroll-behavior: none;
-}
-
-body {
   -webkit-font-smoothing: antialiased;
 }
 
@@ -71,8 +173,16 @@ a {
 }
 
 ::selection {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #dbe1ff;
+  color: #003ea8;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Soften DC ink-box chrome toward DearPDF paper */

@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-[#F8FAFC] font-sans text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-700">
+      <body className="bg-surface font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1 pt-14">{children}</main>

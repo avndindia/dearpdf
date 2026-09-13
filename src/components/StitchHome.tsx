@@ -37,10 +37,14 @@ const FAST_ACTIONS: {
 function badgeClass(tone: StitchBadgeTone) {
   switch (tone) {
     case "brand":
+    case "primaryFixed":
       return "text-brand-700 bg-brand-50 border border-brand-200";
+    case "popular":
+    case "secondary":
     case "emerald":
       return "text-emerald-700 bg-emerald-50 border border-emerald-200";
     case "amber":
+    case "tertiary":
       return "text-amber-800 bg-amber-50 border border-amber-200";
     default:
       return "text-slate-600 bg-slate-100";
@@ -256,7 +260,7 @@ export default function StitchHome() {
       <section
         id="tools"
         ref={toolsRef}
-        className="sticky top-14 z-30 bg-[#F8FAFC]/90 py-2 backdrop-blur scroll-mt-14"
+        className="sticky top-14 z-30 bg-surface/90 py-2 backdrop-blur scroll-mt-14"
       >
         <div className="flex flex-col items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm sm:flex-row">
           <div className="relative w-full sm:w-80">
