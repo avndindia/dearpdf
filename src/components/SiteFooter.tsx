@@ -1,23 +1,48 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function SiteFooter() {
   return (
-    <footer className="mx-auto mt-auto w-full max-w-5xl border-t border-[var(--line)] px-4 py-8 text-sm text-[var(--muted)] sm:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p>
-          <strong className="font-medium text-[var(--ink)]">DearPDF</strong> — drop a
-          file, get it back fixed. Nothing uploaded.
-        </p>
-        <div className="flex gap-4">
-          <Link href="/about" className="hover:text-[var(--ink)]">
-            About
+    <footer className="mt-6 w-full border-t border-slate-200 bg-white py-6">
+      <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-4 px-4 text-xs text-slate-500 sm:px-6 md:flex-row">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo-dearpdf.png"
+            alt="DearPDF"
+            width={20}
+            height={20}
+            className="h-5 w-5 rounded object-contain"
+          />
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="font-semibold text-slate-800">
+              Zero bytes leave your computer.
+            </span>
+            <span className="hidden text-slate-400 sm:inline">·</span>
+            <span className="hidden sm:inline">WebAssembly Client Computing</span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-4 text-slate-600">
+          <Link href="/#tools" className="transition-colors hover:text-brand-600">
+            Tools
           </Link>
-          <Link href="/privacy" className="hover:text-[var(--ink)]">
+          <Link href="/how-it-works" className="transition-colors hover:text-brand-600">
+            Architecture
+          </Link>
+          <Link
+            href="/privacy-architecture"
+            className="transition-colors hover:text-brand-600"
+          >
+            Audit
+          </Link>
+          <Link
+            href="/privacy-architecture"
+            className="transition-colors hover:text-brand-600"
+          >
             Privacy
           </Link>
-          <a href="https://dearpdf.in" className="hover:text-[var(--ink)]">
-            dearpdf.in
-          </a>
+          <span className="font-mono text-[10px] text-slate-400">v2.5.0-wasm</span>
+          <span>© 2026 DearPDF</span>
         </div>
       </div>
     </footer>
