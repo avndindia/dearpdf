@@ -139,6 +139,8 @@ export default function MergePdfPage() {
   const [work, setWork] = useState<WorkState>({ kind: "idle" });
   const [skipped, setSkipped] = useState<SkippedFile[]>([]);
   const [outputName, setOutputName] = useState(defaultMergeName);
+  const [sortKey, setSortKey] = useState<"name" | "size" | "pages" | null>(null);
+  const [sortAsc, setSortAsc] = useState(true);
   const [draggedFileId, setDraggedFileId] = useState<string | null>(null);
   const dragTargetIdRef = useRef<string | null>(null);
   const pointerDragRef = useRef<{
@@ -260,8 +262,26 @@ export default function MergePdfPage() {
     setPreviewFileId((current) => current === id ? null : current);
   }
 
-  function sortByFileName() {
-    setFiles((current) => [...current].sort((left, right) => compareFileNamesNaturally(left.file.name, right.file.name)));
+  function sortFiles(key: "name" | "size" | "pages") {
+    const nextAsc = sortKey === key ? !sortAsc : true;
+    setSortKey(key);
+    setSortAsc(nextAsc);
+    setFiles((current) => {
+      const sorted = [...current].sort((left, right) => {
+        let cmp = 0;
+        if (key === "name") {
+          cmp = compareFileNamesNaturally(left.file.name, right.file.name);
+        } else if (key === "size") {
+          cmp = left.file.size - right.file.size;
+        } else {
+          const leftPages = pageOrders[left.id]?.length ?? left.pageCount;
+          const rightPages = pageOrders[right.id]?.length ?? right.pageCount;
+          cmp = leftPages - rightPages;
+        }
+        return nextAsc ? cmp : -cmp;
+      });
+      return sorted;
+    });
   }
 
   async function sendSkippedToUnlock(item: SkippedFile) {
@@ -484,6 +504,8 @@ export default function MergePdfPage() {
     setPreviewFileId(null);
     setSkipped([]);
     setOutputName(defaultMergeName());
+    setSortKey(null);
+    setSortAsc(true);
     setWork({ kind: "idle" });
   }
 
@@ -514,7 +536,35 @@ export default function MergePdfPage() {
                 <span aria-hidden="true">＋</span> Add files
               </label>
               {files.length > 1 ? (
-                <button className="text-button" type="button" onClick={sortByFileName} disabled={busy}>Sort by name</button>
+                <div className="merge-sort-controls" role="group" aria-label="Sort files">
+                  <span className="merge-sort-label">Sort</span>
+                  {(
+                    [
+                      { key: "name" as const, label: "Name" },
+                      { key: "size" as const, label: "Size" },
+                      { key: "pages" as const, label: "Pages" },
+                    ]
+                  ).map((option, index) => (
+                    <span key={option.key} className="merge-sort-item">
+                      {index > 0 ? <span className="merge-sort-sep" aria-hidden="true">·</span> : null}
+                      <button
+                        className={`text-button merge-sort-button${sortKey === option.key ? " is-active" : ""}`}
+                        type="button"
+                        onClick={() => sortFiles(option.key)}
+                        disabled={busy}
+                        aria-pressed={sortKey === option.key}
+                        title={
+                          sortKey === option.key
+                            ? `Sorted by ${option.label}${sortAsc ? "" : " (reversed)"} — click to reverse`
+                            : `Sort by ${option.label}`
+                        }
+                      >
+                        {option.label}
+                        {sortKey === option.key ? (sortAsc ? " ↑" : " ↓") : ""}
+                      </button>
+                    </span>
+                  ))}
+                </div>
               ) : null}
               <button className="text-button" type="button" onClick={clearAll} disabled={busy}>Clear</button>
             </div>

@@ -20,11 +20,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "DearPDF — Fast, Private, In-Browser PDF Suite",
+    default: "DearPDF — Private PDF tools in your browser",
     template: "%s · DearPDF",
   },
   description:
-    "Drop a file. Get it back fixed. Nothing uploaded. Merge, compress, OCR, and more — 100% client-side WebAssembly.",
+    "Drop a file. Get it back fixed. Nothing uploaded. Merge, compress, OCR, and more — private PDF tools that stay on your device.",
   metadataBase: new URL("https://dearpdf.in"),
 };
 

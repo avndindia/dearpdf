@@ -49,18 +49,17 @@ export default function SiteHeader() {
                 DearPDF
               </span>
               <span className="mt-space-xs font-label-sm text-label-sm font-normal leading-tight text-on-surface-variant">
-                100% Client-side · Zero uploads
+                Private PDF tools
               </span>
             </div>
           </Link>
           <div className="hidden h-4 w-px bg-outline-variant/40 md:block" />
           <div className="hidden items-center gap-space-sm rounded-full border border-outline-variant/40 bg-surface-container-low px-space-md py-space-xs md:inline-flex">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
-            <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface-variant">
-              Wasm Sandbox Active
+            <span className="font-label-sm text-label-sm font-medium text-on-surface-variant">
+              Nothing uploaded
             </span>
           </div>
         </div>
@@ -105,9 +104,6 @@ export default function SiteHeader() {
               if (file) void openFileIntoDearPdf(file);
             }}
           />
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <MaterialIcon name="person" className="text-[18px] text-on-primary" />
-          </div>
         </div>
       </div>
     </header>

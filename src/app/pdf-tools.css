@@ -446,6 +446,32 @@
 
 .merge-workspace-heading-actions { display: flex; align-items: center; gap: 12px; }
 
+.merge-sort-controls {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 0;
+  max-width: 100%;
+}
+.merge-sort-label {
+  margin-right: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.merge-sort-item { display: inline-flex; align-items: center; }
+.merge-sort-sep {
+  margin: 0 4px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.merge-sort-button.is-active {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .merge-page.has-files .merge-intro { display: none; }
 
 .merge-page.has-files .merge-workspace { margin-top: 18px; }
@@ -2276,6 +2302,9 @@ html[data-color-scheme="dark"] .rich-editor-source-results li > button.is-active
   .merge-page.has-files .merge-workspace { margin-top: 10px; }
   .merge-page.has-files .merge-workspace-heading { flex-direction: row; align-items: center; gap: 10px; padding: 10px 12px; }
   .merge-workspace-heading-actions { gap: 8px; }
+  .merge-sort-controls { gap: 0; }
+  .merge-sort-label { font-size: 9px; }
+  .merge-sort-sep { margin: 0 3px; }
   .compact-pdf-add { min-height: 32px; padding: 5px 8px; white-space: nowrap; }
   .merge-page.has-files .merge-action-row { position: sticky; z-index: 20; bottom: 0; flex-direction: row; align-items: center; gap: 10px; border-top: 1px solid var(--ink); background: var(--paper); padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
   .merge-page.has-files .merge-action-row > div { min-width: 0; }
@@ -4945,6 +4974,42 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   color: var(--accent-hover);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+.stitch-tool-shell .merge-sort-controls {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 0;
+  row-gap: 2px;
+}
+.stitch-tool-shell .merge-sort-label {
+  margin-right: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.stitch-tool-shell .merge-sort-sep {
+  margin: 0 0.3rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.stitch-tool-shell .merge-sort-button {
+  padding: 0.2rem 0.05rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.stitch-tool-shell .merge-sort-button.is-active {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.stitch-tool-shell .merge-workspace-heading-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
 }
 
 .stitch-tool-shell .compact-pdf-add {

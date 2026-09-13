@@ -121,16 +121,16 @@ export default function StitchHome() {
       <section className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-            Zero server roundtrips · Client-side WebAssembly · 100% offline
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Your files never leave this device
           </div>
           <h1 className="mb-1.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             Drop a file. Get it back fixed.{" "}
             <span className="text-brand-600">Nothing uploaded.</span>
           </h1>
           <p className="mx-auto mb-4 max-w-xl text-xs text-slate-500 sm:text-sm">
-            Fast, private PDF tools that execute natively inside browser memory.
-            Your contracts, invoices, and sensitive scans never leave this device.
+            Fast, private PDF tools that run in your browser.
+            Contracts, invoices, and scans stay on this device — nothing is uploaded.
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export default function StitchHome() {
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500">
-                  Supports PDF, JPG, PNG up to 500MB · Isolated memory execution
+                  PDF, JPG, or PNG · up to 500MB · nothing uploaded
                 </div>
               </div>
             </div>
@@ -240,9 +240,9 @@ export default function StitchHome() {
 
           <div className="mt-3 grid grid-cols-1 gap-2 text-center sm:grid-cols-3">
             {[
-              { icon: "verified", label: (<><strong>0 Bytes</strong> Transferred</>) },
-              { icon: "shield", label: (<><strong>100%</strong> In-Browser WebAssembly</>) },
-              { icon: "wifi_off", label: (<><strong>Works Offline</strong> in Cache</>) },
+              { icon: "verified", label: (<><strong>Nothing</strong> uploaded</>) },
+              { icon: "shield", label: (<><strong>Runs</strong> in your browser</>) },
+              { icon: "wifi_off", label: (<><strong>Works offline</strong> after first visit</>) },
             ].map((item) => (
               <div
                 key={item.icon}
@@ -392,27 +392,22 @@ export default function StitchHome() {
         <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
           <div className="flex flex-col gap-2.5 lg:col-span-6">
             <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700">
-              <MaterialIcon name="memory" className="text-[15px]" />
-              Why &quot;Nothing Uploaded&quot; Matters
+              <MaterialIcon name="verified_user" className="text-[15px]" />
+              Why &quot;Nothing uploaded&quot; matters
             </div>
             <h3 className="text-lg font-bold tracking-tight text-slate-900">
-              Pure client-side execution in your browser&apos;s V8 sandbox.
+              Your PDFs are edited on this device — not on our servers.
             </h3>
             <p className="text-xs leading-relaxed text-slate-600">
-              Standard web converters beam confidential documents to cloud queues.
-              DearPDF loads the PDF engine into local WebAssembly memory threads.
-              Files are manipulated on your device’s CPU and exported directly to
-              your Downloads folder via{" "}
-              <code className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[11px] text-slate-800">
-                Blob URLs
-              </code>
-              .
+              Most online converters upload your documents to their servers.
+              DearPDF does the work in your browser instead. Open a file, get the
+              result back, and download it — without sending the document anywhere.
             </p>
             <div className="grid grid-cols-3 gap-2 pt-1 text-center">
               {[
-                { title: "01. Memory Buffers", sub: "Direct ArrayBuffer RAM" },
-                { title: "02. Native CPU", sub: "Local WebAssembly" },
-                { title: "03. Zero Network", sub: "Blob URL instant output" },
+                { title: "1. Open", sub: "File stays on this device" },
+                { title: "2. Edit", sub: "Tools run in your browser" },
+                { title: "3. Download", sub: "Nothing sent to a server" },
               ].map((step) => (
                 <div
                   key={step.title}
@@ -431,47 +426,42 @@ export default function StitchHome() {
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <span className="ml-1 text-slate-400">DevTools Network Monitor (F12)</span>
+                <span className="ml-1 text-slate-400">What happens to your file</span>
               </div>
               <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />{" "}
-                Verified 0B
+                Private
               </span>
             </div>
-            <div className="space-y-1.5 text-[11px]">
-              <div className="flex justify-between border-b border-slate-800/80 pb-1 text-[10px] text-slate-400">
-                <span>Request</span>
-                <span>Type</span>
-                <span>Initiator</span>
-                <span>Transferred</span>
-              </div>
-              <div className="flex items-center justify-between text-slate-300">
+            <div className="space-y-2 text-[11px] font-sans">
+              <div className="flex items-start justify-between gap-3 text-slate-300">
                 <span className="flex items-center gap-1 text-emerald-400">
-                  <MaterialIcon name="check" className="text-[13px]" /> pdfengine.wasm
+                  <MaterialIcon name="check" className="text-[13px]" /> Your document
                 </span>
-                <span className="text-slate-500">wasm</span>
-                <span className="text-slate-500">worker.js</span>
-                <span className="text-emerald-400">0 B (cache)</span>
+                <span className="text-right text-emerald-400">Stays on this device</span>
               </div>
-              <div className="flex items-center justify-between text-slate-300">
+              <div className="flex items-start justify-between gap-3 text-slate-300">
                 <span className="flex items-center gap-1 text-emerald-400">
-                  <MaterialIcon name="check" className="text-[13px]" />{" "}
-                  confidential_contract.pdf
+                  <MaterialIcon name="check" className="text-[13px]" /> Processing
                 </span>
-                <span className="text-slate-500">MEM_BLOB</span>
-                <span className="text-slate-500">FileReader</span>
-                <span className="font-bold text-emerald-400">0 B (0 packets)</span>
+                <span className="text-right text-slate-400">In your browser only</span>
+              </div>
+              <div className="flex items-start justify-between gap-3 text-slate-300">
+                <span className="flex items-center gap-1 text-emerald-400">
+                  <MaterialIcon name="check" className="text-[13px]" /> Upload to DearPDF
+                </span>
+                <span className="text-right font-bold text-emerald-400">Never</span>
               </div>
             </div>
             <div className="mt-2.5 flex items-center justify-between border-t border-slate-800 pt-2 font-sans text-[11px]">
               <span className="text-[11px] text-slate-400">
-                Inspect real-time network traffic anytime
+                Want the technical details?
               </span>
               <Link
                 href="/privacy-architecture"
                 className="inline-flex items-center gap-0.5 text-[11px] font-medium text-brand-400 hover:text-brand-300"
               >
-                Audit Details <MaterialIcon name="arrow_forward" className="text-[13px]" />
+                Privacy architecture <MaterialIcon name="arrow_forward" className="text-[13px]" />
               </Link>
             </div>
           </div>

@@ -108,7 +108,7 @@ export default function StitchAllTools() {
             </Link>
             <div className="flex items-center gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span className="font-mono">WASM_CORE_OK</span>
+              <span>Nothing uploaded</span>
             </div>
           </div>
 
@@ -121,30 +121,29 @@ export default function StitchAllTools() {
                 <span className="rounded-full bg-secondary-container px-space-md py-0.5 font-label-sm text-label-sm text-on-secondary-fixed">
                   {STITCH_TOOL_COUNT} Utilities Available
                 </span>
-                <span className="rounded-full bg-surface-container px-space-md py-0.5 font-mono font-label-sm text-label-sm text-on-surface-variant">
-                  Zero Server I/O
+                <span className="rounded-full bg-surface-container px-space-md py-0.5 font-label-sm text-label-sm text-on-surface-variant">
+                  Nothing uploaded
                 </span>
               </div>
               <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                Processed strictly in this browser sandbox. Documents are never
-                transmitted to external infrastructure. Full offline execution with
-                zero network telemetry.
+                Every tool runs in your browser. Your documents stay on this device
+                and are never sent to our servers. Works offline after the first visit.
               </p>
             </div>
 
             <div className="hidden shrink-0 items-center gap-3 rounded border border-outline-variant/30 bg-surface-container-low px-space-lg py-space-sm font-label-sm text-label-sm lg:flex">
               <div className="flex flex-col items-start">
                 <span className="text-[10px] font-semibold uppercase text-on-surface-variant">
-                  Privacy Bound
+                  Privacy
                 </span>
-                <span className="font-mono font-semibold text-primary">100% Local</span>
+                <span className="font-semibold text-primary">On this device</span>
               </div>
               <div className="h-6 w-px bg-outline-variant/40" />
               <div className="flex flex-col items-start">
                 <span className="text-[10px] font-semibold uppercase text-on-surface-variant">
-                  Telemetry
+                  Uploads
                 </span>
-                <span className="font-mono font-semibold text-emerald-600">0.00 KB sent</span>
+                <span className="font-semibold text-emerald-600">None</span>
               </div>
             </div>
           </div>
@@ -298,25 +297,25 @@ export default function StitchAllTools() {
                   Official Document Notice
                 </span>
                 <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />
-                <span className="font-mono font-label-sm text-label-sm text-on-surface-variant">
-                  CLIENT_RETAIN_MODE
+                <span className="font-label-sm text-label-sm text-on-surface-variant">
+                  Files stay here
                 </span>
               </div>
               <p className="max-w-3xl font-body-sm text-body-sm leading-normal text-on-surface-variant">
-                For sensitive official documents, always verify the downloaded result
-                before sharing. All cryptographic operations, OCR parsing, and document
-                manipulations happen strictly within your device&apos;s memory.
+                For important documents, always open the downloaded result before
+                sharing. Editing, OCR, and password tools all run on this device —
+                your file is not uploaded.
               </p>
             </div>
           </div>
           <div className="flex shrink-0 items-center justify-end gap-2 self-stretch border-t border-outline-variant/30 pt-2 md:self-auto md:border-t-0 md:pt-0">
             <div className="flex items-center gap-1.5 rounded border border-outline-variant/30 bg-surface-container-lowest px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
               <MaterialIcon name="dns" className="text-[14px] text-emerald-600" />
-              <span className="font-medium">0 Server Roundtrips</span>
+              <span className="font-medium">Nothing uploaded</span>
             </div>
             <div className="flex items-center gap-1.5 rounded border border-outline-variant/30 bg-surface-container-lowest px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
               <MaterialIcon name="offline_bolt" className="text-[14px] text-primary" />
-              <span className="font-medium">100% Offline Ready</span>
+              <span className="font-medium">Works offline</span>
             </div>
           </div>
         </div>

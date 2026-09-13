@@ -9,12 +9,12 @@ export default function SiteFooter() {
           <div className="flex items-center gap-space-xs text-on-surface-variant">
             <MaterialIcon name="verified_user" className="text-[16px] text-primary" />
             <span className="font-label-md text-label-md font-medium text-on-surface">
-              Zero bytes leave your computer
+              Files stay on this device
             </span>
           </div>
           <span className="hidden text-outline-variant sm:inline">·</span>
           <span className="hidden font-body-sm text-body-sm text-on-surface-variant sm:inline">
-            WebAssembly Client Computing
+            Nothing is uploaded
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-space-md font-label-md text-label-md">
@@ -47,7 +47,7 @@ export default function SiteFooter() {
           </Link>
           <span className="text-outline-variant">/</span>
           <span className="rounded border border-outline-variant/30 bg-surface-container-low px-space-xs py-0.5 font-mono font-label-sm text-label-sm text-on-surface-variant">
-            v2.5.0-wasm
+            v2.5.0
           </span>
           <span className="text-outline-variant">/</span>
           <span className="text-on-surface-variant">© 2026 DearPDF</span>

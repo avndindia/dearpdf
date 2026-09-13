@@ -223,7 +223,7 @@ export const stitchTools: StitchTool[] = [
     icon: "document_scanner",
     badge: "EN · HI · MR",
     badgeTone: "popular",
-    footer: "Tesseract Wasm Engine",
+    footer: "On-device OCR",
     tag: "Neural OCR",
     searchText: "pdf ocr text recognition tesseract english hindi marathi searchable",
     iconTone: "amber",
