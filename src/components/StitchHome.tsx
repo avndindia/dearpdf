@@ -214,12 +214,12 @@ export default function StitchHome() {
                       onClick={(e) => e.stopPropagation()}
                       className={
                         action.highlight
-                          ? "inline-flex w-full items-center justify-center gap-1 rounded-md border border-brand-200/80 bg-brand-50 px-2 py-1.5 text-[11px] font-medium text-brand-700 shadow-sm transition-colors hover:bg-brand-600 hover:text-white sm:w-auto sm:px-2.5 sm:py-1"
-                          : "inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:w-auto sm:px-2.5 sm:py-1"
+                          ? "inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-brand-200/80 bg-brand-50 px-1 py-1.5 text-[10px] font-medium leading-tight text-brand-700 shadow-sm transition-colors hover:bg-brand-600 hover:text-white sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
+                          : "inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-slate-200 bg-white px-1 py-1.5 text-[10px] font-medium leading-tight text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
                       }
                     >
-                      <MaterialIcon name={action.icon} className="text-[13px] shrink-0" />
-                      <span className="truncate">{action.label}</span>
+                      <MaterialIcon name={action.icon} className="text-[15px] shrink-0 sm:text-[13px]" />
+                      <span className="whitespace-normal text-center sm:whitespace-nowrap">{action.label}</span>
                     </Link>
                   ) : (
                     <button
@@ -229,10 +229,10 @@ export default function StitchHome() {
                         e.stopPropagation();
                         applyConvertFilter();
                       }}
-                      className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:w-auto sm:px-2.5 sm:py-1"
+                      className="inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-slate-200 bg-white px-1 py-1.5 text-[10px] font-medium leading-tight text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
                     >
-                      <MaterialIcon name={action.icon} className="text-[13px] shrink-0" />
-                      <span className="truncate">{action.label}</span>
+                      <MaterialIcon name={action.icon} className="text-[15px] shrink-0 sm:text-[13px]" />
+                      <span className="whitespace-normal text-center sm:whitespace-nowrap">{action.label}</span>
                     </button>
                   ),
                 )}
