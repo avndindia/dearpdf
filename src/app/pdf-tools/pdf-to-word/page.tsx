@@ -9,6 +9,7 @@ import {
   usePdfLazyPreviews,
 } from "../../../components/pdf-lazy-previews";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
+import { trackToolEvent } from "../../../lib/stats";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import {
   createEditableDocx,
@@ -187,6 +188,7 @@ export default function PdfToWordPage() {
     setResult(null);
     setProgress({ page: 1, total: orderedSelection.length, phase: "Inspecting text layer", percent: 0 });
     setWork({ kind: "working", message: `Preparing ${orderedSelection.length} pages on this device…` });
+    trackToolEvent("pdf-to-word", "start");
 
     let worker: Tesseract.Worker | null = null;
     let task: ReturnType<(typeof import("pdfjs-dist/legacy/build/pdf.mjs"))["getDocument"]> | null = null;
@@ -329,12 +331,15 @@ export default function PdfToWordPage() {
       downloadDocx(bytes, wordDownloadName(outputName, `${safeBaseName(selected.file.name)}.docx`));
       setSavedNotice(`Converted ${pages.length} ${pages.length === 1 ? "page" : "pages"}. The original PDF is still here.`);
       setProgress(null);
+      trackToolEvent("pdf-to-word", "success");
       setWork({ kind: "idle" });
     } catch (error) {
       setProgress(null);
       if (cancelledRef.current || (error instanceof Error && error.message === "CONVERSION_CANCELLED")) {
+        trackToolEvent("pdf-to-word", "cancel");
         setWork({ kind: "idle" });
       } else {
+        trackToolEvent("pdf-to-word", "error");
         setWork({
           kind: "error",
           message: error instanceof Error ? error.message : "The Word document could not be created.",

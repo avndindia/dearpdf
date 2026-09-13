@@ -17,6 +17,7 @@ import {
   type WatermarkPosition,
 } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type WorkState = { kind: "idle" } | { kind: "reading" | "working" | "error"; message: string };
@@ -171,6 +172,7 @@ export default function SignPdfPage() {
     const canvas = canvasRef.current;
     if (!selected || !canvas || !hasInk || !selection.pages.length) return;
     setWork({ kind: "working", message: "Placing the signature on this device…" });
+    trackToolEvent("sign", "start");
     try {
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
       if (!blob) throw new Error("The signature could not be prepared.");
@@ -186,8 +188,10 @@ export default function SignPdfPage() {
         signDownloadName(outputName, `${safeBaseName(selected.file.name)}-signed.pdf`),
       );
       setSavedNotice("Saved. The original PDF and this signature stay here for the next document.");
+      trackToolEvent("sign", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("sign", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The signature could not be added." });
     }
   }

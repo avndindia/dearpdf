@@ -6,6 +6,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { imagesToPdf, type ImagesToPdfOptions } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type ImageItem = {
   id: string;
@@ -294,6 +295,7 @@ export default function ImagesToPdfPage() {
   async function createPdf() {
     if (!images.length) return;
     setWork({ kind: "working", message: "Creating the PDF on this device…" });
+    trackToolEvent("images-to-pdf", "start");
     try {
       const bytes = await imagesToPdf(
         images.map(({ bytes: imageBytes, mimeType, width, height, rotation }) => ({
@@ -307,8 +309,10 @@ export default function ImagesToPdfPage() {
       );
       downloadPdf(bytes, imagesPdfDownloadName(outputName, suggestedImagesPdfName(images)));
       setSavedNotice("Saved. The images are still here — drop another photo and rebuild.");
+      trackToolEvent("images-to-pdf", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("images-to-pdf", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The PDF could not be created." });
     }
   }

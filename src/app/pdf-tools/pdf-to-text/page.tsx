@@ -9,6 +9,7 @@ import {
   usePdfLazyPreviews,
 } from "../../../components/pdf-lazy-previews";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
+import { trackToolEvent } from "../../../lib/stats";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import {
   extractPdfPages,
@@ -154,6 +155,7 @@ export default function PdfToTextPage() {
     setCopied(false);
     setProgress({ page: 1, total: orderedSelection.length, phase: "Inspecting text layer", percent: 0 });
     setWork({ kind: "working", message: `Preparing ${orderedSelection.length} pages on this device…` });
+    trackToolEvent("pdf-to-text", "start");
 
     let worker: Tesseract.Worker | null = null;
     let task: ReturnType<(typeof import("pdfjs-dist/legacy/build/pdf.mjs"))["getDocument"]> | null = null;
@@ -290,12 +292,15 @@ export default function PdfToTextPage() {
       });
       setSavedNotice(`Read ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"} (${ocrPages} OCR, ${textPages} text). The original scan is still here.`);
       setProgress(null);
+      trackToolEvent("pdf-to-text", "success");
       setWork({ kind: "idle" });
     } catch (error) {
       setProgress(null);
       if (cancelledRef.current || (error instanceof Error && error.message === "OCR_CANCELLED")) {
+        trackToolEvent("pdf-to-text", "cancel");
         setWork({ kind: "idle" });
       } else {
+        trackToolEvent("pdf-to-text", "error");
         setWork({
           kind: "error",
           message: error instanceof Error ? error.message : "Text could not be extracted.",

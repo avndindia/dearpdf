@@ -6,6 +6,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer };
 type WorkState = { kind: "idle" } | { kind: "working"; message: string } | { kind: "error"; message: string };
@@ -70,6 +71,7 @@ export default function LockPdfPage() {
   async function lockPdf() {
     if (!selected || !ready) return;
     setWork({ kind: "working", message: "Applying 256-bit password protection locally…" });
+    trackToolEvent("lock", "start");
     let runner: Awaited<ReturnType<(typeof import("qpdf-run"))["createQpdfRunner"]>> | null = null;
     try {
       const { createQpdfRunner } = await import("qpdf-run");
@@ -87,8 +89,10 @@ export default function LockPdfPage() {
       });
       downloadPdf(output, lockDownloadName(outputName, `${safeBaseName(selected.file.name)}-protected.pdf`));
       setSavedNotice("Saved. The original unprotected PDF is still here.");
+      trackToolEvent("lock", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("lock", "error");
       const detail = error && typeof error === "object" && "stderr" in error && Array.isArray(error.stderr)
         ? error.stderr.join(" ")
         : "";

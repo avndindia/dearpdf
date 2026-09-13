@@ -7,6 +7,7 @@ import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, organisePdfPages, BLANK_PDF_PAGE_INDEX } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type PageItem = {
   id: number;
@@ -227,14 +228,17 @@ export default function OrganisePdfPage() {
   async function downloadOrganisedPdf() {
     if (!selected || !pages.length) return;
     setWork({ kind: "working", message: "Building the organised PDF on this device…" });
+    trackToolEvent("organise", "start");
     try {
       const output = await organisePdfPages(
         selected.bytes,
         pages.map((page) => ({ pageIndex: page.originalIndex, rotation: page.rotation })),
       );
       downloadPdf(output, organiseDownloadName(outputName, `${safeBaseName(selected.file.name)}-organised.pdf`));
+      trackToolEvent("organise", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("organise", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }

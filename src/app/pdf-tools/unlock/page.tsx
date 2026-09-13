@@ -7,6 +7,7 @@ import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer };
 type WorkState =
@@ -83,6 +84,7 @@ export default function UnlockPdfPage() {
     const pages: RasterizedPdfPage[] = [];
 
     try {
+      trackToolEvent("unlock", "start");
       setWork({ kind: "working", message: "Opening the protected PDF locally…", completed: 0, total: 0 });
       const pdfDocument = await task.promise;
       const preset = QUALITY[quality];
@@ -113,8 +115,10 @@ export default function UnlockPdfPage() {
       setWork({ kind: "working", message: "Creating the password-free PDF…", completed: pdfDocument.numPages, total: pdfDocument.numPages });
       downloadPdf(await rasterizedPagesToPdf(pages), unlockDownloadName(outputName, `${safeBaseName(selected.file.name)}-unlocked.pdf`));
       setSavedNotice("Saved. The original protected PDF is still here if you need another copy.");
+      trackToolEvent("unlock", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("unlock", "error");
       const message = error instanceof Error && (error.name === "PasswordException" || /password/i.test(error.message))
         ? "The password is missing or incorrect. Enter the PDF’s open password and try again."
         : error instanceof Error

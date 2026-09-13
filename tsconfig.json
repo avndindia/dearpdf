@@ -37,6 +37,10 @@
   "exclude": [
     "node_modules",
     "tests",
-    "tests/**"
+    "tests/**",
+    "functions",
+    "functions/**",
+    "migrations",
+    "migrations/**"
   ]
 }

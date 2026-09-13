@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { announceGeneratedPdf, downloadGeneratedFile } from "../../../lib/browser-download";
+import { trackToolEvent } from "../../../lib/stats";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import {
   createFilesZip,
@@ -425,10 +426,12 @@ export default function CompressPdfPage() {
         : "Preparing pages…",
       percent: 4,
     });
+    trackToolEvent("compress", "start");
 
     try {
       const partBytes = Math.round(partMb * 1024 * 1024);
       if (splitIntoParts && partBytes < 128 * 1024) {
+        trackToolEvent("compress", "error");
         setWork({ kind: "error", message: "Choose a part size of at least 0.13 MB." });
         return;
       }
@@ -575,8 +578,10 @@ export default function CompressPdfPage() {
           }
         }
       }
+      trackToolEvent("compress", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("compress", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The PDF could not be compressed." });
     }
   }

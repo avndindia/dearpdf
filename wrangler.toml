@@ -1,0 +1,8 @@
+name = "dearpdf"
+compatibility_date = "2026-09-13"
+pages_build_output_dir = "out"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dearpdf-stats"
+database_id = "bce07e80-41f7-4d6f-aa6b-e9ec9cf3b390"

@@ -18,6 +18,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { renderPdfPageThumbnails, type PdfVisualPage } from "../../../components/pdf-page-workspace";
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
+import { trackToolEvent } from "../../../lib/stats";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import {
@@ -481,6 +482,7 @@ export default function EditPdfPage() {
   async function savePdf() {
     if (!selected) return;
     setWork({ kind: "working", message: "Applying edits locally…" });
+    trackToolEvent("edit", "start");
     try {
       const drafts = annotationsWithTextDrafts();
       let output = await applyPdfEdits(selected.bytes, drafts);
@@ -494,8 +496,10 @@ export default function EditPdfPage() {
       }
       downloadPdf(output, editDownloadName(outputName, `${safeBaseName(selected.file.name)}-edited.pdf`));
       setSavedNotice("Saved. The original PDF is still here — undo a mark or keep editing.");
+      trackToolEvent("edit", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("edit", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The edited PDF could not be created." });
     }
   }

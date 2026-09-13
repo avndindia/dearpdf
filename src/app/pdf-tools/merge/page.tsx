@@ -11,6 +11,7 @@ import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, imageToSinglePagePdf, mergePdfPageOrder } from "../../../lib/pdf-tools";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "../../../lib/pdf-tool-handoff";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type PdfFile = {
   id: string;
@@ -482,6 +483,7 @@ export default function MergePdfPage() {
   async function mergeFiles() {
     if (files.length < 2 || !totalPages) return;
     setWork({ kind: "merging", message: "Combining your files on this device…" });
+    trackToolEvent("merge", "start");
 
     try {
       const bytes = await mergePdfPageOrder(
@@ -491,8 +493,10 @@ export default function MergePdfPage() {
       const name = mergeDownloadName(outputName);
       window.__dearPdfNextStep = "download";
       announceGeneratedPdf(bytes as BlobPart, name);
+      trackToolEvent("merge", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("merge", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }

@@ -12,6 +12,7 @@ import {
 } from "../../../lib/pdf-tools";
 import { renderPdfPageThumbnails } from "../../../components/pdf-page-workspace";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = {
   file: File;
@@ -158,6 +159,7 @@ export default function PageNumbersPage() {
   async function addNumbers() {
     if (!selected || !numberedPages.length) return;
     setWork({ kind: "working", message: "Adding page numbers…", percent: 20 });
+    trackToolEvent("page-numbers", "start");
     try {
       const processingBytes = await selected.file.arrayBuffer();
       const output = await addPageNumbersPdf(processingBytes, {
@@ -175,8 +177,10 @@ export default function PageNumbersPage() {
       const name = numberedDownloadName(outputName, `${safeBaseName(selected.file.name)}-numbered.pdf`);
       downloadGeneratedFile(output as BlobPart, name);
       setSavedNotice(`Saved ${name}. The original PDF is still here — change the format and number again if you need to.`);
+      trackToolEvent("page-numbers", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("page-numbers", "error");
       setWork({
         kind: "error",
         message: error instanceof Error ? error.message : "Page numbers could not be added.",

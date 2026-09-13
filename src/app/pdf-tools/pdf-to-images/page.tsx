@@ -16,6 +16,7 @@ import {
   type BinaryDownloadFile,
 } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = {
   file: File;
@@ -240,6 +241,7 @@ export default function PdfToImagesPage() {
     if (!selected || !pageIndices.length || selection.error) return;
     setResult(null);
     setWork({ kind: "working", message: "Preparing PDF pages on this device…" });
+    trackToolEvent("pdf-to-images", "start");
     try {
       const baseName = imagesDownloadBase(outputName, safeBaseName(selected.file.name));
       const files = await exportPdfPages(
@@ -267,8 +269,10 @@ export default function PdfToImagesPage() {
       downloadGeneratedFile(output.bytes as BlobPart, output.fileName);
       setResult(output);
       setSavedNotice("Saved. The original PDF is still here — change format or pages and export again.");
+      trackToolEvent("pdf-to-images", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("pdf-to-images", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The PDF pages could not be converted." });
     }
   }

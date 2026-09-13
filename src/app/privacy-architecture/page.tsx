@@ -31,6 +31,7 @@ export default function PrivacyArchitecturePage() {
           "Passwords for encryption stay in memory on this device.",
           "OCR language models may be downloaded from public CDNs by Tesseract.js into your browser cache — your document itself is not sent to DearPDF.",
           "No account is required to use the tools.",
+          "Anonymous usage pings may be sent (tool name, event type, time, random session id) so we can see which tools are used. Filenames and file contents are never sent.",
           "Verify results in DevTools Network: document requests show 0 B transferred (memory / cache only).",
         ].map((item) => (
           <li

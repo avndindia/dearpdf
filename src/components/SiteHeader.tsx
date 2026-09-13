@@ -31,6 +31,36 @@ export default function SiteHeader() {
   const pathname = usePathname() || "/";
   const inputRef = useRef<HTMLInputElement>(null);
 
+  if (pathname.startsWith("/admin")) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-outline-variant/30 bg-surface-container-lowest shadow-[0_1px_3px_0_rgba(15,23,42,0.05)]">
+        <div className="flex h-14 w-full items-center justify-between gap-space-md px-space-xl">
+          <Link href="/" className="flex select-none items-center gap-space-md">
+            <Image
+              src="/logo-dearpdf.png"
+              alt="DearPDF"
+              width={32}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
+            <div className="flex flex-col">
+              <span className="font-headline-md text-headline-md leading-none tracking-tight text-on-surface">
+                DearPDF
+              </span>
+              <span className="mt-space-xs font-label-sm text-label-sm font-normal leading-tight text-on-surface-variant">
+                Private analytics
+              </span>
+            </div>
+          </Link>
+          <span className="rounded-full border border-outline-variant/40 bg-surface-container-low px-space-md py-space-xs font-label-sm text-label-sm text-on-surface-variant">
+            /admin
+          </span>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-outline-variant/30 bg-surface-container-lowest shadow-[0_1px_3px_0_rgba(15,23,42,0.05)]">
       <div className="flex h-14 w-full items-center justify-between gap-space-md px-space-xl">

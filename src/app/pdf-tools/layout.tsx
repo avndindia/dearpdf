@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ToolTelemetry from "@/components/ToolTelemetry";
 
 export const metadata: Metadata = {
   title: "Private PDF Tools",
@@ -19,5 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default function PdfToolsLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <ToolTelemetry />
+      {children}
+    </>
+  );
 }

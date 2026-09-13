@@ -19,6 +19,7 @@ import {
   splitPdfIntoZip,
 } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = {
   file: File;
@@ -239,6 +240,7 @@ export default function SplitPdfPage() {
   async function extractPages() {
     if (!selected || rangeResult.error || !rangeResult.pages.length) return;
     setWork({ kind: "working", message: "Creating the extracted PDF on this device…" });
+    trackToolEvent("split", "start");
     try {
       const selectedSet = new Set(rangeResult.pages);
       const pageIndices = pageOrderDirty
@@ -248,8 +250,10 @@ export default function SplitPdfPage() {
       const name = splitDownloadName(outputName, suggestedExtractName(selected.file.name, pageIndices));
       downloadBytes(bytes, "application/pdf", name);
       setExtractNotice(`Saved ${name}. The original PDF is still here — pick another range if you need it.`);
+      trackToolEvent("split", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("split", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }
@@ -257,12 +261,15 @@ export default function SplitPdfPage() {
   async function splitEveryPage() {
     if (!selected) return;
     setWork({ kind: "working", message: `Creating ${selected.pageCount} separate PDFs and packing them into a ZIP…` });
+    trackToolEvent("split", "start");
     try {
       const baseName = safeBaseName(selected.file.name);
       const bytes = await splitPdfIntoZip(selected.bytes, baseName);
       downloadBytes(bytes, "application/zip", `${baseName}-split-pages.zip`);
+      trackToolEvent("split", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("split", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }
@@ -273,12 +280,15 @@ export default function SplitPdfPage() {
       kind: "working",
       message: `Creating ${everyNResult.sizes.length} PDFs of up to ${everyNResult.pagesPerFile} pages and packing them into a ZIP…`,
     });
+    trackToolEvent("split", "start");
     try {
       const baseName = safeBaseName(selected.file.name);
       const bytes = await splitPdfEveryNPagesZip(selected.bytes, everyNResult.pagesPerFile, baseName);
       downloadBytes(bytes, "application/zip", `${baseName}-every-${everyNResult.pagesPerFile}-pages.zip`);
+      trackToolEvent("split", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("split", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }
@@ -289,6 +299,7 @@ export default function SplitPdfPage() {
       kind: "working",
       message: `Creating ${equalPartsResult.partCount} nearly equal PDFs and packing them into a ZIP…`,
     });
+    trackToolEvent("split", "start");
     try {
       const baseName = safeBaseName(selected.file.name);
       const bytes = await splitPdfIntoEqualPartsZip(
@@ -297,8 +308,10 @@ export default function SplitPdfPage() {
         baseName,
       );
       downloadBytes(bytes, "application/zip", `${baseName}-${equalPartsResult.partCount}-parts.zip`);
+      trackToolEvent("split", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("split", "error");
       setWork({ kind: "error", message: readablePdfError(error) });
     }
   }

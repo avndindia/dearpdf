@@ -12,6 +12,7 @@ import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type WorkState = { kind: "idle" } | { kind: "reading" | "working" | "error"; message: string };
@@ -119,6 +120,7 @@ export default function GrayscalePdfPage() {
   async function convert() {
     if (!selected) return;
     setWork({ kind: "working", message: `Converting ${selected.pageCount} pages to grayscale locally…` });
+    trackToolEvent("grayscale", "start");
     try {
       const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
       pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
@@ -154,8 +156,10 @@ export default function GrayscalePdfPage() {
         grayscaleDownloadName(outputName, `${safeBaseName(selected.file.name)}-grayscale.pdf`),
       );
       setSavedNotice("Saved. The original colour PDF is still here.");
+      trackToolEvent("grayscale", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("grayscale", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The PDF could not be converted." });
     }
   }

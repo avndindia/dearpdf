@@ -20,6 +20,7 @@ import {
   type WatermarkPosition,
 } from "../../../lib/pdf-tools";
 import StitchToolShell from "../../../components/StitchToolShell";
+import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = {
   file: File;
@@ -261,6 +262,7 @@ export default function WatermarkPdfPage() {
   async function createWatermarkedPdf() {
     if (!selected || !pageSelection.pages.length || pageSelection.error) return;
     setWork({ kind: "working", message: "Adding the watermark on this device…" });
+    trackToolEvent("watermark", "start");
     try {
       const watermark = kind === "text"
         ? { kind: "text" as const, text, color, size: textSize }
@@ -283,8 +285,10 @@ export default function WatermarkPdfPage() {
       });
       downloadPdf(output, watermarkDownloadName(outputName, `${safeBaseName(selected.file.name)}-watermarked.pdf`));
       setSavedNotice("Saved. The original PDF is still here — change the stamp and apply again if you need to.");
+      trackToolEvent("watermark", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent("watermark", "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : "The watermark could not be added." });
     }
   }

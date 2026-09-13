@@ -18,6 +18,7 @@ import {
 } from "./pdf-lazy-previews";
 import PdfNextStepSelector from "./pdf-next-step-selector";
 import { downloadGeneratedFile } from "../lib/browser-download";
+import { trackToolEvent } from "../lib/stats";
 import { useIncomingPdfHandoff } from "../lib/pdf-tool-handoff";
 import {
   addPageNumbersPdf,
@@ -336,6 +337,7 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
   async function processPdf() {
     if (!selected) return;
     setWork({ kind: "working", message: `${copy.action} locally…` });
+    trackToolEvent(mode, "start");
     try {
       // Re-read the local file so PDF.js preview workers can never leave the
       // processing buffer detached in browsers that transfer typed arrays.
@@ -381,8 +383,10 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
       }
       downloadPdf(output, simpleDownloadName(outputName, `${safeBaseName(selected.file.name)}-${copy.suffix}.pdf`));
       setSavedNotice(repairNotice || "Saved. The original PDF is still here.");
+      trackToolEvent(mode, "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      trackToolEvent(mode, "error");
       setWork({ kind: "error", message: error instanceof Error ? error.message : `${copy.title} could not finish.` });
     }
   }
