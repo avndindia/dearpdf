@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type Tesseract from "tesseract.js";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
@@ -22,6 +21,7 @@ import {
   extractTaggedPage,
   type PdfStructNode,
 } from "../../../lib/pdf-to-word-layout";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type ConversionMode = "auto" | "text" | "ocr";
@@ -360,21 +360,12 @@ export default function PdfToWordPage() {
     .join("\n");
 
   return (
-    <div className={`pdf-page utility-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>PDF to Word</h1>
-          <p>Reconstruct PDF text, formatting, alignment, and tables in an editable Word document.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> No document uploads</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">PRIVATE PDF CONVERSION</p><h2>Make the document editable again.</h2></div>
-        <p>Choose the pages you need. The converter reconstructs positioned text as Word paragraphs and tables, retaining detectable font styling, alignment, spacing, and page dimensions.</p>
-      </section>
-
+    <StitchToolShell
+      title="PDF to Word"
+      subtitle="Reconstruct PDF text, formatting, and tables in an editable Word document."
+      className={`utility-pdf-page${selected ? " has-file" : ""}`}
+      note="Always review names, figures, tables, and official wording after conversion."
+    >
       <section className="merge-workspace utility-workspace">
         <div className="merge-workspace-heading">
           <div><h2>Source PDF</h2><p>{selected ? `${selected.pageCount} ${selected.pageCount === 1 ? "page" : "pages"} · ${orderedSelection.length} selected` : "Choose one PDF file"}</p></div>
@@ -510,13 +501,6 @@ export default function PdfToWordPage() {
           </>
         )}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>Formatting reconstruction</strong><span>Text styles, alignment, spacing, pages, and detectable tables are rebuilt as Word content.</span></div>
-        <div><strong>Scans supported</strong><span>Optional OCR reads English, Hindi, and Marathi pages.</span></div>
-      </section>
-
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Always review names, figures, tables, and official wording after conversion.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   Download,
   Eraser,
@@ -29,6 +28,7 @@ import {
   type RedactedPageImage,
 } from "../../../lib/pdf-editor";
 import { inspectPdf } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type EditorTool = "select" | "text" | "draw" | "highlight" | "rectangle" | "redact" | "image";
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number; pages: PdfVisualPage[] };
@@ -501,17 +501,12 @@ export default function EditPdfPage() {
   }
 
   return (
-    <div className={`pdf-page pdf-editor-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div><Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link><h1>Edit PDF</h1><p>Add text, drawings, highlights, shapes, redaction, and images.</p></div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> Editing stays local</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">VISUAL · PRIVATE · REVERSIBLE</p><h2>Edit directly on the page.</h2></div>
-        <p>Work visually without uploading the document. Redacted areas are burned out of the downloaded file, so the words cannot be copied.</p>
-      </section>
-
+    <StitchToolShell
+      title="Edit PDF"
+      subtitle="Add text, drawings, highlights, shapes, redaction, and images."
+      className={`pdf-editor-page${selected ? " has-file" : ""}`}
+      note="Verify the downloaded document before relying on it as an official record."
+    >
       <section className="pdf-editor-workspace">
         <div className="merge-workspace-heading">
           <div><h2>Document editor</h2><p>{selected ? `${selected.file.name} · ${selected.pageCount} pages · ${annotations.length} edits` : "Choose a PDF to begin"}</p></div>
@@ -705,9 +700,6 @@ export default function EditPdfPage() {
         )}
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-
-      <section className="merge-assurance"><div><strong>Fully local</strong><span>The PDF and edits never leave this browser tab.</span></div><div><strong>True redact</strong><span>Marked areas are flattened so the original words are gone from that page.</span></div><div><strong>Undo friendly</strong><span>Reverse changes before downloading the final copy.</span></div></section>
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Verify the downloaded document before relying on it as an official record.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

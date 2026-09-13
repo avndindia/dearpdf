@@ -4467,3 +4467,379 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   font-size: 14px;
   line-height: 1.55;
 }
+
+/* =============================================================================
+   Stitch tool shell — calm DearPDF chrome for /pdf-tools/[tool]
+   Softens DC ink-box hierarchy without rewriting tool engines.
+   ============================================================================= */
+
+.stitch-tool-shell {
+  width: min(var(--site-shell-width, 1240px), calc(100% - 2rem));
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 0 2rem;
+  color: var(--ink);
+}
+
+.stitch-tool-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.stitch-tool-topbar-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+}
+
+.stitch-tool-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.stitch-tool-mark:hover {
+  color: var(--accent);
+}
+
+.stitch-tool-topbar-divider {
+  display: none;
+  width: 1px;
+  height: 14px;
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+@media (min-width: 480px) {
+  .stitch-tool-topbar-divider {
+    display: block;
+  }
+}
+
+.stitch-tool-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.stitch-tool-back:hover {
+  color: var(--accent);
+}
+
+.stitch-tool-privacy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.3rem 0.7rem;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.stitch-tool-privacy-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #10b981;
+  flex-shrink: 0;
+}
+
+.stitch-tool-heading {
+  margin: 0 0 1.25rem;
+  max-width: 42rem;
+}
+
+.stitch-tool-heading h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.stitch-tool-heading p {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.stitch-tool-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stitch-tool-trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.stitch-tool-trust-main {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  max-width: 48rem;
+}
+
+.stitch-tool-trust-link,
+.stitch-tool-related a {
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stitch-tool-trust-link:hover,
+.stitch-tool-related a:hover {
+  text-decoration: underline;
+}
+
+.stitch-tool-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+/* Hide legacy DC page chrome when Stitch shell is used */
+.stitch-tool-shell > .site-header,
+.stitch-tool-shell > .site-footer,
+.stitch-tool-shell > .merge-intro,
+.stitch-tool-shell > .merge-assurance,
+.stitch-tool-shell > .merge-notes,
+.stitch-tool-shell .pdf-tools-back,
+.stitch-tool-shell .suite-name,
+.stitch-tool-shell .local-processing-badge {
+  display: none !important;
+}
+
+/* Soft workspace cards */
+.stitch-tool-shell .merge-workspace,
+.stitch-tool-shell .organise-workspace,
+.stitch-tool-shell .utility-workspace,
+.stitch-tool-shell .lock-workspace,
+.stitch-tool-shell .sign-workspace,
+.stitch-tool-shell .compress-workspace,
+.stitch-tool-shell .split-workspace,
+.stitch-tool-shell .watermark-workspace,
+.stitch-tool-shell .images-workspace,
+.stitch-tool-shell .pdf-editor-workspace {
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.stitch-tool-shell .merge-workspace-heading,
+.stitch-tool-shell .organise-workspace .merge-workspace-heading,
+.stitch-tool-shell .utility-workspace .merge-workspace-heading {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--wash) 80%, #fff);
+  padding: 14px 18px;
+}
+
+.stitch-tool-shell .merge-workspace-heading h2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.stitch-tool-shell .merge-workspace-heading p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Large calm drop zone */
+.stitch-tool-shell .pdf-drop-zone {
+  min-height: 200px;
+  margin: 12px 16px 16px;
+  border: 2px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 12px;
+  border-bottom-style: dashed;
+  background: color-mix(in srgb, #eff6ff 70%, var(--wash));
+  gap: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.stitch-tool-shell .pdf-drop-zone:hover {
+  background: color-mix(in srgb, #dbeafe 55%, #fff);
+  border-color: var(--accent);
+}
+
+.stitch-tool-shell .pdf-drop-zone strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.stitch-tool-shell .pdf-drop-zone > span:last-child {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Primary actions — Stitch primary-container blue */
+.stitch-tool-shell .primary-button,
+.stitch-tool-shell .merge-button,
+.stitch-tool-shell button.primary-button,
+.stitch-tool-shell .pdf-action.primary,
+.stitch-tool-shell .compress-run,
+.stitch-tool-shell .split-run {
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  min-height: 42px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgb(37 99 235 / 25%);
+  transition: background 0.15s ease;
+}
+
+.stitch-tool-shell .primary-button:hover:not(:disabled),
+.stitch-tool-shell .merge-button:hover:not(:disabled),
+.stitch-tool-shell .compress-run:hover:not(:disabled),
+.stitch-tool-shell .split-run:hover:not(:disabled) {
+  background: #004ac6;
+}
+
+.stitch-tool-shell .primary-button:disabled,
+.stitch-tool-shell .merge-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.stitch-tool-shell .secondary-button,
+.stitch-tool-shell .small-button {
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.stitch-tool-shell .secondary-button:hover,
+.stitch-tool-shell .small-button:hover {
+  background: var(--wash);
+}
+
+.stitch-tool-shell .text-button {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.stitch-tool-shell .text-button:hover {
+  text-decoration: underline;
+}
+
+/* Quieter file list / cards */
+.stitch-tool-shell .pdf-file-list li {
+  border-bottom-color: color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.stitch-tool-shell .pdf-file-icon {
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 8px;
+  background: var(--wash);
+}
+
+.stitch-tool-shell .pdf-work-message {
+  margin: 12px 16px;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.stitch-tool-shell .field input,
+.stitch-tool-shell .field select,
+.stitch-tool-shell .field textarea,
+.stitch-tool-shell .utility-field input,
+.stitch-tool-shell .utility-field select,
+.stitch-tool-shell .merge-output-name input {
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.stitch-tool-shell .merge-actions,
+.stitch-tool-shell .utility-actions,
+.stitch-tool-shell .organise-actions {
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--wash) 60%, #fff);
+}
+
+/* When files loaded, keep heading compact (no giant intro) */
+.stitch-tool-shell.has-files .stitch-tool-heading,
+.stitch-tool-shell.has-file .stitch-tool-heading {
+  margin-bottom: 0.85rem;
+}
+
+.stitch-tool-shell.has-files .stitch-tool-heading p,
+.stitch-tool-shell.has-file .stitch-tool-heading p {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .stitch-tool-shell {
+    width: min(100%, calc(100% - 1rem));
+    padding: 0.75rem 0 1.5rem;
+  }
+
+  .stitch-tool-privacy {
+    font-size: 10px;
+  }
+
+  .stitch-tool-shell .pdf-drop-zone {
+    min-height: 160px;
+    margin: 10px 12px 12px;
+  }
+}
+
+
+/* Broad soft card for any *workspace section inside Stitch shell */
+.stitch-tool-shell section[class*="workspace"],
+.stitch-tool-shell .pdf-editor-shell,
+.stitch-tool-shell .pdf-editor-layout {
+  border-color: color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+.stitch-tool-shell section[class*="workspace"] {
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}

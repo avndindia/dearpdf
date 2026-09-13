@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
@@ -12,6 +11,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type WorkState = { kind: "idle" } | { kind: "reading" | "working" | "error"; message: string };
@@ -161,9 +161,12 @@ export default function GrayscalePdfPage() {
   }
 
   return (
-    <div className={`pdf-page utility-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header"><div><Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link><h1>Grayscale PDF</h1><p>Convert every page to neutral grayscale.</p></div><div className="local-processing-badge"><span aria-hidden="true">●</span> Files stay local</div></header>
-      <section className="merge-intro"><div><p className="pdf-eyebrow">LOCAL COLOUR CONVERSION</p><h2>Prepare colour documents for simple printing.</h2></div><p>Render every page in grayscale with adjustable resolution and quality. This works especially well for scans and image-heavy PDFs.</p></section>
+    <StitchToolShell
+      title="Grayscale PDF"
+      subtitle="Convert every page to neutral grayscale."
+      className={`utility-pdf-page${selected ? " has-file" : ""}`}
+      note="For text-based PDFs, keep the original as an accessible copy."
+    >
       <section className="merge-workspace utility-workspace">
         <div className="merge-workspace-heading"><div><h2>Source PDF</h2><p>{selected ? `${selected.pageCount} pages · ${formatBytes(selected.file.size)}` : "Choose one PDF file"}</p></div>{selected ? <div className="organise-heading-actions"><PdfLazyPreviewControls previewState={previewState} onShow={() => { if (selected) void loadPreviews(selected.bytes).catch(() => setWork({ kind: "error", message: "Page previews could not be created for this PDF." })); }} onHide={hidePreviews} disabled={busy} /><button className="text-button" type="button" onClick={() => { resetPreviews(); setSelected(null); setPreview(null); setSavedNotice(""); }}>Remove file</button></div> : null}</div>
         {!selected ? (
@@ -220,8 +223,6 @@ export default function GrayscalePdfPage() {
         )}
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-      <section className="merge-assurance"><div><strong>Private conversion</strong><span>Pages render only on this device.</span></div><div><strong>Memory limits</strong><span>Large pages are scaled safely.</span></div><div><strong>Original preserved</strong><span>A new PDF is downloaded.</span></div></section>
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>For text-based PDFs, keep the original as an accessible copy.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

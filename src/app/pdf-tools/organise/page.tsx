@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, organisePdfPages, BLANK_PDF_PAGE_INDEX } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type PageItem = {
   id: number;
@@ -255,28 +255,11 @@ export default function OrganisePdfPage() {
   );
 
   return (
-    <div className={`pdf-page organise-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>Organise PDF</h1>
-          <p>Reorder, rotate, and remove pages visually.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-
-      <section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PROCESSED IN THIS BROWSER · VISUAL PAGE PREVIEWS</p>
-          <h2>Put every page in its place.</h2>
-        </div>
-        <p>
-          Choose one PDF, then drag pages into order, rotate them, duplicate a
-          page, insert a blank A4, or remove pages you do not need. Name the
-          download before you save.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Organise PDF"
+      subtitle="Reorder, rotate, and remove pages visually."
+      className={`organise-page${selected ? " has-file" : ""}`}
+    >
       <section className="organise-workspace" aria-labelledby="organise-workspace-title">
         <div className="merge-workspace-heading">
           <div>
@@ -371,26 +354,6 @@ export default function OrganisePdfPage() {
           <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p>
         ) : null}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>Local previews</strong><span>Thumbnails are rendered in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames or document contents.</span></div>
-        <div><strong>Temporary session</strong><span>Refreshing or closing this page removes the selected file.</span></div>
-      </section>
-
-      <section className="merge-notes">
-        <h2>Before you organise</h2>
-        <ul>
-          <li>Password-protected PDFs must be unlocked first.</li>
-          <li>Existing digital signatures will normally become invalid after pages are changed.</li>
-          <li>Open and check the downloaded result before sending or filing it.</li>
-        </ul>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

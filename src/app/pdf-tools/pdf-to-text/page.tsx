@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import type Tesseract from "tesseract.js";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
@@ -17,6 +16,7 @@ import {
   mergePdfDocuments,
   parsePageSelection,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type ExtractionMode = "auto" | "ocr" | "text";
@@ -345,21 +345,12 @@ export default function PdfToTextPage() {
   }
 
   return (
-    <div className={`pdf-page utility-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>PDF OCR</h1>
-          <p>Copy the text, or save a searchable PDF. Files stay on this device.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> No document uploads</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">LOCAL TEXT RECOGNITION</p><h2>Take the words out of the PDF.</h2></div>
-        <p>Use the existing text layer when available and run private OCR only where needed. English, Hindi, and Marathi recognition happens in this browser. Copy the text, download a TXT file, or save a searchable PDF.</p>
-      </section>
-
+    <StitchToolShell
+      title="PDF OCR"
+      subtitle="Copy the text, or save a searchable PDF."
+      className={`utility-pdf-page${selected ? " has-file" : ""}`}
+      note="OCR accuracy depends on scan clarity and layout. Always verify official text."
+    >
       <section className="merge-workspace utility-workspace">
         <div className="merge-workspace-heading">
           <div><h2>Source PDF</h2><p>{selected ? `${selected.pageCount} pages · ${orderedSelection.length} selected` : "Choose one PDF file"}</p></div>
@@ -502,17 +493,6 @@ export default function PdfToTextPage() {
 
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>Local OCR</strong><span>Rendered pages stay in browser memory.</span></div>
-        <div><strong>Multilingual</strong><span>English, Hindi, and Marathi models.</span></div>
-        <div><strong>Text or searchable PDF</strong><span>Copy the recognised text, download TXT, or save a PDF you can search.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p>OCR accuracy depends on scan clarity, language, typeface, and page layout. Always verify official text.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

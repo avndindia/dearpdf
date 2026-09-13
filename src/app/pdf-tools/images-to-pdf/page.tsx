@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { Grid2X2, List, RotateCcw, RotateCw, Trash2 } from "lucide-react";
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { imagesToPdf, type ImagesToPdfOptions } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type ImageItem = {
   id: string;
@@ -314,27 +314,11 @@ export default function ImagesToPdfPage() {
   }
 
   return (
-    <div className={`pdf-page images-pdf-page${images.length ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>Images to PDF</h1>
-          <p>Combine JPG, PNG, and WebP images into one PDF.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-
-      <section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PROCESSED IN THIS BROWSER · JPG · PNG · WEBP</p>
-          <h2>Turn images into one document.</h2>
-        </div>
-        <p>
-          Add images, arrange them in page order, choose the document layout,
-          then download one PDF made entirely in your browser.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Images to PDF"
+      subtitle="Combine JPG, PNG, and WebP images into one PDF."
+      className={`images-pdf-page${images.length ? " has-file" : ""}`}
+    >
       <section className="images-pdf-workspace" aria-labelledby="images-workspace-title">
         <div className="merge-workspace-heading">
           <div>
@@ -533,19 +517,7 @@ export default function ImagesToPdfPage() {
       </section>
 
       {totalBytes > 100 * 1024 * 1024 ? <p className="large-file-note">These images total more than 100 MB. Processing may be slow on a device with limited memory.</p> : null}
-
-      <section className="merge-assurance">
-        <div><strong>Local conversion</strong><span>Images and the finished PDF stay in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive image names or contents.</span></div>
-        <div><strong>Temporary session</strong><span>Refreshing or closing this page removes the selected images.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-
-      {touchDragGhost && draggedImage ? (
+{touchDragGhost && draggedImage ? (
         <div
           className="image-drag-ghost"
           aria-hidden="true"
@@ -580,6 +552,6 @@ export default function ImagesToPdfPage() {
           </div>
         </div>
       ) : null}
-    </div>
+    </StitchToolShell>
   );
 }

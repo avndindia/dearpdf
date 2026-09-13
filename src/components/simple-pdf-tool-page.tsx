@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import StitchToolShell from "./StitchToolShell";
 import {
   useMemo,
   useRef,
@@ -405,22 +405,12 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
   }
 
   return (
-    <div className={`pdf-page utility-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link>
-          <Link className="suite-name" href="/">DearPDF</Link>
-          <h1>{copy.title}</h1>
-          <p>{copy.subtitle}</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> Files stay on this device</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">LOCAL PDF UTILITY</p><h2>{copy.headline}</h2></div>
-        <p>{copy.intro}</p>
-      </section>
-
+    <StitchToolShell
+      title={copy.title}
+      subtitle={copy.subtitle}
+      className={`utility-pdf-page${selected ? " has-file" : ""}`}
+      note="Open and verify the downloaded PDF before relying on it."
+    >
       <section className="merge-workspace utility-workspace">
         <div className="merge-workspace-heading">
           <div>
@@ -593,13 +583,6 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
 
-      <section className="merge-assurance">
-        <div><strong>No uploads</strong><span>The source PDF stays in this browser tab.</span></div>
-        <div><strong>No file analytics</strong><span>Names, contents, and choices are never collected.</span></div>
-        <div><strong>Fresh download</strong><span>The original file is never overwritten.</span></div>
-      </section>
-
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Open and verify the downloaded PDF before relying on it.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

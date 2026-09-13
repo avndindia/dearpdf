@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
@@ -16,6 +15,7 @@ import {
   parsePageSelection,
   type BinaryDownloadFile,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
   file: File;
@@ -277,27 +277,11 @@ export default function PdfToImagesPage() {
   const estimatedHeight = preview ? Math.round(preview.pageHeight * dpi / 72) : 0;
 
   return (
-    <div className={`pdf-page pdf-images-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>PDF to Images</h1>
-          <p>Export PDF pages as PNG, JPG, or WebP images.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-
-      <section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PNG · JPG · WEBP · PROCESSED IN THIS BROWSER</p>
-          <h2>Turn every page into an image.</h2>
-        </div>
-        <p>
-          Export one page directly or convert multiple pages into a numbered ZIP.
-          Choose the exact pages, resolution, format, and quality.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="PDF to Images"
+      subtitle="Export PDF pages as PNG, JPG, or WebP images."
+      className={`pdf-images-page${selected ? " has-file" : ""}`}
+    >
       <section className="pdf-images-workspace" aria-labelledby="pdf-images-title">
         <div className="merge-workspace-heading">
           <div>
@@ -418,17 +402,6 @@ export default function PdfToImagesPage() {
         ) : null}
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>Local conversion</strong><span>Every page is rendered inside this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames, pages, or image contents.</span></div>
-        <div><strong>Memory protected</strong><span>Extreme page dimensions are safely capped during export.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

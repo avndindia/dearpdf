@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { Eye, EyeOff, LockKeyhole } from "lucide-react";
 import { useRef, useState } from "react";
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer };
 type WorkState = { kind: "idle" } | { kind: "working"; message: string } | { kind: "error"; message: string };
@@ -104,17 +104,12 @@ export default function LockPdfPage() {
   }
 
   return (
-    <div className={`pdf-page lock-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div><Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link><h1>Add Password to PDF</h1><p>Add an open password with 256-bit encryption.</p></div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> Password stays local</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">AES-256 · PROCESSED IN THIS BROWSER</p><h2>Keep the document private.</h2></div>
-        <p>Add a password that must be entered whenever the PDF is opened. The document is encrypted entirely inside this browser tab.</p>
-      </section>
-
+    <StitchToolShell
+      title="Add Password to PDF"
+      subtitle="Add an open password with 256-bit encryption."
+      className={`lock-pdf-page${selected ? " has-file" : ""}`}
+      note="Store the password securely before sharing or deleting the original PDF."
+    >
       <section className="lock-workspace">
         <div className="merge-workspace-heading">
           <div><h2>PDF and password</h2><p>{selected ? `${selected.file.name} · ${formatBytes(selected.file.size)}` : "Choose an unprotected PDF"}</p></div>
@@ -172,9 +167,6 @@ export default function LockPdfPage() {
           </div>
         )}
       </section>
-
-      <section className="merge-assurance"><div><strong>Real encryption</strong><span>The downloaded file requires its password when opened.</span></div><div><strong>Fully local</strong><span>The PDF and password stay in this browser tab.</span></div><div><strong>Content preserved</strong><span>Pages, text, links, forms, and bookmarks remain intact.</span></div></section>
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Store the password securely before sharing or deleting the original PDF.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

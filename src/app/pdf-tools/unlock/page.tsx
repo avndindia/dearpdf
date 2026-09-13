@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { Eye, EyeOff, LockOpen } from "lucide-react";
 import { useRef, useState } from "react";
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer };
 type WorkState =
@@ -127,17 +127,12 @@ export default function UnlockPdfPage() {
   }
 
   return (
-    <div className={`pdf-page unlock-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div><Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link><h1>Remove Password from PDF</h1><p>Remove an open password by rebuilding a local, unprotected copy.</p></div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span> Password stays local</div>
-      </header>
-
-      <section className="merge-intro">
-        <div><p className="pdf-eyebrow">REMOVE PASSWORD · PROCESSED IN THIS BROWSER</p><h2>Open it once. Keep a password-free copy.</h2></div>
-        <p>Enter a password you are authorised to use. The browser opens each page locally and creates a fresh PDF without password protection.</p>
-      </section>
-
+    <StitchToolShell
+      title="Remove Password from PDF"
+      subtitle="Remove an open password by rebuilding a local, unprotected copy."
+      className={`unlock-pdf-page${selected ? " has-file" : ""}`}
+      note="Do not remove protection from a document without authorisation."
+    >
       <section className="unlock-workspace">
         <div className="merge-workspace-heading">
           <div><h2>Protected PDF</h2><p>{selected ? `${selected.file.name} · ${formatBytes(selected.file.size)}` : "Choose one password-protected PDF"}</p></div>
@@ -200,9 +195,6 @@ export default function UnlockPdfPage() {
           </div>
         )}
       </section>
-
-      <section className="merge-assurance"><div><strong>No uploads</strong><span>The PDF and password stay inside this browser tab.</span></div><div><strong>Fresh copy</strong><span>The downloaded PDF has no open password.</span></div><div><strong>Visible pages kept</strong><span>Always compare the rebuilt copy with the source.</span></div></section>
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Do not remove protection from a document without authorisation.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

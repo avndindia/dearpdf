@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
@@ -17,6 +16,7 @@ import {
   stampPdfWithImage,
   type WatermarkPosition,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type WorkState = { kind: "idle" } | { kind: "reading" | "working" | "error"; message: string };
@@ -193,9 +193,12 @@ export default function SignPdfPage() {
   }
 
   return (
-    <div className={`pdf-page utility-pdf-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header"><div><Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link><h1>Sign PDF</h1><p>Draw a signature and place it on selected pages.</p></div><div className="local-processing-badge"><span aria-hidden="true">●</span> Signature stays local</div></header>
-      <section className="merge-intro"><div><p className="pdf-eyebrow">LOCAL SIGNATURE STAMP</p><h2>Sign without uploading the document.</h2></div><p>Draw with a mouse, trackpad, stylus, or finger, then place the signature on the last page or a custom page range.</p></section>
+    <StitchToolShell
+      title="Sign PDF"
+      subtitle="Draw a signature and place it on selected pages."
+      className={`utility-pdf-page${selected ? " has-file" : ""}`}
+      note="Use an approved digital-signature system when a certificate-backed signature is legally required."
+    >
       <section className="merge-workspace utility-workspace">
         <div className="merge-workspace-heading"><div><h2>Document and signature</h2><p>{selected ? `${selected.pageCount} pages ready` : "Start with a PDF"}</p></div>{selected ? <div className="organise-heading-actions"><PdfLazyPreviewControls previewState={previewState} onShow={() => { if (selected) void loadPreviews(selected.bytes).catch(() => setWork({ kind: "error", message: "Page previews could not be created for this PDF." })); }} onHide={hidePreviews} disabled={busy} /><button className="text-button" type="button" onClick={() => { resetPreviews(); setSelected(null); }}>Remove file</button></div> : null}</div>
         {!selected ? (
@@ -261,8 +264,6 @@ export default function SignPdfPage() {
         )}
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-      <section className="merge-assurance"><div><strong>Local drawing</strong><span>The signature never leaves this tab.</span></div><div><strong>Transparent stamp</strong><span>Page content remains visible.</span></div><div><strong>Clear distinction</strong><span>This is a visual, not cryptographic, signature.</span></div></section>
-      <footer className="site-footer"><p><Link href="/pdf-tools">← All PDF tools</Link></p><p>Use an approved digital-signature system when a certificate-backed signature is legally required.</p></footer>
-    </div>
+    </StitchToolShell>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
@@ -20,6 +19,7 @@ import {
   watermarkPreviewInsetPercent,
   type WatermarkPosition,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
   file: File;
@@ -308,26 +308,11 @@ export default function WatermarkPdfPage() {
     : null;
 
   return (
-    <div className={`pdf-page watermark-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>Watermark PDF</h1>
-          <p>Add text or an image to selected PDF pages.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-<section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">TEXT OR IMAGE · LIVE PREVIEW · PROCESSED IN THIS BROWSER</p>
-          <h2>Mark documents clearly.</h2>
-        </div>
-        <p>
-          Add a watermark to every page or only the ranges you choose. Adjust
-          its placement and appearance before downloading the result.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Watermark PDF"
+      subtitle="Add text or an image to selected PDF pages."
+      className={`watermark-page${selected ? " has-file" : ""}`}
+    >
       <section className="watermark-workspace" aria-labelledby="watermark-workspace-title">
         <div className="merge-workspace-heading">
           <div>
@@ -513,17 +498,6 @@ export default function WatermarkPdfPage() {
 
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>Local preview</strong><span>The PDF and watermark are rendered in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames, text, or document contents.</span></div>
-        <div><strong>Temporary session</strong><span>Refreshing or closing this page removes the selected files.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import Link from "next/link";
 import PdfPageWorkspace, {
   moveId,
   renderPdfPageThumbnails,
@@ -11,6 +10,7 @@ import { announceGeneratedPdf } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, imageToSinglePagePdf, mergePdfPageOrder } from "../../../lib/pdf-tools";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "../../../lib/pdf-tool-handoff";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type PdfFile = {
   id: string;
@@ -488,30 +488,12 @@ export default function MergePdfPage() {
   }
 
   return (
-    <div className={`pdf-page merge-page${files.length ? " has-files" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>Merge PDF</h1>
-          <p>Combine PDFs and images in the order you choose.</p>
-        </div>
-        <div className="local-processing-badge">
-          <span aria-hidden="true">●</span>
-          Files stay on this device
-        </div>
-      </header>
-
-      <section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PROCESSED IN THIS BROWSER · NOT SENT TO OUR SERVERS</p>
-          <h2>Put your files together.</h2>
-        </div>
-        <p>
-          Add PDFs, photos, or both. Drag them into order, then download one combined PDF.
-          A first-page thumbnail appears automatically; open Preview only when you need to inspect or rearrange individual pages.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Merge PDF"
+      subtitle="Combine PDFs and images in the order you choose."
+      className={`merge-page${files.length ? " has-files" : ""}`}
+      note="Password-protected PDFs are skipped. Always open the merged file before sending it."
+    >
       <section className="merge-workspace" aria-labelledby="merge-workspace-title">
         <div className="merge-workspace-heading">
           <div>
@@ -730,26 +712,6 @@ export default function MergePdfPage() {
           These files total more than 100 MB. Processing may be slow or fail on a device with limited memory.
         </p>
       ) : null}
-
-      <section className="merge-assurance">
-        <div><strong>Local processing</strong><span>The PDF data stays in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames or document contents.</span></div>
-        <div><strong>Temporary session</strong><span>Refreshing or closing this page removes the selected files.</span></div>
-      </section>
-
-      <section className="merge-notes">
-        <h2>Before you merge</h2>
-        <ul>
-          <li>Password-protected PDFs are skipped. Remove the password, then add them back.</li>
-          <li>Existing digital signatures will normally become invalid after a PDF is modified.</li>
-          <li>Always open and check the downloaded document before sending or filing it.</li>
-        </ul>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

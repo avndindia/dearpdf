@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
@@ -19,6 +18,7 @@ import {
   splitPdfIntoEqualPartsZip,
   splitPdfIntoZip,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
   file: File;
@@ -304,30 +304,11 @@ export default function SplitPdfPage() {
   }
 
   return (
-    <div className={`pdf-page split-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link><Link className="suite-name" href="/">DearPDF</Link>
-          <h1>Split & Extract PDF</h1>
-          <p>Keep selected pages together or save every page separately.</p>
-        </div>
-        <div className="local-processing-badge">
-          <span aria-hidden="true">●</span>
-          Files stay on this device
-        </div>
-      </header>
-<section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PROCESSED IN THIS BROWSER · NO FILE STORAGE</p>
-          <h2>Take only the pages you need.</h2>
-        </div>
-        <p>
-          Choose one PDF. Split after every few pages, divide into equal parts,
-          extract a page range, or split every page into a ZIP. Tap page numbers to
-          extract, or type a range. The original file stays loaded after extract.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Split & Extract PDF"
+      subtitle="Keep selected pages together or save every page separately."
+      className={`split-page${selected ? " has-file" : ""}`}
+    >
       <section className="merge-workspace" aria-labelledby="split-workspace-title">
         <div className="merge-workspace-heading">
           <div>
@@ -620,26 +601,6 @@ export default function SplitPdfPage() {
       {selected && selected.file.size > 100 * 1024 * 1024 ? (
         <p className="large-file-note">This file is larger than 100 MB. Processing may be slow or fail on a device with limited memory.</p>
       ) : null}
-
-      <section className="merge-assurance">
-        <div><strong>Local processing</strong><span>The PDF data stays in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames or document contents.</span></div>
-        <div><strong>Temporary session</strong><span>Refreshing or closing this page removes the selected file.</span></div>
-      </section>
-
-      <section className="merge-notes">
-        <h2>Before you split</h2>
-        <ul>
-          <li>Password-protected PDFs must be unlocked first.</li>
-          <li>Links, forms, and digital signatures may not remain valid when pages are extracted.</li>
-          <li>Open and check every downloaded result before sending or filing it.</li>
-        </ul>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/pdf-tools">← All PDF tools</Link></p>
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
@@ -12,6 +11,7 @@ import {
   type PageNumberPosition,
 } from "../../../lib/pdf-tools";
 import { renderPdfPageThumbnails } from "../../../components/pdf-page-workspace";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
   file: File;
@@ -185,24 +185,11 @@ export default function PageNumbersPage() {
   }
 
   return (
-    <div className={`pdf-page compress-page page-numbers-page${selected ? " has-file" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link>
-          <h1>Add Page Numbers</h1>
-          <p>Choose a format and position. Files stay on this device.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-
-      <section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">LOCAL PDF UTILITY</p>
-          <h2>Make every page easy to reference.</h2>
-        </div>
-        <p>Choose pages from a live preview, then set the numbering style, position, colour, and starting number.</p>
-      </section>
-
+    <StitchToolShell
+      title="Add Page Numbers"
+      subtitle="Choose a format and position for selected pages."
+      className={`compress-page page-numbers-page${selected ? " has-file" : ""}`}
+    >
       <section className="compress-workspace">
         {!selected ? (
           <label className={`pdf-drop-zone${busy ? " disabled" : ""}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
@@ -400,16 +387,6 @@ export default function PageNumbersPage() {
           <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p>
         ) : null}
       </section>
-
-      <section className="merge-assurance">
-        <div><strong>No uploads</strong><span>The source PDF stays in this browser tab.</span></div>
-        <div><strong>Live placement</strong><span>The preview shows where the number will sit.</span></div>
-        <div><strong>Fresh download</strong><span>The original file is never overwritten.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }

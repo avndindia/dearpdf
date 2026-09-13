@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { announceGeneratedPdf, downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
@@ -14,6 +13,7 @@ import {
   splitPdfByMaximumBytes,
   type RasterizedPdfPage,
 } from "../../../lib/pdf-tools";
+import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
   file: File;
@@ -597,27 +597,12 @@ export default function CompressPdfPage() {
   }, [result, selected, outputName]);
 
   return (
-    <div className={`pdf-page compress-page${selected ? " has-file" : ""}${splitIntoParts ? " size-split-page" : ""}`}>
-      <header className="site-header pdf-site-header">
-        <div>
-          <Link className="pdf-tools-back" href="/pdf-tools">← All PDF tools</Link>
-          <h1>Compress PDF</h1>
-          <p>Reduce size, or split into parts under a limit. Files stay on this device.</p>
-        </div>
-        <div className="local-processing-badge"><span aria-hidden="true">●</span>Files stay on this device</div>
-      </header>
-<section className="merge-intro">
-        <div>
-          <p className="pdf-eyebrow">PROCESSED IN THIS BROWSER</p>
-          <h2>Make PDFs easier to share.</h2>
-        </div>
-        <p>
-          Keep the text when you can. Use Balanced or Extreme when the file
-          must be smaller. Turn on split if each piece must stay under an
-          email or upload limit.
-        </p>
-      </section>
-
+    <StitchToolShell
+      title="Compress PDF"
+      subtitle="Reduce size, or split into parts under a limit."
+      className={`compress-page${selected ? " has-file" : ""}${splitIntoParts ? " size-split-page" : ""}`}
+      note="Compression stays on this device. Compare the download with the original before you delete anything."
+    >
       <section className="compress-workspace">
         {!selected ? (
           <label className={`pdf-drop-zone${busy ? " disabled" : ""}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); if (!busy) void chooseFile(event.dataTransfer.files[0]); }}>
@@ -868,17 +853,6 @@ export default function CompressPdfPage() {
       {selected && isLargePdf(selected.pageCount, selected.file.size) && level !== "less" ? (
         <p className="large-file-note">This file is large. Extreme and Balanced turn every page into an image in this browser.</p>
       ) : null}
-
-      <section className="merge-assurance">
-        <div><strong>Local compression</strong><span>Source pages and output stay in this browser tab.</span></div>
-        <div><strong>No file tracking</strong><span>Analytics never receive filenames, contents, or quality choices.</span></div>
-        <div><strong>Never larger</strong><span>The original is retained whenever compression cannot reduce its size.</span></div>
-        <div><strong>Split if needed</strong><span>Optional parts stay under an email or upload limit, in page order.</span></div>
-      </section>
-
-      <footer className="site-footer">
-        <p><Link href="/">DearPDF</Link> · Government rules and everyday office tools.</p>
-      </footer>
-    </div>
+    </StitchToolShell>
   );
 }
