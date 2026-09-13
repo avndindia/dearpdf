@@ -38,20 +38,15 @@ export default function SiteHeader() {
           <Link href="/" className="flex select-none items-center gap-space-md">
             <Image
               src="/logo-dearpdf.png"
-              alt="DearPDF"
+              alt="DearPDF.in"
               width={32}
               height={32}
               className="h-8 w-auto object-contain"
               priority
             />
-            <div className="flex flex-col">
-              <span className="font-headline-md text-headline-md leading-none tracking-tight text-on-surface">
-                DearPDF
-              </span>
-              <span className="mt-space-xs font-label-sm text-label-sm font-normal leading-tight text-on-surface-variant">
-                Private analytics
-              </span>
-            </div>
+            <span className="font-headline-md text-headline-md leading-none tracking-tight text-on-surface">
+              DearPDF.in
+            </span>
           </Link>
           <span className="rounded-full border border-outline-variant/40 bg-surface-container-low px-space-md py-space-xs font-label-sm text-label-sm text-on-surface-variant">
             /admin
@@ -68,20 +63,15 @@ export default function SiteHeader() {
           <Link href="/" className="flex select-none items-center gap-space-md">
             <Image
               src="/logo-dearpdf.png"
-              alt="DearPDF"
+              alt="DearPDF.in"
               width={32}
               height={32}
               className="h-8 w-auto object-contain"
               priority
             />
-            <div className="flex flex-col">
-              <span className="font-headline-md text-headline-md leading-none tracking-tight text-on-surface">
-                DearPDF
-              </span>
-              <span className="mt-space-xs font-label-sm text-label-sm font-normal leading-tight text-on-surface-variant">
-                Private PDF tools
-              </span>
-            </div>
+            <span className="font-headline-md text-headline-md leading-none tracking-tight text-on-surface">
+              DearPDF.in
+            </span>
           </Link>
           <div className="hidden h-4 w-px bg-outline-variant/40 md:block" />
           <div className="hidden items-center gap-space-sm rounded-full border border-outline-variant/40 bg-surface-container-low px-space-md py-space-xs md:inline-flex">

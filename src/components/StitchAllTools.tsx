@@ -106,10 +106,6 @@ export default function StitchAllTools() {
               />
               <span>Back to DearPDF home</span>
             </Link>
-            <div className="flex items-center gap-space-sm font-label-sm text-label-sm text-on-surface-variant">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span>Nothing uploaded</span>
-            </div>
           </div>
 
           <div className="flex flex-col justify-between gap-space-md pt-space-xs md:flex-row md:items-end">
@@ -121,30 +117,11 @@ export default function StitchAllTools() {
                 <span className="rounded-full bg-secondary-container px-space-md py-0.5 font-label-sm text-label-sm text-on-secondary-fixed">
                   {STITCH_TOOL_COUNT} Utilities Available
                 </span>
-                <span className="rounded-full bg-surface-container px-space-md py-0.5 font-label-sm text-label-sm text-on-surface-variant">
-                  Nothing uploaded
-                </span>
               </div>
               <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                Every tool runs in your browser. Your documents stay on this device
-                and are never sent to our servers. Works offline after the first visit.
+                Merge, compress, OCR, convert, and more — every tool runs in your
+                browser. Works offline after the first visit.
               </p>
-            </div>
-
-            <div className="hidden shrink-0 items-center gap-3 rounded border border-outline-variant/30 bg-surface-container-low px-space-lg py-space-sm font-label-sm text-label-sm lg:flex">
-              <div className="flex flex-col items-start">
-                <span className="text-[10px] font-semibold uppercase text-on-surface-variant">
-                  Privacy
-                </span>
-                <span className="font-semibold text-primary">On this device</span>
-              </div>
-              <div className="h-6 w-px bg-outline-variant/40" />
-              <div className="flex flex-col items-start">
-                <span className="text-[10px] font-semibold uppercase text-on-surface-variant">
-                  Uploads
-                </span>
-                <span className="font-semibold text-emerald-600">None</span>
-              </div>
             </div>
           </div>
 
@@ -161,7 +138,7 @@ export default function StitchAllTools() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g. merge, compress, ocr, split)...`}
-                className="h-9 w-full rounded border border-outline-variant/60 bg-surface pl-9 pr-12 font-body-sm text-body-sm text-on-surface shadow-sm transition-all placeholder:text-on-surface-variant/60 focus:border-primary focus:bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary"
+                className="h-10 w-full rounded border border-outline-variant/60 bg-surface pl-9 pr-12 text-base text-on-surface shadow-sm transition-all placeholder:text-on-surface-variant/60 focus:border-primary focus:bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary"
               />
               <div className="pointer-events-none absolute right-2.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
                 <kbd className="rounded border border-outline-variant/40 bg-surface-container-high px-1.5 py-0.5 font-mono text-[10px] text-on-surface-variant">
@@ -292,27 +269,16 @@ export default function StitchAllTools() {
               <MaterialIcon name="verified_user" className="text-[18px] text-tertiary" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface">
-                  Official Document Notice
-                </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-outline-variant" />
-                <span className="font-label-sm text-label-sm text-on-surface-variant">
-                  Files stay here
-                </span>
-              </div>
+              <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface">
+                Official Document Notice
+              </span>
               <p className="max-w-3xl font-body-sm text-body-sm leading-normal text-on-surface-variant">
                 For important documents, always open the downloaded result before
-                sharing. Editing, OCR, and password tools all run on this device —
-                your file is not uploaded.
+                sharing or filing.
               </p>
             </div>
           </div>
           <div className="flex shrink-0 items-center justify-end gap-2 self-stretch border-t border-outline-variant/30 pt-2 md:self-auto md:border-t-0 md:pt-0">
-            <div className="flex items-center gap-1.5 rounded border border-outline-variant/30 bg-surface-container-lowest px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
-              <MaterialIcon name="dns" className="text-[14px] text-emerald-600" />
-              <span className="font-medium">Nothing uploaded</span>
-            </div>
             <div className="flex items-center gap-1.5 rounded border border-outline-variant/30 bg-surface-container-lowest px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
               <MaterialIcon name="offline_bolt" className="text-[14px] text-primary" />
               <span className="font-medium">Works offline</span>

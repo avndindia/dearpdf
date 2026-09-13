@@ -267,7 +267,7 @@ export default function AdminPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-on-surface outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-base text-on-surface outline-none focus:border-primary"
                   required
                 />
               </label>

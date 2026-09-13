@@ -122,15 +122,13 @@ export default function StitchHome() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Your files never leave this device
+            Private PDF tools
           </div>
           <h1 className="mb-1.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Drop a file. Get it back fixed.{" "}
-            <span className="text-brand-600">Nothing uploaded.</span>
+            Drop a file. Get it back fixed.
           </h1>
           <p className="mx-auto mb-4 max-w-xl text-xs text-slate-500 sm:text-sm">
-            Fast, private PDF tools that run in your browser.
-            Contracts, invoices, and scans stay on this device — nothing is uploaded.
+            Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
           </p>
         </div>
 
@@ -196,7 +194,7 @@ export default function StitchHome() {
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500">
-                  PDF, JPG, or PNG · up to 500MB · nothing uploaded
+                  PDF, JPG, or PNG · up to 500MB
                 </div>
               </div>
             </div>
@@ -274,7 +272,7 @@ export default function StitchHome() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress)...`}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-8 text-xs text-slate-800 outline-none transition-all placeholder:text-slate-400 hover:bg-white focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-8 text-base text-slate-800 outline-none transition-all placeholder:text-slate-400 hover:bg-white focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500"
             />
             <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-white px-1 font-mono text-[10px] text-slate-400 shadow-sm">
               /

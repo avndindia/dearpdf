@@ -62,7 +62,7 @@ export default function DropZone({
     >
       <p className="text-lg font-medium text-[var(--ink)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">
-        Processed entirely in this tab. Nothing is uploaded.
+        Drop files here, or click to browse.
       </p>
       <input
         ref={inputRef}

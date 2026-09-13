@@ -185,6 +185,15 @@ a {
   display: none;
 }
 
+/* iOS Safari: inputs <16px trigger focus zoom — keep form controls readable on small screens */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* Soften DC ink-box chrome toward DearPDF paper */
 .pdf-page .pdf-tool-card,
 .pdf-page .merge-workspace,

@@ -12,10 +12,6 @@ export default function SiteFooter() {
               Files stay on this device
             </span>
           </div>
-          <span className="hidden text-outline-variant sm:inline">·</span>
-          <span className="hidden font-body-sm text-body-sm text-on-surface-variant sm:inline">
-            Nothing is uploaded
-          </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-space-md font-label-md text-label-md">
           <Link

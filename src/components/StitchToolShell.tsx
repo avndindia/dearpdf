@@ -52,7 +52,7 @@ export default function StitchToolShell({
           <MaterialIcon name="verified_user" className="text-[16px] text-primary" />
           <span>
             {note ??
-              "Processed in this browser. Nothing is uploaded. Open the download before you file or send it."}
+              "Open the download before you file or send it."}
           </span>
         </div>
         {related && related.length > 0 ? (
