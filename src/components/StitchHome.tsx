@@ -124,8 +124,10 @@ export default function StitchHome() {
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Private PDF tools
           </div>
-          <h1 className="mb-1.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Drop a file. Get it back fixed.
+          <h1 className="mb-1.5 text-[1.375rem] font-bold leading-snug tracking-tight text-slate-900 text-balance sm:text-3xl sm:leading-tight">
+            Drop a file.
+            <br className="sm:hidden" />{" "}
+            Get it back fixed.
           </h1>
           <p className="mx-auto mb-4 max-w-xl text-xs text-slate-500 sm:text-sm">
             Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
@@ -199,40 +201,42 @@ export default function StitchHome() {
               </div>
             </div>
 
-            <div className="relative z-20 flex flex-wrap items-center justify-center gap-1.5 pt-1">
-              <span className="mr-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <div className="relative z-20 flex w-full flex-col items-stretch gap-1.5 pt-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
+              <span className="text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400 sm:mr-1 sm:shrink-0 sm:text-left">
                 Fast Actions:
               </span>
-              {FAST_ACTIONS.map((action) =>
-                action.href ? (
-                  <Link
-                    key={action.label}
-                    href={action.href}
-                    onClick={(e) => e.stopPropagation()}
-                    className={
-                      action.highlight
-                        ? "inline-flex items-center gap-1 rounded-md border border-brand-200/80 bg-brand-50 px-2.5 py-1 text-[11px] font-medium text-brand-700 shadow-sm transition-colors hover:bg-brand-600 hover:text-white"
-                        : "inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600"
-                    }
-                  >
-                    <MaterialIcon name={action.icon} className="text-[13px]" />
-                    {action.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={action.label}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      applyConvertFilter();
-                    }}
-                    className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600"
-                  >
-                    <MaterialIcon name={action.icon} className="text-[13px]" />
-                    {action.label}
-                  </button>
-                ),
-              )}
+              <div className="grid grid-cols-3 gap-1.5 sm:contents">
+                {FAST_ACTIONS.map((action) =>
+                  action.href ? (
+                    <Link
+                      key={action.label}
+                      href={action.href}
+                      onClick={(e) => e.stopPropagation()}
+                      className={
+                        action.highlight
+                          ? "inline-flex w-full items-center justify-center gap-1 rounded-md border border-brand-200/80 bg-brand-50 px-2 py-1.5 text-[11px] font-medium text-brand-700 shadow-sm transition-colors hover:bg-brand-600 hover:text-white sm:w-auto sm:px-2.5 sm:py-1"
+                          : "inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:w-auto sm:px-2.5 sm:py-1"
+                      }
+                    >
+                      <MaterialIcon name={action.icon} className="text-[13px] shrink-0" />
+                      <span className="truncate">{action.label}</span>
+                    </Link>
+                  ) : (
+                    <button
+                      key={action.label}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        applyConvertFilter();
+                      }}
+                      className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:w-auto sm:px-2.5 sm:py-1"
+                    >
+                      <MaterialIcon name={action.icon} className="text-[13px] shrink-0" />
+                      <span className="truncate">{action.label}</span>
+                    </button>
+                  ),
+                )}
+              </div>
             </div>
           </div>
 
