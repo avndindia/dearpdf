@@ -42,7 +42,7 @@ export const TOOL_LABELS: Record<StatTool, string> = {
   sign: "Sign PDF",
   watermark: "Watermark",
   metadata: "Metadata",
-  flatten: "Flatten Forms",
+  flatten: "Flatten PDF",
   "pdf-to-text": "PDF OCR",
   "pdf-to-word": "PDF to Word",
   "images-to-pdf": "Images to PDF",

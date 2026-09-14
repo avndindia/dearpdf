@@ -988,16 +988,29 @@ export async function countPdfFormFields(
   return document.getForm().getFields().length;
 }
 
-export async function flattenPdfForms(
+/** Flatten AcroForm fields when present; otherwise return the bytes unchanged. */
+export async function flattenAcroFormFieldsIfPresent(
   bytes: ArrayBuffer | Uint8Array,
 ): Promise<Uint8Array> {
   const document = await PDFDocument.load(bytes, { updateMetadata: false });
   const form = document.getForm();
   if (!form.getFields().length) {
-    throw new Error("This PDF does not contain any form fields to flatten.");
+    return bytes instanceof Uint8Array ? bytes.slice() : new Uint8Array(bytes);
   }
   form.flatten();
   return document.save({ useObjectStreams: true });
+}
+
+/**
+ * @deprecated Prefer `flattenPdf` from `./raster` — PDF24-style bake of forms,
+ * annotations, and visible edits into fixed page images.
+ */
+export async function flattenPdfForms(
+  bytes: ArrayBuffer | Uint8Array,
+  onProgress?: (done: number, total: number) => void,
+): Promise<Uint8Array> {
+  const { flattenPdf } = await import("./raster");
+  return flattenPdf(bytes, onProgress);
 }
 
 export async function stampPdfWithImage(

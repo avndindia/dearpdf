@@ -12,7 +12,6 @@ import {
   createFilesZip,
   cropPdf,
   extractPdfPages,
-  flattenPdfForms,
   imagesToPdf,
   inspectPdf,
   keepSmallerPdf,
@@ -35,6 +34,7 @@ import { encryptPdfWithPassword } from "@/lib/qpdf";
 import {
   compressByRaster,
   compressSplitBySize,
+  flattenPdf,
   grayscalePdf,
   unlockByRaster,
 } from "@/lib/raster";
@@ -289,7 +289,9 @@ export default function ToolClient({ tool }: { tool: PdfTool }) {
         });
         downloadGeneratedFile(out as BlobPart, `${base}-metadata.pdf`);
       } else if (slug === "flatten") {
-        const out = await flattenPdfForms(files[0].bytes);
+        const out = await flattenPdf(files[0].bytes, (done, total) => {
+          setWork({ kind: "busy", message: `Flattening page ${done} of ${total}…` });
+        });
         downloadGeneratedFile(out as BlobPart, `${base}-flattened.pdf`);
       } else if (slug === "sign") {
         if (!signDataUrl) throw new Error("Draw a signature first.");

@@ -50,7 +50,7 @@ const toolIcons: Record<string, LucideIcon> = {
   "Edit Metadata": FileCog,
   "PDF OCR": ScanText,
   "Grayscale PDF": Contrast,
-  "Flatten Forms": Layers,
+  "Flatten PDF": Layers,
   "Sign PDF": Signature,
   "Repair PDF": Wrench,
   "Remove Password from PDF": LockOpen,

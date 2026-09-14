@@ -12,7 +12,7 @@ import {
   createFilesZip,
   cropPdf,
   extractPdfPages,
-  flattenPdfForms,
+  flattenAcroFormFieldsIfPresent,
   countPdfFormFields,
   inspectPdf,
   formatPageNumberLabel,
@@ -531,21 +531,25 @@ test("flattens interactive PDF form fields", async () => {
   const field = document.getForm().createTextField("employee.name");
   field.setText("A. Colleague");
   field.addToPage(page, { x: 20, y: 220, width: 180, height: 24 });
-  const flattened = await PDFDocument.load(await flattenPdfForms(await document.save()));
-  assert.equal(flattened.getForm().getFields().length, 0);
-  assert.equal(await countPdfFormFields(await document.save()), 1);
-  await assert.rejects(flattenPdfForms(await makePdf(1)), /does not contain/i);
+  const withFields = await document.save();
+  assert.equal(await countPdfFormFields(withFields), 1);
+  const prepared = await PDFDocument.load(await flattenAcroFormFieldsIfPresent(withFields));
+  assert.equal(prepared.getForm().getFields().length, 0);
+  const plain = await flattenAcroFormFieldsIfPresent(await makePdf(1));
+  assert.equal((await PDFDocument.load(plain)).getPageCount(), 1);
+  assert.equal(await countPdfFormFields(plain), 0);
 
   const { readFile } = await import("node:fs/promises");
-  const pageSource = await readFile(new URL("../components/simple-pdf-tool-page.tsx", import.meta.url), "utf8");
+  const pageSource = await readFile(new URL("../src/components/simple-pdf-tool-page.tsx", import.meta.url), "utf8");
   assert.match(pageSource, /simpleDownloadName/);
-  assert.match(pageSource, /countPdfFormFields/);
-  assert.match(pageSource, /Flatten \$\{fieldCount\}/);
+  assert.match(pageSource, /flattenPdf/);
+  assert.match(pageSource, /Flatten \$\{selected\.pageCount\}/);
+  assert.match(pageSource, /image-based pages/);
   assert.match(pageSource, /The original PDF is still here/);
   assert.match(pageSource, /repairedPages === selected.pageCount/);
   assert.match(pageSource, /Repair \$\{selected.pageCount\}/);
+  assert.doesNotMatch(pageSource, /fieldCount > 0/);
 });
-
 test("places a signature image on selected PDF pages", async () => {
   const source = await PDFDocument.create();
   source.addPage([300, 400]);

@@ -23,14 +23,13 @@ import { useIncomingPdfHandoff } from "../lib/pdf-tool-handoff";
 import {
   addPageNumbersPdf,
   cropPdf,
-  flattenPdfForms,
-  countPdfFormFields,
   inspectPdf,
   optimisePdfStructure,
   parsePageSelection,
   updatePdfMetadata,
   type PageNumberPosition,
 } from "../lib/pdf-tools";
+import { flattenPdf } from "../lib/raster";
 
 export type SimplePdfToolMode = "page-numbers" | "crop" | "metadata" | "flatten" | "repair";
 
@@ -85,11 +84,11 @@ const COPY: Record<SimplePdfToolMode, {
     suffix: "metadata",
   },
   flatten: {
-    title: "Flatten PDF Forms",
-    subtitle: "Turn completed form fields into fixed page content.",
-    headline: "Lock form entries into the pages.",
-    intro: "Preview every page before flattening filled values into fixed, non-editable content. Keep the original if you may need to edit fields again.",
-    action: "Flatten form",
+    title: "Flatten PDF",
+    subtitle: "Bake forms, annotations, and edits into fixed page images.",
+    headline: "Make visible edits permanent.",
+    intro: "Works on any PDF. Forms, annotations, and other visible edits are baked into image-based pages so they cannot be removed later. Text may no longer be selectable. Keep the original if you still need an editable copy.",
+    action: "Flatten PDF",
     suffix: "flattened",
   },
   repair: {
@@ -287,7 +286,6 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
   const [metadata, setMetadata] = useState({ title: "", author: "", subject: "", keywords: "" });
   const [outputName, setOutputName] = useState("document.pdf");
   const [savedNotice, setSavedNotice] = useState("");
-  const [fieldCount, setFieldCount] = useState(0);
   const busy = work.kind === "reading" || work.kind === "working";
   useIncomingPdfHandoff(chooseFile);
 
@@ -319,7 +317,6 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
       setRange(`1-${pageCount}`);
       setOutputName(`${safeBaseName(file.name)}-${copy.suffix}.pdf`);
       setSavedNotice("");
-      setFieldCount(mode === "flatten" ? await countPdfFormFields(bytes) : 0);
       setWork({ kind: "idle" });
       if (mode === "crop") {
         void loadPreviews(bytes).catch(() => {
@@ -370,7 +367,9 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
           keywords: metadata.keywords.split(",").map((keyword) => keyword.trim()).filter(Boolean),
         });
       } else if (mode === "flatten") {
-        output = await flattenPdfForms(processingBytes);
+        output = await flattenPdf(processingBytes, (done, total) => {
+          setWork({ kind: "working", message: `Flattening page ${done} of ${total}…` });
+        });
       } else {
         output = await optimisePdfStructure(processingBytes);
       }
@@ -395,8 +394,7 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
   const showsVisualPages = mode !== "metadata" && mode !== "repair";
   const canProcess = Boolean(
     selected
-    && (!usesSelection || (selection.pages.length && !selection.error))
-    && (mode !== "flatten" || fieldCount > 0),
+    && (!usesSelection || (selection.pages.length && !selection.error)),
   );
 
   async function showPreviews() {
@@ -539,9 +537,7 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
 
             {mode === "flatten" ? (
               <p className="utility-callout">
-                {fieldCount
-                  ? `${fieldCount} form ${fieldCount === 1 ? "field" : "fields"} will be frozen in the download. The original stays editable.`
-                  : "This PDF has no form fields to flatten."}
+                Every page becomes an image in the download, so forms and annotations stay fixed. Text may no longer be selectable. The original stays editable here.
               </p>
             ) : null}
             {mode === "repair" ? (
@@ -565,16 +561,14 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
                 />
               </label>
               <span>
-                {mode === "flatten"
-                  ? (fieldCount ? `${fieldCount} ${fieldCount === 1 ? "field" : "fields"} to freeze` : "No form fields")
-                  : usesSelection ? `${selection.pages.length} pages selected` : `${selected.pageCount} pages ready`}
+                {usesSelection ? `${selection.pages.length} pages selected` : `${selected.pageCount} pages ready`}
               </span>
               <PdfNextStepSelector />
               <button className="merge-button" type="button" disabled={busy || !canProcess} onClick={() => void processPdf()}>
                 {work.kind === "working"
                   ? "Working…"
                   : mode === "flatten"
-                    ? `Flatten ${fieldCount} ${fieldCount === 1 ? "field" : "fields"}`
+                    ? `Flatten ${selected.pageCount} ${selected.pageCount === 1 ? "page" : "pages"}`
                     : mode === "repair"
                       ? `Repair ${selected.pageCount} ${selected.pageCount === 1 ? "page" : "pages"}`
                       : copy.action}

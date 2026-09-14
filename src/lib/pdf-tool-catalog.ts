@@ -106,8 +106,8 @@ export const pdfTools: PdfToolCatalogItem[] = [
     category: "Convert",
   },
   {
-    title: "Flatten Forms",
-    description: "Turn completed form fields into fixed page content.",
+    title: "Flatten PDF",
+    description: "Bake forms, annotations, and edits into fixed page images.",
     href: "/pdf-tools/flatten",
     category: "Edit",
   },

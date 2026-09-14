@@ -106,3 +106,19 @@ export async function compressSplitBySize(
 }
 
 export { rasterizedPagesToPdf };
+
+/** Bake forms, annotations, and visible edits into fixed JPEG page images (~144 DPI). */
+export async function flattenPdf(
+  bytes: ArrayBuffer | Uint8Array,
+  onProgress?: (done: number, total: number) => void,
+) {
+  const { flattenAcroFormFieldsIfPresent } = await import("./pdf-tools");
+  const prepared = await flattenAcroFormFieldsIfPresent(bytes);
+  const pages = await rasterizePdfPages(prepared, {
+    dpi: 144,
+    quality: 0.88,
+    mime: "image/jpeg",
+    onProgress,
+  });
+  return rasterizedPagesToPdf(pages);
+}

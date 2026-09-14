@@ -163,13 +163,13 @@ export const tools: PdfTool[] = [
   },
   {
     slug: "flatten",
-    title: "Flatten forms",
-    job: "Turn filled form fields into fixed page content.",
-    description: "Lock AcroForm values so they cannot be edited later.",
+    title: "Flatten PDF",
+    job: "Bake forms, annotations, and edits into fixed page images.",
+    description: "Rasterise pages so interactive content cannot be removed later. Text may no longer be selectable.",
     category: "edit",
     accept: "application/pdf",
     limit: "full",
-    keywords: ["forms", "acroform"],
+    keywords: ["forms", "acroform", "annotations", "flatten"],
   },
   {
     slug: "sign",
