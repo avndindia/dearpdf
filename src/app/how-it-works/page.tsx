@@ -56,7 +56,7 @@ export default function HowItWorksPage() {
     <div className="bg-canvas-bg">
       <div className="mx-auto max-w-4xl space-y-10 px-4 py-10 sm:px-6">
         <div>
-          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-rose-subtle px-3 py-1 text-[11px] font-semibold text-primary-container">
+          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold text-primary-container">
             <MaterialIcon name="verified_user" className="text-[15px]" />
             Local browser tools — no cloud upload
           </div>
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
               >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container">
                       <MaterialIcon name={step.icon} className="text-[20px]" />
                     </div>
                     <div>
@@ -113,7 +113,7 @@ export default function HowItWorksPage() {
             </ul>
             <p className="mt-3 text-[12px] text-amber-700">Your document leaves your device.</p>
           </div>
-          <div className="rounded-2xl border border-brand-200 bg-rose-subtle/40 p-5 shadow-sm">
+          <div className="rounded-2xl border border-brand-200 bg-sky-50/40 p-5 shadow-sm">
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-primary-container">
               DearPDF
             </div>
@@ -162,14 +162,14 @@ export default function HowItWorksPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/pdf-tools/merge"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-container to-ruby-deep px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)]"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(2,132,199,0.3)] hover:bg-sky-700"
             >
               <MaterialIcon name="call_merge" className="text-[16px]" />
               Merge PDF
             </Link>
             <Link
               href="/#tools"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border-subtle bg-white px-4 py-2 text-sm font-semibold text-on-surface hover:border-brand-300 hover:bg-rose-subtle"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border-subtle bg-white px-4 py-2 text-sm font-semibold text-on-surface hover:border-brand-300 hover:bg-sky-50"
             >
               All tools
               <MaterialIcon name="arrow_forward" className="text-[16px]" />

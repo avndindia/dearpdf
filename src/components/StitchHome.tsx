@@ -34,7 +34,7 @@ function badgeClass(tone: StitchBadgeTone) {
     case "brand":
     case "primaryFixed":
     case "popular":
-      return "bg-rose-subtle text-primary-container border border-brand-300";
+      return "bg-sky-50 text-primary-container border border-brand-300";
     case "secondary":
     case "emerald":
       return "text-emerald-700 bg-emerald-50 border border-emerald-200";
@@ -112,8 +112,8 @@ export default function StitchHome() {
 
   return (
     <div className="relative w-full overflow-hidden bg-canvas-bg">
-      <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-[360px] w-[820px] -translate-x-1/2 bg-gradient-to-b from-rose-tint/50 via-rose-subtle/30 to-transparent blur-3xl" />
-      <div className="pointer-events-none absolute top-20 right-10 -z-10 h-96 w-96 rounded-full bg-rose-subtle/70 blur-3xl" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-[360px] w-[820px] -translate-x-1/2 bg-gradient-to-b from-sky-100/50 via-sky-50/30 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute top-20 right-10 -z-10 h-96 w-96 rounded-full bg-sky-50/70 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
         {/* Hero + dropzone */}
@@ -130,8 +130,11 @@ export default function StitchHome() {
           </div>
 
           <h1 className="mb-4 text-[2rem] font-extrabold leading-10 tracking-tight text-on-surface sm:text-[2.75rem] sm:leading-[3.25rem]">
-            Drop a file.
-            <br className="sm:hidden" /> Get it back fixed.
+            Drop a file.{" "}
+            <br className="sm:hidden" />
+            <span className="bg-gradient-to-r from-sky-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+              Get it back fixed.
+            </span>
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-slate-500">
             Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
@@ -171,12 +174,12 @@ export default function StitchHome() {
             }}
             className={`group relative w-full max-w-4xl cursor-pointer rounded-3xl border-2 border-dashed p-6 shadow-lg transition-all duration-300 hover:shadow-2xl sm:p-8 ${
               dragging
-                ? "border-crimson-vivid bg-rose-subtle shadow-[0_0_0_4px_rgba(225,29,72,0.12)]"
+                ? "border-sky-500 bg-sky-50 shadow-[0_0_0_4px_rgba(2,132,199,0.12)]"
                 : "border-brand-300 bg-white"
             }`}
-            style={dragging ? undefined : { borderColor: "#fda4af" }}
+            style={dragging ? undefined : { borderColor: "#0284c7" }}
           >
-            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-rose-subtle/60 via-white to-white" />
+            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-white" />
             <input
               ref={fileRef}
               type="file"
@@ -190,12 +193,12 @@ export default function StitchHome() {
               }}
             />
             <div className="relative z-10 flex flex-col items-center text-center">
-              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-rose-tint bg-rose-subtle text-primary-container shadow-sm transition-all duration-300 group-hover:border-primary-container group-hover:bg-primary-container group-hover:text-white">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-100 bg-sky-50 text-primary-container shadow-sm transition-all duration-300 group-hover:border-primary-container group-hover:bg-primary-container group-hover:text-white">
                 <MaterialIcon name="cloud_sync" className="text-[32px] transition-transform group-hover:scale-110" />
               </div>
               <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-semibold text-on-surface">
                 <span>Drop your PDF here, or</span>
-                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-ruby-deep">
+                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-sky-700">
                   browse files
                 </span>
               </div>
@@ -214,7 +217,7 @@ export default function StitchHome() {
                         key={action.label}
                         href={action.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
+                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
                       >
                         <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>
@@ -227,7 +230,7 @@ export default function StitchHome() {
                           e.stopPropagation();
                           applyConvertFilter();
                         }}
-                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
+                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
                       >
                         <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>
@@ -277,7 +280,7 @@ export default function StitchHome() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress...)`}
-                className="w-full rounded-xl bg-slate-100 py-2 pl-9 pr-8 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-rose-subtle/50 focus:ring-1 focus:ring-primary-container"
+                className="w-full rounded-xl bg-slate-100 py-2 pl-9 pr-8 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-sky-50/50 focus:ring-1 focus:ring-primary-container"
               />
               <kbd className="absolute right-2.5 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[12px] text-slate-400 shadow-sm">
                 /
@@ -334,7 +337,7 @@ export default function StitchHome() {
               <section key={group.id} className="space-y-4">
                 <div className="flex items-center justify-between pb-1">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container">
                       <MaterialIcon name={group.icon} className="text-[18px]" />
                     </div>
                     <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl">
@@ -361,7 +364,7 @@ export default function StitchHome() {
                             className={
                               tool.iconTone === "amber"
                                 ? "flex h-11 w-11 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-all group-hover:bg-amber-600 group-hover:text-white"
-                                : "flex h-11 w-11 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container transition-all group-hover:bg-primary-container group-hover:text-white"
+                                : "flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container transition-all group-hover:bg-primary-container group-hover:text-white"
                             }
                           >
                             <MaterialIcon name={tool.icon} className="text-[22px]" />
@@ -400,7 +403,7 @@ export default function StitchHome() {
         <section className="mt-12 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm sm:p-6">
           <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
             <div className="flex flex-col gap-2.5 lg:col-span-6">
-              <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-200 bg-rose-subtle px-2 py-0.5 text-[11px] font-semibold text-primary-container">
+              <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-200 bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-primary-container">
                 <MaterialIcon name="verified_user" className="text-[15px]" />
                 Why &quot;Nothing uploaded&quot; matters
               </div>
@@ -432,7 +435,7 @@ export default function StitchHome() {
             <div className="rounded-xl border border-slate-800 bg-tech-black p-3.5 font-mono text-slate-100 shadow-md lg:col-span-6">
               <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2 text-[11px]">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-sky-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <span className="ml-1 text-slate-400">What happens to your file</span>

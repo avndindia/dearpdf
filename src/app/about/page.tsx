@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-[800px] space-y-6 px-4 py-10 sm:px-6">
-      <div className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-rose-subtle px-2.5 py-1 text-[11px] font-medium text-primary-container">
+      <div className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-sky-50 px-2.5 py-1 text-[11px] font-medium text-primary-container">
         <span className="h-1.5 w-1.5 rounded-full bg-primary-container" />
         100% client-side · Zero uploads
       </div>

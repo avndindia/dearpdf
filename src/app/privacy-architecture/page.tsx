@@ -79,7 +79,7 @@ export default function PrivacyArchitecturePage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-brand-200 bg-rose-subtle/50 p-5 shadow-sm">
+          <div className="rounded-2xl border border-brand-200 bg-sky-50/50 p-5 shadow-sm">
             <div className="mb-3 flex items-center gap-2">
               <MaterialIcon name="verified_user" className="text-[20px] text-primary-container" />
               <h3 className="text-base font-bold text-on-surface">DearPDF client-side engine</h3>
@@ -120,7 +120,7 @@ export default function PrivacyArchitecturePage() {
                 className="rounded-2xl border border-border-subtle bg-white p-4 shadow-sm"
               >
                 <div className="mb-2 flex items-center gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container">
                     <MaterialIcon name={layer.icon} className="text-[18px]" />
                   </div>
                   <div>

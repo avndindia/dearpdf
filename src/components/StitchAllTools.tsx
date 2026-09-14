@@ -26,7 +26,7 @@ function badgeClass(tone: StitchBadgeTone) {
     case "popular":
     case "brand":
     case "primaryFixed":
-      return "bg-rose-subtle text-primary-container border border-brand-300 font-semibold";
+      return "bg-sky-50 text-primary-container border border-brand-300 font-semibold";
     case "secondary":
     case "emerald":
       return "bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold";
@@ -110,7 +110,7 @@ export default function StitchAllTools() {
                 <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
                   All PDF Tools
                 </h1>
-                <span className="rounded-full border border-brand-200 bg-rose-subtle px-3 py-0.5 text-[11px] font-semibold text-primary-container">
+                <span className="rounded-full border border-brand-200 bg-sky-50 px-3 py-0.5 text-[11px] font-semibold text-primary-container">
                   {STITCH_TOOL_COUNT} Utilities Available
                 </span>
               </div>
@@ -180,7 +180,7 @@ export default function StitchAllTools() {
           <section key={group.id} className="flex flex-col gap-4" data-category={group.id}>
             <div className="flex items-center justify-between border-b border-border-subtle pb-2">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container">
                   <MaterialIcon name={group.icon} className="text-[18px]" />
                 </div>
                 <h2 className="text-lg font-bold tracking-tight text-on-surface">
@@ -203,7 +203,7 @@ export default function StitchAllTools() {
                 >
                   <div className="flex flex-col gap-2">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container transition-colors group-hover:bg-primary-container group-hover:text-white">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container transition-colors group-hover:bg-primary-container group-hover:text-white">
                         <MaterialIcon name={tool.icon} className="text-[22px]" />
                       </div>
                       <span
@@ -252,7 +252,7 @@ export default function StitchAllTools() {
             <button
               type="button"
               onClick={resetSearch}
-              className="rounded-lg bg-slate-100 px-4 py-1.5 text-[13px] font-medium text-on-surface transition-colors hover:bg-rose-subtle hover:text-primary-container"
+              className="rounded-lg bg-slate-100 px-4 py-1.5 text-[13px] font-medium text-on-surface transition-colors hover:bg-sky-50 hover:text-primary-container"
             >
               Reset Search Filter
             </button>
@@ -261,7 +261,7 @@ export default function StitchAllTools() {
 
         <div className="mt-2 flex w-full flex-col items-start justify-between gap-4 rounded-2xl border border-border-subtle bg-surface-slate p-4 md:flex-row md:items-center md:p-5">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-sky-100 bg-sky-50">
               <MaterialIcon name="verified_user" className="text-[18px] text-primary-container" />
             </div>
             <div className="flex flex-col gap-0.5">

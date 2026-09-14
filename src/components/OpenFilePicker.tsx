@@ -37,7 +37,7 @@ const PDF_TOOLS: ToolChoice[] = [
 
 /**
  * Global open-file tool picker. Listens to openFileIntoDearPdf() pending state
- * so home dropzone and header Open File share one calm Ruby-styled sheet.
+ * so home dropzone and header Open File share one calm Sky-styled sheet.
  */
 export default function OpenFilePicker() {
   const [pending, setPending] = useState<OpenFilePending | null>(null);
@@ -107,7 +107,7 @@ export default function OpenFilePicker() {
             ref={closeRef}
             type="button"
             onClick={() => clearOpenFilePending()}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container"
             aria-label="Cancel"
           >
             <MaterialIcon name="close" className="text-[20px]" />
@@ -123,7 +123,7 @@ export default function OpenFilePicker() {
               <button
                 type="button"
                 onClick={() => chooseOpenFileTool("/pdf-tools/images-to-pdf")}
-                className="flex w-full items-center gap-3 rounded-2xl border border-brand-300 bg-rose-subtle px-4 py-3.5 text-left transition hover:border-primary-container hover:bg-primary-container hover:text-white group"
+                className="flex w-full items-center gap-3 rounded-2xl border border-brand-300 bg-sky-50 px-4 py-3.5 text-left transition hover:border-primary-container hover:bg-primary-container hover:text-white group"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-200 bg-white text-primary-container group-hover:border-white/30 group-hover:bg-white/15 group-hover:text-white">
                   <MaterialIcon name="photo_library" className="text-[22px]" />
@@ -146,7 +146,7 @@ export default function OpenFilePicker() {
                       key={tool.path}
                       type="button"
                       onClick={() => chooseOpenFileTool(tool.path)}
-                      className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50/80 px-2 py-3 text-center transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:shadow-sm sm:flex-row sm:justify-start sm:gap-2 sm:px-3 sm:text-left"
+                      className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50/80 px-2 py-3 text-center transition hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:shadow-sm sm:flex-row sm:justify-start sm:gap-2 sm:px-3 sm:text-left"
                     >
                       <MaterialIcon
                         name={tool.icon}
@@ -167,7 +167,7 @@ export default function OpenFilePicker() {
                       key={tool.path}
                       type="button"
                       onClick={() => chooseOpenFileTool(tool.path)}
-                      className="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 text-left text-[13px] font-medium text-on-surface transition hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container"
+                      className="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 text-left text-[13px] font-medium text-on-surface transition hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container"
                     >
                       <MaterialIcon name={tool.icon} className="shrink-0 text-[18px] text-primary-container" />
                       {tool.label}
