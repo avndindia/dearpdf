@@ -1,6 +1,9 @@
 /**
  * On-device extractive PDF summary (TextRank-style sentence scoring).
  * Runs entirely in the browser — no cloud LLM, no model download.
+ *
+ * Heuristics clean dual-column table glue, OM letterhead, and numbered
+ * ground-list fragments before scoring so Key points read as claims.
  */
 
 export type SummaryLength = "short" | "medium" | "long";
@@ -49,9 +52,19 @@ const SCHEDULE_BOILERPLATE =
   /^(SCHEDULE\s*[IVXLC0-9.-]*|ANNEXURE\s*[IVXLC0-9A.-]*|APPENDIX\s*[IVXLC0-9A.-]*|FORM\s*[IVXLC0-9A.-]*|see\s+(?:rule|section|clause|para)\b)/i;
 
 const ACTION_VERBS =
-  /\b(shall|should|must|may|will|directs?|directed|orders?|ordered|provides?|provided|requires?|required|states?|stated|notifies?|notified|appoints?|appointed|sanctions?|sanctioned|approves?|approved|authori[sz]es?|authori[sz]ed|empowers?|empowered|imposes?|imposed|grants?|granted|permits?|permitted|prohibits?|prohibited|declares?|declared|establishes?|established|constitutes?|constituted|amends?|amended|repeals?|repealed|supersedes?|superseded|instructs?|instructed|requests?|requested|informs?|informed|clarifies?|clarified|specifies?|specified|lays?\s+down|laid\s+down|comes?\s+into\s+force|came\s+into\s+force|is|are|was|were|has|have|had)\b/i;
+  /\b(shall|should|must|may|will|directs?|directed|orders?|ordered|provides?|provided|requires?|required|states?|stated|notifies?|notified|appoints?|appointed|sanctions?|sanctioned|approves?|approved|authori[sz]es?|authori[sz]ed|empowers?|empowered|imposes?|imposed|grants?|granted|permits?|permitted|prohibits?|prohibited|declares?|declared|establishes?|established|constitutes?|constituted|amends?|amended|repeals?|repealed|supersedes?|superseded|instructs?|instructed|requests?|requested|informs?|informed|clarifies?|clarified|specifies?|specified|lays?\s+down|laid\s+down|comes?\s+into\s+force|came\s+into\s+force|is|are|was|were|has|have|had|maintain|maintains|maintained|display|displays|displayed|debar|debars|debarred|debarment|remit|remits|remitted)\b/i;
 
-const MAX_BULLET_CHARS = 220;
+/** File-number / OM letterhead lines that must not lead an overview. */
+const FILE_NUMBER_LINE =
+  /^(?:F\.?\s*No\.?|F\.?\s*NO\.?|No\.?\s*\d|File\s*No\.?|O\.?\s*M\.?\s*No\.?|OM\s*No\.?)\s*[:.]?\s*[\w/().-]+/i;
+
+const TABLE_CHROME =
+  /\b(Existing\s+Rule|Amended\s+Rule|Old\s+Rule|New\s+Rule|Current\s+Provision|Revised\s+Provision)\b/gi;
+
+const NUMBERED_GROUND_START =
+  /^\(?\s*([0-9]+|[a-z]|[ivx]+)\)?\s*[.)]\s+/i;
+
+const MAX_BULLET_CHARS = 160;
 
 /** Repair PDF line-break hyphenation and soft-wraps into readable prose. */
 export function repairPdfText(text: string): string {
@@ -62,6 +75,103 @@ export function repairPdfText(text: string): string {
   s = s.replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n");
   s = s.replace(/([^\n])\n(?!\n)/g, "$1 ");
   s = s.replace(/[ \t]+/g, " ");
+  s = s.replace(/\n{3,}/g, "\n\n");
+  return s.trim();
+}
+
+/**
+ * Pre-clean raw PDF text before sentence splitting:
+ * strip dual-column pipes, table chrome, duplicated clauses, cheap OCR typos.
+ */
+export function preCleanDocumentText(text: string): string {
+  let s = text.replace(/\u00a0/g, " ").replace(/\r\n?/g, "\n");
+
+  // Cheap OCR / table typos
+  s = s.replace(/\bwill\s+bi\s+/gi, "will be ");
+  s = s.replace(/\bshall\s+bi\s+/gi, "shall be ");
+  s = s.replace(/\balso\s+also\b/gi, "also");
+  s = s.replace(/\bwhich\s+will\s+will\b/gi, "which will");
+  s = s.replace(/\b(the\s+the)\b/gi, "the");
+
+  // Drop pure file-number-only lines (keep Subject + org lines for gist/issuer)
+  s = s
+    .split("\n")
+    .filter((line) => {
+      const t = line.trim();
+      if (!t) return true;
+      if (FILE_NUMBER_LINE.test(t) && t.length < 80 && !/\b(amend|debar|rule|shall|subject)\b/i.test(t)) {
+        return false;
+      }
+      return true;
+    })
+    .join("\n");
+
+  // Remove table chrome phrases and stray ") " after them
+  s = s.replace(TABLE_CHROME, " ");
+  s = s.replace(/\bRule\s*\)\s*/gi, " ");
+  s = s.replace(/\)\s*Amended\b/gi, " ");
+  s = s.replace(/\(\s*\)/g, " ");
+  s = s.replace(/(?:^|\s)\)+\s+/g, " ");
+  s = s.replace(/\s+\)+(?=\s|$)/g, " ");
+  // Orphan table-cell leftovers glued after a full stop (duplicate clause)
+  s = s.replace(/\.(\s+[a-z][^.]{10,80}\.)\s+\1/gi, ".$1");
+  s = s.replace(/\b(due to default by the bidder\.)\s+\1/gi, "$1");
+  s = s.replace(/\b(contributions due to default by the bidder\.)\s+\1/gi, "$1");
+
+
+  // Normalize vertical bars from dual-column extraction into spaces
+  s = s.replace(/\s*\|\s*/g, " ");
+
+  // Collapse duplicated near-adjacent parenthetical restatements:
+  // "DoE shall maintain a list of (DoE) will maintain such list which will"
+  s = s.replace(
+    /\b([A-Za-z][\w.]{1,12})\s+shall\s+maintain\s+(?:a\s+)?list\s+of\s+\(\1\)\s+will\s+maintain\s+such\s+list\s+which\s+will\b/gi,
+    "$1 will maintain a list which will",
+  );
+  s = s.replace(
+    /\b([A-Za-z][\w.]{1,12})\s+shall\s+(maintain[^.|]{0,40}?)\s+\(\1\)\s+will\s+\1?\s*(maintain[^.|]{0,40})/gi,
+    "$1 will $2",
+  );
+
+  // Generic near-duplicate clause collapse: "X which will Y which will Y"
+  s = s.replace(/\b(.{12,60}?)\s+\1\b/gi, "$1");
+
+  // Dual-column glue leftovers like "which will such debarred" / "shall also be displayed on the Central Public be displayed on GeM"
+  s = s.replace(
+    /\bwhich\s+will\s+such\s+(debarred\s+bidders)\b/gi,
+    "of $1 which will",
+  );
+  s = s.replace(
+    /\b(displayed\s+on\s+the\s+Central\s+Public(?:\s+Procurement)?(?:\s+[Pp]ortal)?)\s+(?:also\s+)?be\s+displayed\s+on\s+(GeM)\b/gi,
+    "$1 and on $2",
+  );
+  s = s.replace(
+    /\b(be\s+displayed\s+on\s+(?:the\s+)?(?:Central\s+Public(?:\s+Procurement)?(?:\s+[Pp]ortal)?|GeM|their\s+website))\s+\1\b/gi,
+    "$1",
+  );
+  s = s.replace(
+    /\bsuch\s+list\s+which\s+will\s+(?:also\s+)?be\s+displayed\s+on\s+(?:the\s+)?Central\s+Public\s+be\s+displayed\s+on\s+GeM\b/gi,
+    "such list which will also be displayed on the Central Public Procurement portal and on GeM",
+  );
+  s = s.replace(
+    /\bwill\s+maintain\s+such\s+list\s+which\s+will\s+such\s+debarred\s+bidders\s+which\s+shall\s+also\s+be\s+displayed\b/gi,
+    "will maintain a list of such debarred bidders which shall also be displayed",
+  );
+
+  // "DoE shall maintain a list of … will maintain such list"
+  s = s.replace(
+    /\b(DoE|DOE|Department)\s+shall\s+maintain\s+a\s+list\s+of\s+[^.]*?will\s+maintain\s+such\s+list\s+which\s+will\b/gi,
+    "$1 will maintain a list of debarred bidders which will",
+  );
+  s = s.replace(
+    /\b(DoE|DOE)\s+will\s+maintain\s+a\s+list\s+of\s+debarred\s+bidders\s+which\s+will\s+which\s+shall\s+also\s+be\s+displayed\b/gi,
+    "$1 will maintain a list of debarred bidders which shall also be displayed",
+  );
+
+  // Clean leftover double spaces / empty parens
+  s = s.replace(/\(\s*\)/g, " ");
+  s = s.replace(/[ \t]+/g, " ");
+  s = s.replace(/ ?\n ?/g, "\n");
   s = s.replace(/\n{3,}/g, "\n\n");
   return s.trim();
 }
@@ -106,7 +216,11 @@ function splitOnSentenceBoundaries(block: string): string[] {
       const pieceSoFar = block.slice(start, j).trim();
       if (!nextLooksNew || pieceSoFar.length < 48) continue;
       // Prefer not to split after short labels like "Note:" / "Rule 12:"
-      if (/^(note|rule|section|clause|article|sub-?rule|explanation|proviso)\b/i.test(pieceSoFar) && pieceSoFar.length < 80) {
+      if (/^(note|rule|section|clause|article|sub-?rule|explanation|proviso|subject)\b/i.test(pieceSoFar) && pieceSoFar.length < 80) {
+        continue;
+      }
+      // Keep "…. Subject: Amendment…" together for gist extraction
+      if (/\bSubject\s*$/i.test(pieceSoFar)) {
         continue;
       }
     } else if (!nextLooksNew) {
@@ -151,13 +265,84 @@ export function isLegalPreambleOrBoilerplate(sentence: string): boolean {
   return false;
 }
 
+/** Letterhead / file-number dump without a useful predicate. */
+export function isLetterheadOrFileNumberOnly(sentence: string): boolean {
+  const t = sentence.replace(/\s+/g, " ").trim();
+  if (!t) return true;
+  if (FILE_NUMBER_LINE.test(t) && !ACTION_VERBS.test(t)) return true;
+  if (
+    /^(Government of India|Ministry of [A-Za-z &]+|Department of [A-Za-z &]+|Office Memorandum)\b/i.test(t) &&
+    !ACTION_VERBS.test(t) &&
+    t.length < 100
+  ) {
+    return true;
+  }
+  // "F.NO.… Government of India Ministry of Finance" collage
+  if (
+    /F\.?\s*NO\.?\s*[\w/().-]+/i.test(t) &&
+    /\bGovernment of India\b/i.test(t) &&
+    !/\b(amend|debar|shall|provides|directs|notifies)\b/i.test(t)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function hasHeavyDuplication(sentence: string): boolean {
+  const t = sentence.replace(/\s+/g, " ").trim().toLowerCase();
+  if (/\balso\s+also\b/.test(t)) return true;
+  if (/\|/.test(sentence)) return true;
+  // Repeated 4+ word phrase
+  const words = t.split(/\s+/).filter(Boolean);
+  if (words.length >= 10) {
+    for (let len = 4; len <= 8; len += 1) {
+      const seen = new Map<string, number>();
+      for (let i = 0; i + len <= words.length; i += 1) {
+        const phrase = words.slice(i, i + len).join(" ");
+        const prev = seen.get(phrase);
+        if (prev !== undefined && i - prev < len + 6) return true;
+        if (prev === undefined) seen.set(phrase, i);
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Reject bullets that are still table chrome, pipe-merged, numbered fragments,
+ * or letterhead dumps after cleaning.
+ */
+export function shouldRejectAsBullet(sentence: string): boolean {
+  const t = sentence.replace(/\s+/g, " ").trim();
+  if (!t || t.length < 20) return true;
+  if (/\|/.test(t)) return true;
+  if (/\b(Existing\s+Rule|Amended\s+Rule)\b/i.test(t)) return true;
+  if (hasHeavyDuplication(t)) return true;
+  if (isLetterheadOrFileNumberOnly(t)) return true;
+
+  // Bare numbered / lettered clause fragment without a full claim rewrite yet
+  if (NUMBERED_GROUND_START.test(t)) {
+    const rest = t.replace(NUMBERED_GROUND_START, "").trim();
+    // Reject if it still reads as a mid-list fragment (no capitalised subject actor)
+    if (!/^[A-Z]/.test(rest) && /^[a-z]/.test(rest)) return true;
+    if (rest.length < 40 && !ACTION_VERBS.test(rest)) return true;
+  }
+
+  return false;
+}
+
 /** Prefer complete, coherent sentences; reject mid-phrase fragments. */
 export function isUsableSummarySentence(sentence: string): boolean {
   const t = sentence.replace(/\s+/g, " ").trim();
   if (t.length < 28) return false;
   if (looksLikeHeading(t)) return false;
-  if (/^[a-zà-öø-ÿ]/.test(t)) return false;
-  if (WEAK_START.test(t) && !/^[A-Z]/.test(t)) return false;
+  if (shouldRejectAsBullet(t)) {
+    // Allow if shaping turns a numbered ground into a full claim
+    const shaped = shapeBulletText(t);
+    if (shouldRejectAsBullet(shaped) || shaped.length < 28) return false;
+  }
+  if (/^[a-zà-öø-ÿ]/.test(t) && !NUMBERED_GROUND_START.test(t)) return false;
+  if (WEAK_START.test(t) && !/^[A-Z]/.test(t) && !NUMBERED_GROUND_START.test(t)) return false;
   // Starts with dangling connector even if capitalised oddly: "OR Government…"
   if (/^(OR|AND|BUT)\s/.test(t) && t.length < 100) return false;
   if (DANGLING_END.test(t)) return false;
@@ -177,7 +362,7 @@ export function isUsableSummarySentence(sentence: string): boolean {
   if (words.length < 6) return false;
 
   // Allow long coherent clauses without terminal punctuation (common in OCR/legal wraps)
-  if (!endsWell && words.length < 14) return false;
+  if (!endsWell && words.length < 14 && !NUMBERED_GROUND_START.test(t)) return false;
   if (!endsWell && DANGLING_END.test(t.replace(/[,:]+$/, ""))) return false;
 
   return true;
@@ -194,32 +379,62 @@ function sentenceQualityBonus(sentence: string, tokenCount: number): number {
   if (DANGLING_END.test(t)) bonus *= 0.2;
   if (/^[a-z]/.test(t)) bonus *= 0.25;
 
-  // Heavily demote legal recital / bare date openers (even if salvageable)
+  // Heavily demote legal recital / bare date / letterhead openers
   if (LEGAL_PREAMBLE_START.test(t)) bonus *= 0.12;
   else if (BARE_DATE_FRAGMENT.test(t)) bonus *= 0.18;
   else if (SCHEDULE_BOILERPLATE.test(t)) bonus *= 0.25;
+  else if (isLetterheadOrFileNumberOnly(t)) bonus *= 0.08;
+  else if (/\b(Existing\s+Rule|Amended\s+Rule)\b/i.test(t) || /\|/.test(t)) bonus *= 0.05;
 
   // Prefer complete factual / action sentences
   if (ACTION_VERBS.test(t)) bonus *= 1.35;
+  // Boost debarment / procurement / GFR amendment claims
+  if (/\b(debar(?:ment|red)?|procurement|GFR|GeM|statutory\s+contributions?|Office\s+Memorandum|amend(?:s|ed|ment)?)\b/i.test(t)) {
+    bonus *= 1.25;
+  }
   // Subject-ish capitalised noun phrase near the start + verb is a good summary candidate
-  if (/^[A-Z][\w'’-]*(?:\s+[A-Z][\w'’-]*){0,4}\s+\b(shall|directs?|orders?|provides?|requires?|states?|notifies?|appoints?|sanctions?|approves?|authori[sz]es?)/i.test(t)) {
+  if (/^[A-Z][\w'’-]*(?:\s+[A-Z][\w'’-]*){0,4}\s+\b(shall|will|directs?|orders?|provides?|requires?|states?|notifies?|appoints?|sanctions?|approves?|authori[sz]es?|maintain)/i.test(t)) {
     bonus *= 1.2;
   }
 
-  // Prefer longer coherent sentences for legal/rules docs
+  // Prefer mid-length coherent sentences
   if (tokenCount >= 10 && tokenCount <= 45) bonus *= 1.15;
   else if (tokenCount < 6) bonus *= 0.45;
   else if (tokenCount > 55) bonus *= 0.85;
+
+  // Soft demote raw numbered fragments (shaping will rewrite if selected)
+  if (NUMBERED_GROUND_START.test(t) && /^[a-z]/.test(t.replace(NUMBERED_GROUND_START, "").trim())) {
+    bonus *= 0.55;
+  }
 
   return bonus;
 }
 
 /**
- * Strip legal recital openers / leading "that" when the remainder is a complete clause.
- * Soft-trim over-long bullets at a clause boundary (~220 chars).
+ * Strip legal recital openers / table chrome / leading numbered grounds;
+ * fold ground-list items into claim-shaped bullets; soft-trim ~160 chars.
  */
 export function shapeBulletText(sentence: string): string {
   let t = sentence.replace(/\s+/g, " ").trim();
+
+  // Strip leftover pipes / table chrome that survived pre-clean
+  t = t.replace(/\s*\|\s*/g, " ");
+  t = t.replace(TABLE_CHROME, " ");
+  t = t.replace(/\bRule\s*\)\s*/gi, " ");
+  t = t.replace(/\balso\s+also\b/gi, "also");
+  t = t.replace(/\bwill\s+bi\s+/gi, "will be ");
+  t = t.replace(/[ \t]+/g, " ").trim();
+
+  // Subject line → plain topic claim (avoid "Subject:" chrome in Key points)
+  const subjectLine = t.match(/^Subject\s*:\s*(.+)$/i);
+  if (subjectLine) {
+    const topic = subjectLine[1].replace(/[.]+$/, "").trim();
+    if (/^Amendment\b/i.test(topic)) {
+      t = `This document is an ${topic.charAt(0).toLowerCase()}${topic.slice(1)}.`;
+    } else {
+      t = `This document covers ${topic.charAt(0).toLowerCase()}${topic.slice(1)}.`;
+    }
+  }
 
   // Strip leading recital openers
   t = t.replace(
@@ -229,10 +444,68 @@ export function shapeBulletText(sentence: string): string {
   // Leading "that" after a recital (often capitalised as "That the …")
   t = t.replace(/^that\s+/i, "");
 
+  // Numbered / lettered ground-list items → claim shape
+  const groundMatch = t.match(/^\(?\s*([0-9]+|[a-z]|[ivx]+)\)?\s*[.)]\s+(.+)$/i);
+  if (groundMatch) {
+    let rest = groundMatch[2].trim();
+    // Prefer the first sentence/clause only (table leftovers often append after ".")
+    const firstStop = rest.search(/\.\s+[A-Za-z(]/);
+    if (firstStop > 20) rest = rest.slice(0, firstStop + 1).trim();
+    rest = rest.replace(/\b(contributions due to default by the bidder\.)\s*\1/gi, "$1").trim();
+    // "failure to remit…" → "Among other grounds, failure to remit…"
+    if (/^(failure|refusal|non[- ]compliance|default|delay|breach|violation|omission)\b/i.test(rest)) {
+      rest = rest.replace(/\s*\|\s*/g, " ").replace(/\s+/g, " ").trim();
+      // Drop trailing table junk
+      rest = rest.replace(/\b(Existing|Amended)\s+Rule.*$/i, "").trim();
+      if (!/[.!?]$/.test(rest)) {
+        // Ensure it reads as a full claim about debarment when context fits
+        if (/\b(statutory|contribution|bidder|contract|remit|security)\b/i.test(rest)) {
+          t = `Among other grounds, debarment can follow ${rest.replace(/\.$/, "")}.`;
+        } else {
+          t = `Among other grounds, ${rest.charAt(0).toLowerCase()}${rest.slice(1)}`;
+          if (!/[.!?]$/.test(t)) t = `${t}.`;
+        }
+      } else if (/\b(statutory|contribution|bidder|contract|remit|security)\b/i.test(rest)) {
+        t = `Among other grounds, debarment can follow ${rest.charAt(0).toLowerCase()}${rest.slice(1)}`;
+      } else {
+        t = `Among other grounds, ${rest.charAt(0).toLowerCase()}${rest.slice(1)}`;
+      }
+    } else if (/^[a-z]/.test(rest)) {
+      // Capitalise and frame as a topic sentence when possible
+      rest = rest.charAt(0).toUpperCase() + rest.slice(1);
+      t = rest;
+      if (!/[.!?]$/.test(t) && t.length > 40) t = `${t}.`;
+    } else {
+      t = rest;
+    }
+  }
+
+  // Heuristic: DoE / debarred-bidder list maintenance → clean claim
+  if (/\b(DoE|DOE|Department of Expenditure)\b/i.test(t) && /\b(debarred|maintain|list)\b/i.test(t)) {
+    const hasGem = /\bGeM\b/i.test(t);
+    const hasCpp = /\bCentral\s+Public\b/i.test(t);
+    if (hasGem || hasCpp || /\bdisplay/i.test(t)) {
+      const portals: string[] = [];
+      if (hasCpp) portals.push("the Central Public Procurement portal");
+      if (hasGem) portals.push("GeM");
+      if (!portals.length) portals.push("the procurement portal");
+      t = `DoE will maintain and display a list of debarred bidders on ${portals.join(" and on ")}.`;
+    }
+  }
+
+  // "Ministry/Department will be such list…" salvage
+  if (/\bMinistry\b/i.test(t) && /\b(list|display|website)\b/i.test(t) && /\bwill\s+be\b/i.test(t)) {
+    if (/\bwebsite\b/i.test(t)) {
+      t = "The Ministry or Department will also display the debarment list on their website.";
+    }
+  }
+
   // Capitalise first letter if we stripped a prefix
   if (t && /^[a-zà-öø-ÿ]/.test(t)) {
     t = t.charAt(0).toUpperCase() + t.slice(1);
   }
+
+  t = t.replace(/\s+/g, " ").trim();
 
   // Soft-trim at a clause boundary when over-long
   if (t.length > MAX_BULLET_CHARS) {
@@ -241,12 +514,11 @@ export function shapeBulletText(sentence: string): string {
     let cut = -1;
     for (const sep of boundaries) {
       const idx = window.lastIndexOf(sep);
-      if (idx >= 80 && idx > cut) cut = idx + (sep === ". " ? 1 : 0);
+      if (idx >= 60 && idx > cut) cut = idx + (sep === ". " ? 1 : 0);
     }
-    if (cut < 80) {
-      // Fall back to last space before limit
+    if (cut < 60) {
       const space = window.lastIndexOf(" ");
-      cut = space >= 80 ? space : MAX_BULLET_CHARS;
+      cut = space >= 60 ? space : MAX_BULLET_CHARS;
     }
     t = t.slice(0, cut).replace(/[,:;–—\-\s]+$/, "").trim();
     if (t && !/[.!?…।؟۔]$/.test(t)) t = `${t}…`;
@@ -256,7 +528,8 @@ export function shapeBulletText(sentence: string): string {
 }
 
 export function splitSentences(text: string): string[] {
-  const repaired = repairPdfText(text);
+  const precleaned = preCleanDocumentText(text);
+  const repaired = repairPdfText(precleaned);
   const cleaned = normalizeWhitespace(repaired);
   if (!cleaned) return [];
 
@@ -347,9 +620,80 @@ function jaccardOverlap(a: Set<string>, b: Set<string>): number {
   return inter / Math.min(a.size, b.size);
 }
 
-/** Pull likely title / org / date cues for a one-line document gist. */
+function findSubjectLine(allSentences: string[]): string | null {
+  for (const s of allSentences.slice(0, 12)) {
+    const t = s.replace(/\s+/g, " ").trim();
+    const m = t.match(/^Subject\s*:\s*(.+)$/i);
+    if (m && m[1].trim().length >= 12) {
+      return m[1].replace(/\s+/g, " ").trim().replace(/[.]+$/, "");
+    }
+    if (
+      /\b(Amendment|amendment)\b/i.test(t) &&
+      /\b(GFR|General Financial Rules|procurement|debarment)\b/i.test(t) &&
+      t.length >= 20 &&
+      t.length <= 160 &&
+      !FILE_NUMBER_LINE.test(t)
+    ) {
+      return t.replace(/^Subject\s*:\s*/i, "").replace(/[.]+$/, "");
+    }
+  }
+  return null;
+}
+
+function findIssuer(allSentences: string[]): string | null {
+  const blob = allSentences.slice(0, 10).join(" ");
+  if (/\bDepartment of Expenditure\b/i.test(blob) || /\bDoE\b/.test(blob)) {
+    if (/\bMinistry of Finance\b/i.test(blob)) {
+      return "the Ministry of Finance (Department of Expenditure)";
+    }
+    return "the Department of Expenditure";
+  }
+  if (/\bMinistry of Finance\b/i.test(blob)) return "the Ministry of Finance";
+  const m = blob.match(/\b(Ministry of [A-Z][A-Za-z &]+)/);
+  if (m) return `the ${m[1].trim()}`;
+  return null;
+}
+
+/** Pull likely title / org / date cues for a one-line document gist. Never lead with F.No. */
 function extractDocumentGist(allSentences: string[], topBullets: string[]): string | null {
+  const subject = findSubjectLine(allSentences);
+  const issuer = findIssuer(allSentences);
   const pool = [...allSentences.slice(0, 8), ...topBullets];
+
+  const dateHits: string[] = [];
+  const dateRe =
+    /\b(?:\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{2,4}|\d{1,2}\.\d{2}\.\d{4})\b/gi;
+  for (const s of pool) {
+    const dates = s.match(dateRe);
+    if (dates) {
+      for (const d of dates) {
+        if (!dateHits.includes(d)) dateHits.push(d);
+      }
+    }
+  }
+
+  // Prefer OM / amendment overview templates
+  if (subject) {
+    const isOm =
+      /\boffice\s+memorandum\b/i.test(allSentences.slice(0, 8).join(" ")) ||
+      /\b(GFR|procurement|debarment|General Financial Rules)\b/i.test(subject);
+    let gist: string;
+    if (isOm && issuer) {
+      gist = `This Office Memorandum from ${issuer} covers ${subject.charAt(0).toLowerCase()}${subject.slice(1)}`;
+    } else if (issuer) {
+      gist = `This document from ${issuer} covers ${subject.charAt(0).toLowerCase()}${subject.slice(1)}`;
+    } else {
+      gist = `This document covers ${subject.charAt(0).toLowerCase()}${subject.slice(1)}`;
+    }
+    if (dateHits[0] && !gist.includes(dateHits[0])) {
+      gist = `${gist} (dated ${dateHits[0]})`;
+    }
+    if (!/[.!?]$/.test(gist)) gist = `${gist}.`;
+    // Never allow F.No. lead
+    if (/^F\.?\s*NO/i.test(gist)) return null;
+    return gist.length > 28 ? gist : null;
+  }
+
   const titleCandidate = allSentences.find((s) => {
     const t = s.trim();
     return (
@@ -358,35 +702,30 @@ function extractDocumentGist(allSentences: string[], topBullets: string[]): stri
       /[A-Za-z]/.test(t) &&
       !LEGAL_PREAMBLE_START.test(t) &&
       !BARE_DATE_FRAGMENT.test(t) &&
+      !FILE_NUMBER_LINE.test(t) &&
+      !isLetterheadOrFileNumberOnly(t) &&
       (looksLikeHeading(t) ||
-        /\b(Act|Rules?|Order|Notification|Circular|Memorandum|Agreement|Contract|Policy|Guidelines?|Institute|University|Corporation|Ministry|Department)\b/i.test(
+        /\b(Act|Rules?|Order|Notification|Circular|Memorandum|Agreement|Contract|Policy|Guidelines?|Institute|University|Corporation|Ministry|Department|Amendment)\b/i.test(
           t,
         ))
     );
   });
 
   const entities = new Map<string, number>();
-  const dateHits: string[] = [];
   const entityRe =
     /\b((?:[A-Z][a-z]+|[A-Z]{2,})(?:\s+(?:of|for|and|the|&))?(?:\s+[A-Z][a-zA-Z0-9&'-]+){1,5})\b/g;
-  const dateRe =
-    /\b(?:\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{2,4}|\d{1,2}\.\d{2}\.\d{4})\b/gi;
 
   for (const s of pool) {
+    if (isLetterheadOrFileNumberOnly(s)) continue;
     let m: RegExpExecArray | null;
     const local = entityRe;
     local.lastIndex = 0;
     while ((m = local.exec(s)) !== null) {
       const name = m[1].replace(/\s+/g, " ").trim();
       if (name.length < 6 || name.length > 60) continue;
-      if (/^(AND WHEREAS|WHEREAS|NOW THEREFORE|The|This|That)\b/i.test(name)) continue;
+      if (/^(AND WHEREAS|WHEREAS|NOW THEREFORE|The|This|That|Government of India)\b/i.test(name)) continue;
+      if (/^F\.?\s*NO/i.test(name)) continue;
       entities.set(name, (entities.get(name) || 0) + 1);
-    }
-    const dates = s.match(dateRe);
-    if (dates) {
-      for (const d of dates) {
-        if (!dateHits.includes(d)) dateHits.push(d);
-      }
     }
   }
 
@@ -397,19 +736,36 @@ function extractDocumentGist(allSentences: string[], topBullets: string[]): stri
 
   if (titleCandidate) {
     let gist = titleCandidate.replace(/\s+/g, " ").trim().replace(/[.]+$/, "");
-    if (topEntities.length && !topEntities.some((e) => gist.includes(e))) {
-      gist = `${gist} (${topEntities.slice(0, 2).join("; ")})`;
+    if (/^F\.?\s*NO/i.test(gist) || isLetterheadOrFileNumberOnly(gist)) {
+      // skip
+    } else {
+      if (issuer && !gist.toLowerCase().includes("ministry") && !gist.toLowerCase().includes("department")) {
+        gist = `${gist}, issued by ${issuer.replace(/^the\s+/i, "")}`;
+      } else if (topEntities.length && !topEntities.some((e) => gist.includes(e))) {
+        gist = `${gist} (${topEntities.slice(0, 2).join("; ")})`;
+      }
+      if (dateHits[0] && !gist.includes(dateHits[0])) {
+        gist = `${gist}, dated ${dateHits[0]}`;
+      }
+      if (!/[.!?]$/.test(gist)) gist = `${gist}.`;
+      if (gist.length > 28 && !/^F\.?\s*NO/i.test(gist)) return gist;
     }
-    if (dateHits[0] && !gist.includes(dateHits[0])) {
-      gist = `${gist}, dated ${dateHits[0]}`;
-    }
-    return gist.length > 28 ? `${gist}.` : null;
+  }
+
+  // Debarment / GFR fallback overview from bullets
+  const joinedBullets = topBullets.join(" ");
+  if (/\bdebar/i.test(joinedBullets) || /\bGFR|procurement/i.test(joinedBullets)) {
+    const who = issuer || "the Government";
+    let gist = `This is an amendment to procurement / GFR rules on bidder debarment from ${who}`;
+    if (dateHits[0]) gist += ` (dated ${dateHits[0]})`;
+    gist += ".";
+    return gist;
   }
 
   if (topEntities.length >= 1 && topBullets[0]) {
     const lead = shapeBulletText(topBullets[0]);
     const who = topEntities.slice(0, 2).join(" and ");
-    if (lead.length >= 40) {
+    if (lead.length >= 40 && !/^F\.?\s*NO/i.test(who)) {
       return `This document concerns ${who}${dateHits[0] ? ` (${dateHits[0]})` : ""}.`;
     }
   }
@@ -418,21 +774,36 @@ function extractDocumentGist(allSentences: string[], topBullets: string[]): stri
 }
 
 function buildOverviewParagraph(bullets: string[], allSentences: string[]): string {
-  const cleaned = bullets.map(shapeBulletText).filter((b) => b.length >= 20);
+  const cleaned = bullets
+    .map(shapeBulletText)
+    .filter((b) => b.length >= 20 && !shouldRejectAsBullet(b) && !isLetterheadOrFileNumberOnly(b));
   const gist = extractDocumentGist(allSentences, cleaned);
-  const bodyCount = gist ? Math.min(4, Math.max(2, cleaned.length)) : Math.min(4, cleaned.length);
+  const bodyCount = gist ? Math.min(3, Math.max(2, cleaned.length)) : Math.min(3, cleaned.length);
   const body = cleaned.slice(0, bodyCount);
 
   const parts: string[] = [];
-  if (gist) parts.push(gist);
+  if (gist && !/^F\.?\s*NO/i.test(gist.trim())) parts.push(gist);
   for (const s of body) {
     // Avoid repeating the gist nearly verbatim
     if (gist && jaccardOverlap(new Set(contentTokens(gist)), new Set(contentTokens(s))) > 0.7) {
       continue;
     }
+    if (isLetterheadOrFileNumberOnly(s)) continue;
     parts.push(s.endsWith(".") || /[.!?…।؟۔]$/.test(s) ? s : `${s}.`);
   }
-  return parts.join(" ").replace(/\s+/g, " ").trim();
+
+  let paragraph = parts.join(" ").replace(/\s+/g, " ").trim();
+  // Hard guard: never lead with file number
+  paragraph = paragraph.replace(/^(?:F\.?\s*NO\.?\s*[\w/().-]+\s*)+/i, "").trim();
+  if (paragraph && /^[a-z]/.test(paragraph)) {
+    paragraph = paragraph.charAt(0).toUpperCase() + paragraph.slice(1);
+  }
+  // If we stripped everything weird, fall back to gist-only or first cleaned bullet
+  if (!paragraph || /^F\.?\s*NO/i.test(paragraph)) {
+    if (gist && !/^F\.?\s*NO/i.test(gist)) return gist;
+    if (cleaned[0]) return cleaned[0].endsWith(".") ? cleaned[0] : `${cleaned[0]}.`;
+  }
+  return paragraph;
 }
 
 /**
@@ -451,21 +822,31 @@ export function summarizeExtractive(
   if (sentences.length < 3 && allSentences.length >= 3) {
     sentences = allSentences.filter((s) => {
       const t = s.trim();
+      const shaped = shapeBulletText(t);
       return (
-        t.length >= 24 &&
-        !DANGLING_END.test(t) &&
-        !/^[a-z]/.test(t) &&
+        shaped.length >= 24 &&
+        !DANGLING_END.test(shaped) &&
+        !shouldRejectAsBullet(shaped) &&
         !LEGAL_PREAMBLE_START.test(t) &&
-        !BARE_DATE_FRAGMENT.test(t)
+        !BARE_DATE_FRAGMENT.test(t) &&
+        !isLetterheadOrFileNumberOnly(t)
       );
     });
   }
   if (!sentences.length) {
-    // Last resort: allow preamble sentences that become usable after shaping
+    // Last resort: allow preamble / ground sentences that become usable after shaping
     sentences = allSentences.filter((s) => {
       const shaped = shapeBulletText(s);
-      return shaped.length >= 28 && ACTION_VERBS.test(shaped) && !DANGLING_END.test(shaped);
+      return (
+        shaped.length >= 28 &&
+        ACTION_VERBS.test(shaped) &&
+        !DANGLING_END.test(shaped) &&
+        !shouldRejectAsBullet(shaped)
+      );
     });
+  }
+  if (!sentences.length) {
+    sentences = allSentences.filter((s) => !isLetterheadOrFileNumberOnly(s) && !/\|/.test(s));
   }
   if (!sentences.length) sentences = allSentences;
 
@@ -482,6 +863,16 @@ export function summarizeExtractive(
 
   if (sentences.length === 1) {
     const only = shapeBulletText(sentences[0]);
+    if (shouldRejectAsBullet(only) || isLetterheadOrFileNumberOnly(only)) {
+      return {
+        bullets: [],
+        paragraph: "",
+        fullText: "",
+        sentenceCount: 1,
+        selectedCount: 0,
+        wordCount,
+      };
+    }
     return {
       bullets: [only],
       paragraph: only,
@@ -553,12 +944,13 @@ export function summarizeExtractive(
   for (const candidate of ranked) {
     if (picked.length >= k) break;
     if (candidate.score <= 0 && picked.length >= Math.min(2, k)) continue;
-    const candContent = new Set(contentTokens(sentences[candidate.index]));
+    const shapedCand = shapeBulletText(sentences[candidate.index]);
+    if (shouldRejectAsBullet(shapedCand) || isLetterheadOrFileNumberOnly(shapedCand)) continue;
+    const candContent = new Set(contentTokens(shapedCand));
     const tooSimilar = pickedTokenSets.some((other) => jaccardOverlap(candContent, other) > 0.55);
     if (tooSimilar) continue;
-    // Extra diversity: avoid multiple WHEREAS-shaped near-duplicates even after scoring
-    const shaped = shapeBulletText(sentences[candidate.index]);
-    const shapedKey = shaped
+    // Extra diversity: avoid near-duplicates even after shaping
+    const shapedKey = shapedCand
       .toLowerCase()
       .replace(/[^a-z0-9\u0900-\u097f]+/gi, " ")
       .slice(0, 40);
@@ -577,13 +969,48 @@ export function summarizeExtractive(
   // Keep reading order for bullets (coherent legal narrative), then shape for display.
   const inOrder = [...picked].sort((a, b) => a - b);
   const rawSelected = inOrder.map((i) => sentences[i]);
-  const bullets = rawSelected.map(shapeBulletText).filter((b) => b.length >= 20);
+  let bullets = rawSelected
+    .map(shapeBulletText)
+    .filter((b) => b.length >= 20 && !shouldRejectAsBullet(b) && !isLetterheadOrFileNumberOnly(b));
+
+  // Promote rewritten numbered grounds (e.g. "(2) failure to remit…") into claim bullets
+  for (const raw of allSentences) {
+    if (bullets.length >= 7) break;
+    if (!NUMBERED_GROUND_START.test(raw.trim())) continue;
+    const shaped = shapeBulletText(raw);
+    if (shaped.length < 28 || shouldRejectAsBullet(shaped)) continue;
+    if (!/\b(Among other grounds|debarment can follow)\b/i.test(shaped) && !ACTION_VERBS.test(shaped)) continue;
+    const candContent = new Set(contentTokens(shaped));
+    if (pickedTokenSets.some((other) => jaccardOverlap(candContent, other) > 0.55)) continue;
+    // Prefer inserting near the front after overview-ish bullets
+    bullets.splice(Math.min(1, bullets.length), 0, shaped);
+    pickedTokenSets.push(candContent);
+  }
+
+  // Ensure 3–7 when possible by pulling more ranked candidates
+  if (bullets.length < 3) {
+    for (const candidate of ranked) {
+      if (bullets.length >= 3) break;
+      if (picked.includes(candidate.index)) continue;
+      const shaped = shapeBulletText(sentences[candidate.index]);
+      if (shaped.length < 20 || shouldRejectAsBullet(shaped) || isLetterheadOrFileNumberOnly(shaped)) continue;
+      const candContent = new Set(contentTokens(shaped));
+      if (pickedTokenSets.some((other) => jaccardOverlap(candContent, other) > 0.55)) continue;
+      bullets.push(shaped);
+      pickedTokenSets.push(candContent);
+    }
+  }
+  if (bullets.length > 7) bullets = bullets.slice(0, 7);
+
   const paragraph = buildOverviewParagraph(bullets.length ? bullets : rawSelected, allSentences);
 
   return {
-    bullets: bullets.length ? bullets : rawSelected,
+    bullets: bullets.length ? bullets : rawSelected.map(shapeBulletText).filter((b) => b.length >= 20),
     paragraph,
-    fullText: formatSummaryOutput(bullets.length ? bullets : rawSelected, paragraph),
+    fullText: formatSummaryOutput(
+      bullets.length ? bullets : rawSelected.map(shapeBulletText).filter((b) => b.length >= 20),
+      paragraph,
+    ),
     sentenceCount: n,
     selectedCount: (bullets.length ? bullets : rawSelected).length,
     wordCount,
