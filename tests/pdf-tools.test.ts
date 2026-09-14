@@ -13,6 +13,8 @@ import {
   isUsableSummarySentence,
   isLegalPreambleOrBoilerplate,
   shapeBulletText,
+  preCleanDocumentText,
+  shouldRejectAsBullet,
 } from "../src/lib/on-device-summary.ts";
 import { applyPdfEdits, pageIndexesNeedingRedaction, replacePdfPagesWithImages } from "../src/lib/pdf-editor.ts";
 import {
@@ -1143,5 +1145,63 @@ test("summary demotes WHEREAS / bare Dated openers and shapes bullets", () => {
   // Overview should not lead with abrupt legal openers
   assert.doesNotMatch(summary.paragraph, /^(AND WHEREAS|WHEREAS|Dated)\b/i);
   assert.ok(summary.paragraph.length > 40);
+});
+
+test("summary cleans dual-column OM amendment tables and rejects letterhead dumps", () => {
+  const omTableDoc = [
+    "F.NO.2/6/2026-PPD(I)",
+    "Government of India",
+    "Ministry of Finance",
+    "Department of Expenditure",
+    "Office Memorandum",
+    "Subject: Amendment to General Financial Rules regarding debarment of bidders.",
+    "(2) failure to remit statutory contributions due to default by the bidder.",
+    "Existing Rule ) Amended Rule ) contributions due to default by the | bidder.",
+    "DoE shall maintain a list of (DoE) will maintain such list which will | such debarred bidders which shall also also be displayed on the Central Public | be displayed on GeM.",
+    "The Ministry/ Department will bi such list which will also be displayed on | their website.",
+    "Debarment proceedings may be initiated by the procuring entity for repeated defaults under these rules.",
+    "This OM comes into force with immediate effect and amends the relevant GFR provisions on bidder debarment.",
+  ].join("\n");
+
+  const cleaned = preCleanDocumentText(omTableDoc);
+  assert.doesNotMatch(cleaned, /\|/);
+  assert.doesNotMatch(cleaned, /Existing\s+Rule/i);
+  assert.doesNotMatch(cleaned, /Amended\s+Rule/i);
+  assert.doesNotMatch(cleaned, /\balso\s+also\b/i);
+  assert.match(cleaned, /will be /i);
+
+  assert.equal(
+    shouldRejectAsBullet("Existing Rule ) Amended Rule ) contributions due to default by the | bidder."),
+    true,
+  );
+  assert.equal(shouldRejectAsBullet("F.NO.2/6/2026-PPD(I) Government of India Ministry of Finance"), true);
+
+  const shapedGround = shapeBulletText(
+    "(2) failure to remit statutory contributions due to default by the bidder.",
+  );
+  assert.doesNotMatch(shapedGround, /^\(2\)/);
+  assert.match(shapedGround, /debarment|Among other grounds/i);
+  assert.match(shapedGround, /statutory/i);
+
+  const summary = summarizeExtractive(omTableDoc, "medium");
+  assert.ok(summary.bullets.length >= 2);
+  assert.ok(summary.bullets.length <= 7);
+  for (const bullet of summary.bullets) {
+    assert.doesNotMatch(bullet, /\|/);
+    assert.doesNotMatch(bullet, /Existing\s+Rule/i);
+    assert.doesNotMatch(bullet, /Amended\s+Rule/i);
+    assert.doesNotMatch(bullet, /^\(2\)\s+failure/i);
+    assert.doesNotMatch(bullet, /^F\.?\s*NO/i);
+    assert.doesNotMatch(bullet, /\balso\s+also\b/i);
+  }
+  assert.doesNotMatch(summary.paragraph, /^F\.?\s*NO/i);
+  assert.doesNotMatch(summary.paragraph, /\|/);
+  assert.doesNotMatch(summary.paragraph, /Existing\s+Rule/i);
+  // Overview should describe the OM / amendment, not dump the file number
+  assert.match(summary.paragraph, /amendment|debarment|procurement|GFR|Office Memorandum|Ministry|Department/i);
+  const joined = summary.bullets.join(" ");
+  assert.match(joined, /debar|statutory|DoE|GeM|Ministry|procuring|GFR|force/i);
+  assert.match(joined, /Among other grounds|debarment can follow|statutory contributions/i);
+  assert.match(joined, /DoE will maintain|debarred bidders/i);
 });
 

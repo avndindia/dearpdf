@@ -33,7 +33,7 @@ function LogoLink() {
   return (
     <Link href="/" onClick={() => dismissPdfToolCompletion()} className="flex select-none items-center py-1 transition-transform hover:scale-[1.02]">
       <Image
-        src="/logo-dearpdf-lockup.png?v=sky2"
+        src="/logo-dearpdf-lockup.png?v=sky3"
         alt="DearPDF.in"
         width={200}
         height={40}
