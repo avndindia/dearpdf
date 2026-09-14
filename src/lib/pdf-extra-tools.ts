@@ -1,6 +1,17 @@
 import { PDFDocument, StandardFonts, rgb, degrees, type PDFFont, type PDFPage } from "pdf-lib";
-import fontkit from "@pdf-lib/fontkit";
+import fontkitImport from "@pdf-lib/fontkit";
 import { zipSync } from "fflate";
+
+/** Webpack/Safari often nests the default export — always unwrap to a kit with `.create`. */
+function resolveFontkit(mod: unknown) {
+  const candidate = (mod as { default?: unknown } | null)?.default ?? mod;
+  if (!candidate || typeof (candidate as { create?: unknown }).create !== "function") {
+    throw new Error(
+      "Handwriting font engine failed to load in this browser. Try Chrome/Firefox, or refresh and try again.",
+    );
+  }
+  return candidate as { create: (...args: never[]) => unknown };
+}
 
 export type PageNumberPosition =
   | "top-left"
@@ -19,14 +30,26 @@ function parseHexColor(value: string) {
 }
 
 function safeStandardFontText(font: PDFFont, text: string) {
-  return Array.from(text, (character) => {
+  // Index loop (not for-of / Array.from map) — avoids fragile iterators on Safari.
+  const chars: string[] = [];
+  for (let i = 0; i < text.length; i += 1) {
+    const character = text[i]!;
     try {
       font.encodeText(character);
-      return character;
+      chars.push(character);
     } catch {
-      return "?";
+      chars.push("?");
     }
-  }).join("");
+  }
+  return chars.join("");
+}
+
+function copyFontBytes(fontBytes: ArrayBuffer | Uint8Array): Uint8Array {
+  // Always embed from a fresh copy — Safari can detach a cached ArrayBuffer after use.
+  if (fontBytes instanceof Uint8Array) {
+    return fontBytes.slice();
+  }
+  return new Uint8Array(fontBytes).slice();
 }
 
 export type NUpPagesPerSheet = 2 | 4 | 6 | 9 | 16;
@@ -352,14 +375,16 @@ export async function extractPdfPlainText(bytes: ArrayBuffer | Uint8Array): Prom
 function wrapLines(text: string, font: PDFFont, fontSize: number, maxWidth: number): string[] {
   const paragraphs = text.replace(/\r\n?/g, "\n").split(/\n+/);
   const lines: string[] = [];
-  for (const para of paragraphs) {
+  for (let p = 0; p < paragraphs.length; p += 1) {
+    const para = paragraphs[p]!;
     const words = para.trim().split(/\s+/).filter(Boolean);
     if (!words.length) {
       lines.push("");
       continue;
     }
     let current = "";
-    for (const word of words) {
+    for (let w = 0; w < words.length; w += 1) {
+      const word = words[w]!;
       const trial = current ? `${current} ${word}` : word;
       const width = font.widthOfTextAtSize(safeStandardFontText(font, trial), fontSize);
       if (width <= maxWidth || !current) {
@@ -391,8 +416,22 @@ export async function pdfToHandwritingNotebook(
   const ink = parseHexColor(options.inkColor);
 
   const output = await PDFDocument.create();
-  output.registerFontkit(fontkit);
-  const font = await output.embedFont(options.fontBytes);
+  let font: PDFFont;
+  try {
+    const kit = resolveFontkit(fontkitImport);
+    output.registerFontkit(kit as Parameters<PDFDocument["registerFontkit"]>[0]);
+    // Fresh copy every call — never reuse a possibly detached cached ArrayBuffer.
+    font = await output.embedFont(copyFontBytes(options.fontBytes));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (/fontkit|create is not a function|font engine|Unknown font format|detached|ArrayBuffer/i.test(message)) {
+      throw new Error(
+        "Handwriting font engine failed in this browser (Safari sometimes breaks custom fonts). Try refreshing, or use Chrome/Firefox. Details: " +
+          message,
+      );
+    }
+    throw error instanceof Error ? error : new Error(message);
+  }
   const maxWidth = pageWidth - margin - 40;
   const lines = wrapLines(cleaned, font, fontSize, maxWidth);
   const usableTop = pageHeight - 54;
@@ -463,7 +502,10 @@ export async function warpQuadToJpeg(
   const leftH = Math.hypot(bl.x - tl.x, bl.y - tl.y);
   const rightH = Math.hypot(br.x - tr.x, br.y - tr.y);
   const width = Math.max(32, Math.round(outputWidth || Math.max(topW, bottomW)));
-  const height = Math.max(32, Math.round(width * (Math.max(leftH, rightH) / Math.max(topW, bottomW, 1))));
+  // Clamp aspect so a bad edge-detect strip cannot explode into ~900×2400 pages.
+  const rawAspect = Math.max(leftH, rightH) / Math.max(topW, bottomW, 1);
+  const aspect = Math.min(2.4, Math.max(0.45, rawAspect));
+  const height = Math.max(32, Math.round(width * aspect));
 
   const canvas = document.createElement("canvas");
   canvas.width = width;

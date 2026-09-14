@@ -6,6 +6,7 @@ import { downloadGeneratedFile } from "../../../lib/browser-download";
 import {
   defaultCorners,
   detectDocumentQuad,
+  isSaneDocumentQuad,
   mildCurveFlattenJpeg,
   quadDrift,
   splitQuadVertical,
@@ -43,7 +44,7 @@ type AdjustDraft = {
 
 const AUTO_STABLE_MS = 800;
 const AUTO_COOLDOWN_MS = 2200;
-const DETECT_MIN_CONFIDENCE = 0.34;
+const DETECT_MIN_CONFIDENCE = 0.42;
 const STABLE_DRIFT = 0.028;
 
 function uid() {
@@ -246,7 +247,14 @@ export default function ScanToPdfPage() {
         corners = forcedCorners;
       } else {
         const detected = detectDocumentQuad(source, w, h);
-        corners = detected?.corners ?? defaultCorners(w, h);
+        // Fail soft: only hard-crop when confidence clears the lock threshold
+        // and the quad is page-shaped (not a tall text-column strip).
+        corners =
+          detected &&
+          detected.confidence >= DETECT_MIN_CONFIDENCE &&
+          isSaneDocumentQuad(detected.corners, w, h)
+            ? detected.corners
+            : defaultCorners(w, h);
       }
       const encoded = await encodeSourceJpeg(source, w, h, 1600);
       const scaledCorners = scaleCorners(corners, encoded.scale);
@@ -473,10 +481,14 @@ export default function ScanToPdfPage() {
       });
       const nw = page.sourceWidth ?? img.naturalWidth;
       const nh = page.sourceHeight ?? img.naturalHeight;
+      const detected =
+        page.corners == null
+          ? detectDocumentQuad(img, img.naturalWidth, img.naturalHeight)
+          : null;
+      // Always seed adjust handles: prefer stored corners, else any detection
+      // (even soft), else inset guide — never leave the user without handles.
       const corners =
-        page.corners ??
-        detectDocumentQuad(img, img.naturalWidth, img.naturalHeight)?.corners ??
-        defaultCorners(nw, nh);
+        page.corners ?? detected?.corners ?? defaultCorners(nw, nh);
       setAdjust({
         pageId: page.id,
         imageUrl: url,
@@ -723,7 +735,13 @@ export default function ScanToPdfPage() {
               {flash ? <div className="scan-flash" aria-hidden /> : null}
               <div className="scan-camera-hint">
                 {mode === "book" ? "Book" : "Document"} · Page {pages.length + 1}
-                {autoScan ? (edgeLocked ? " · Auto ready" : " · Hold steady…") : " · Align edges"}
+                {autoScan
+                  ? edgeLocked
+                    ? " · Auto ready"
+                    : " · Hold steady…"
+                  : edgeLocked
+                    ? " · Edges locked"
+                    : " · Adjust after capture if needed"}
               </div>
             </div>
             <div className="scan-shutter-row">

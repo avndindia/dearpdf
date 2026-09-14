@@ -7055,3 +7055,161 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   display: grid;
   gap: 2px;
 }
+
+
+/* ===== Handwriting notebook live preview ===== */
+.handwriting-notebook-live {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  border: 1px solid var(--light-line);
+  background: #fcfbf6;
+  background-image:
+    linear-gradient(90deg, transparent 63px, rgba(200, 90, 90, 0.45) 63px, rgba(200, 90, 90, 0.45) 64px, transparent 64px),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      rgba(150, 180, 210, 0.55) 27px,
+      rgba(150, 180, 210, 0.55) 28px
+    );
+  background-position: 0 54px;
+  padding: 54px 28px 36px 78px;
+}
+.handwriting-notebook-live.paper-plain {
+  background-image: none;
+  background: #fcfbf6;
+  padding: 36px 28px;
+}
+.handwriting-notebook-lines {
+  font-family: "Caveat", "Segoe Script", "Comic Sans MS", cursive;
+  font-weight: 500;
+  word-break: break-word;
+}
+.handwriting-notebook-more {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+}
+.stitch-tool-shell.handwriting-page .compress-workspace {
+  overflow: visible;
+}
+
+
+/* ===== Bates overlay preview extras ===== */
+.page-number-live-mark.bates-plate {
+  padding: 3px 6px;
+  background: rgb(255 255 255 / 0.92);
+  border-radius: 2px;
+}
+.bates-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+.bates-file-list > li {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--light-line);
+  background: #fff;
+  padding: 8px 10px;
+}
+.bates-file-pick {
+  display: grid;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.bates-file-pick strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.bates-file-pick small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.bates-file-pick.active strong {
+  color: #0369a1;
+}
+.bates-file-actions {
+  display: flex;
+  gap: 6px;
+}
+.bates-results {
+  display: grid;
+  gap: 10px;
+}
+.bates-results h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.bates-results ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.bates-results li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  background: #fff;
+}
+.bates-results li strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bates-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.stitch-tool-shell.bates-page .compress-workspace {
+  overflow: visible;
+}
+.pdf-drop-zone.compact {
+  min-height: 64px;
+  padding: 12px;
+}
+
+
+.watermark-shell .watermark-preview-stage {
+  min-height: 420px;
+  padding: 0;
+  background: #111;
+}
+.watermark-shell .watermark-preview-page {
+  width: 100%;
+  max-width: none;
+  box-shadow: none;
+}
+.watermark-preview-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.stitch-tool-shell.watermark-page .watermark-workspace {
+  overflow: visible;
+}
+.page-numbers-panel.watermark-settings {
+  border-right: 0;
+  padding: 0;
+}

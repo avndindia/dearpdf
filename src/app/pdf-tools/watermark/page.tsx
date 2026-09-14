@@ -315,7 +315,7 @@ export default function WatermarkPdfPage() {
     <StitchToolShell
       title="Watermark PDF"
       subtitle="Add text or an image to selected PDF pages."
-      className={`watermark-page${selected ? " has-file" : ""}`}
+      className={`compress-page watermark-page${selected ? " has-file" : ""}`}
     >
       <section className="watermark-workspace" aria-labelledby="watermark-workspace-title">
         <div className="merge-workspace-heading">
@@ -380,8 +380,73 @@ export default function WatermarkPdfPage() {
                 })}
               </div>
             ) : null}
-            <div className="watermark-content">
-            <aside className="watermark-settings">
+            <div className="page-numbers-shell watermark-shell">
+            <section className="page-numbers-preview" aria-label="Watermark preview">
+              <div className="page-numbers-preview-meta">
+                <span>Live preview</span>
+                <span>Page {previewPage} of {selected.pageCount}</span>
+              </div>
+              <div className="watermark-preview-stage page-number-live">
+                {preview ? (
+                  <div
+                    ref={previewPageRef}
+                    className="watermark-preview-page"
+                    style={{ aspectRatio: `${preview.width} / ${preview.height}` }}
+                  >
+                    {/* PDF preview is generated locally as a data URL. */}
+                    <img className="watermark-preview-document" src={preview.url} alt={`Preview of PDF page ${previewPage}`} />
+                    {previewContent ? position === "tile" ? (
+                      <div className="watermark-preview-tiles" style={{ opacity: opacity / 100 }}>
+                        {Array.from({ length: 12 }, (_, index) => kind === "text"
+                          ? <span key={index} style={{ color, transform: `rotate(${rotation}deg)`, fontSize: `${previewFontSizePx}px` }}>{text}</span>
+                          : (
+                            <span key={index} style={{ transform: `rotate(${rotation}deg)` }}>
+                              {/* Preview data is generated locally. */}
+                              <img src={watermarkImage!.preview} alt="" style={{ width: `${previewImageWidthPx}px` }} />
+                            </span>
+                          ))}
+                      </div>
+                    ) : kind === "text" ? (
+                      <span
+                        className="watermark-preview-single text"
+                        style={{
+                          ...placedPositionStyle!,
+                          color,
+                          opacity: opacity / 100,
+                          transform: `rotate(${rotation}deg)`,
+                          fontSize: `${previewFontSizePx}px`,
+                        }}
+                      >
+                        {text}
+                      </span>
+                    ) : (
+                      <img
+                        className="watermark-preview-single image"
+                        src={watermarkImage!.preview}
+                        alt=""
+                        style={{
+                          ...placedPositionStyle!,
+                          width: `${imageSize}%`,
+                          opacity: opacity / 100,
+                          transform: `rotate(${rotation}deg)`,
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="page-number-live-empty">Preparing preview…</div>
+                )}
+              </div>
+              <div className="page-numbers-pager">
+                <button type="button" disabled={busy || previewPage <= 1} onClick={() => void changePreviewPage(previewPage - 1)}>Previous</button>
+                <span>{previewPage} / {selected.pageCount}</span>
+                <button type="button" disabled={busy || previewPage >= selected.pageCount} onClick={() => void changePreviewPage(previewPage + 1)}>Next</button>
+              </div>
+              <p className="watermark-preview-note">Preview size and placement follow the PDF page. Large or rotated watermarks may clip at the page edge.</p>
+            </section>
+
+            <aside className="page-numbers-panel watermark-settings">
+
               <div className="watermark-kind-tabs" role="group" aria-label="Watermark type">
                 <button type="button" className={kind === "text" ? "active" : ""} onClick={() => setKind("text")}>Text</button>
                 <button type="button" className={kind === "image" ? "active" : ""} onClick={() => setKind("image")}>Image</button>
@@ -439,63 +504,6 @@ export default function WatermarkPdfPage() {
               </button>
               {savedNotice ? <p className="page-numbers-saved" role="status">{savedNotice}</p> : null}
             </aside>
-
-            <section className="watermark-preview-panel" aria-label="Watermark preview">
-              <div className="watermark-preview-heading">
-                <strong>Preview</strong>
-                <label>Page <select value={previewPage} onChange={(event) => void changePreviewPage(Number(event.target.value))} disabled={busy}>{Array.from({ length: selected.pageCount }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></label>
-              </div>
-              <div className="watermark-preview-stage">
-                {preview ? (
-                  <div
-                    ref={previewPageRef}
-                    className="watermark-preview-page"
-                    style={{ aspectRatio: `${preview.width} / ${preview.height}` }}
-                  >
-                    {/* PDF preview is generated locally as a data URL. */}
-                    <img className="watermark-preview-document" src={preview.url} alt={`Preview of PDF page ${previewPage}`} />
-                    {previewContent ? position === "tile" ? (
-                      <div className="watermark-preview-tiles" style={{ opacity: opacity / 100 }}>
-                        {Array.from({ length: 12 }, (_, index) => kind === "text"
-                          ? <span key={index} style={{ color, transform: `rotate(${rotation}deg)`, fontSize: `${previewFontSizePx}px` }}>{text}</span>
-                          : (
-                            <span key={index} style={{ transform: `rotate(${rotation}deg)` }}>
-                              {/* Preview data is generated locally. */}
-                              <img src={watermarkImage!.preview} alt="" style={{ width: `${previewImageWidthPx}px` }} />
-                            </span>
-                          ))}
-                      </div>
-                    ) : kind === "text" ? (
-                      <span
-                        className="watermark-preview-single text"
-                        style={{
-                          ...placedPositionStyle!,
-                          color,
-                          opacity: opacity / 100,
-                          transform: `rotate(${rotation}deg)`,
-                          fontSize: `${previewFontSizePx}px`,
-                        }}
-                      >
-                        {text}
-                      </span>
-                    ) : (
-                      <img
-                        className="watermark-preview-single image"
-                        src={watermarkImage!.preview}
-                        alt=""
-                        style={{
-                          ...placedPositionStyle!,
-                          width: `${imageSize}%`,
-                          opacity: opacity / 100,
-                          transform: `rotate(${rotation}deg)`,
-                        }}
-                      />
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-              <p>Preview size and placement follow the PDF page. Large or rotated watermarks may clip at the page edge.</p>
-            </section>
             </div>
           </>
         )}
