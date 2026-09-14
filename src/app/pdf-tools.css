@@ -6986,3 +6986,72 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 @media (max-width: 560px) {
   .stitch-tool-shell .tool-options-grid { grid-template-columns: 1fr; padding: 12px; }
 }
+
+/* N-up reuses page-numbers shell; keep preview from being clipped */
+.stitch-tool-shell.n-up-page .compress-workspace {
+  overflow: visible;
+}
+
+.n-up-sheet-live {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgb(15 23 42 / 0.08);
+}
+.n-up-sheet-live.has-error {
+  background: #111;
+}
+.n-up-sheet-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: #f8fafc;
+}
+.n-up-sheet-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+}
+.n-up-sheet-cell.bordered {
+  box-shadow: inset 0 0 0 1px #b8b8b8;
+}
+.n-up-sheet-cell.empty {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f1f5f9,
+    #f1f5f9 6px,
+    #e2e8f0 6px,
+    #e2e8f0 12px
+  );
+}
+.n-up-sheet-cell img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+.n-up-sheet-cell-placeholder {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+.page-numbers-panel .n-up-panel-summary {
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  padding: 10px 0 0;
+  margin: 0;
+}
+.page-numbers-panel .n-up-panel-summary > div {
+  display: grid;
+  gap: 2px;
+}
