@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
+import DearPdfLogo from "@/components/DearPdfLogo";
 import MaterialIcon from "@/components/MaterialIcon";
 import { dismissPdfToolCompletion } from "@/lib/browser-download";
 import { openFileIntoDearPdf } from "@/lib/open-file-handoff";
@@ -33,17 +34,10 @@ function LogoLink() {
     <Link
       href="/"
       onClick={() => dismissPdfToolCompletion()}
-      className="flex min-w-0 shrink select-none items-center py-1 transition-transform hover:scale-[1.02]"
+      className="flex min-w-0 shrink select-none items-center py-0.5 transition-transform hover:scale-[1.02]"
+      aria-label="DearPDF.in home"
     >
-      {/* User-provided SVG lockup — crisp on retina; cache-bust when file changes */}
-      <img
-        src="/logo-dearpdf-lockup.svg?v=user2"
-        alt="DearPDF.in"
-        width={268}
-        height={82}
-        className="h-11 w-auto max-w-[min(15.5rem,72vw)] object-contain object-left sm:h-12 sm:max-w-[17rem]"
-        decoding="async"
-      />
+      <DearPdfLogo />
     </Link>
   );
 }
