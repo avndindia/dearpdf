@@ -121,7 +121,7 @@ export default function NUpPdfPage() {
 
             <fieldset className="compression-presets" style={{ border: 0, margin: 0, padding: 0 }}>
               <legend className="sr-only">Pages per sheet</legend>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <div className="tool-layout-pills">
                 {LAYOUTS.map((n) => (
                   <button
                     key={n}
@@ -139,7 +139,7 @@ export default function NUpPdfPage() {
               </div>
             </fieldset>
 
-            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+            <div className="tool-options-grid cols-4">
               <label>
                 <span>Paper</span>
                 <select value={paperSize} disabled={busy} onChange={(e) => setPaperSize(e.target.value as NUpPaperSize)}>
@@ -165,7 +165,7 @@ export default function NUpPdfPage() {
               </label>
             </div>
 
-            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label className="tool-check-row">
               <input type="checkbox" checked={cellBorder} disabled={busy} onChange={(e) => setCellBorder(e.target.checked)} />
               <span>Draw light border around each cell</span>
             </label>

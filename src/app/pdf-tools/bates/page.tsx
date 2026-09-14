@@ -137,7 +137,7 @@ export default function BatesNumberingPage() {
           </ol>
         ) : null}
 
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
+        <div className="tool-options-grid cols-4">
           <label><span>Prefix</span><input value={prefix} disabled={busy} onChange={(e) => setPrefix(e.target.value)} /></label>
           <label><span>Suffix</span><input value={suffix} disabled={busy} onChange={(e) => setSuffix(e.target.value)} /></label>
           <label><span>Start number</span><input type="number" min={0} value={startNumber} disabled={busy} onChange={(e) => setStartNumber(Math.max(0, Number(e.target.value) || 0))} /></label>
@@ -153,7 +153,7 @@ export default function BatesNumberingPage() {
           <label><span>Colour</span><input type="color" value={color} disabled={busy} onChange={(e) => setColor(e.target.value)} /></label>
         </div>
 
-        <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <label className="tool-check-row">
           <input type="checkbox" checked={whitePlate} disabled={busy} onChange={(e) => setWhitePlate(e.target.checked)} />
           <span>White plate behind number (keeps stamp readable on dark scans)</span>
         </label>

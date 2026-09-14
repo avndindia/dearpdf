@@ -6594,3 +6594,359 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   .scan-shutter-row .secondary-button { width: 100%; font-size: 12px; padding-inline: 8px; }
   .scan-video-wrap { max-height: min(64vh, 560px); aspect-ratio: 3 / 4; }
 }
+
+
+/* ===== Page Numbers workspace (ported + calmed for DearPDF) ===== */
+.page-numbers-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 340px);
+  gap: 18px;
+  align-items: start;
+  padding: 12px 16px 20px;
+}
+.page-numbers-preview {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.page-numbers-preview-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.page-number-live {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--light-line);
+  background: #111;
+}
+.page-number-live img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+}
+.page-number-live-empty {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  color: #bbb;
+}
+.page-number-live-mark {
+  position: absolute;
+  font-family: Helvetica, Arial, sans-serif;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.page-number-live-mark.top-left { top: 3.5%; left: 4%; }
+.page-number-live-mark.top-center { top: 3.5%; left: 50%; transform: translateX(-50%); }
+.page-number-live-mark.top-right { top: 3.5%; right: 4%; }
+.page-number-live-mark.bottom-left { bottom: 3.5%; left: 4%; }
+.page-number-live-mark.bottom-center { bottom: 3.5%; left: 50%; transform: translateX(-50%); }
+.page-number-live-mark.bottom-right { bottom: 3.5%; right: 4%; }
+.page-number-live-skip {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 4px 8px;
+  background: rgb(0 0 0 / 0.45);
+  color: #fff;
+  font-size: 12px;
+}
+.page-numbers-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.page-numbers-pager button {
+  border: 1px solid var(--light-line);
+  background: var(--paper);
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+}
+.page-numbers-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.page-numbers-panel > section,
+.page-number-pair {
+  display: grid;
+  gap: 8px;
+}
+.page-numbers-panel > section > span,
+.page-numbers-panel label > span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.page-number-formats,
+.page-number-weight {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.page-number-formats button,
+.page-number-weight button {
+  border: 1px solid var(--light-line);
+  background: var(--paper);
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 12px;
+}
+.page-number-formats button.active,
+.page-number-weight button.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+.page-number-position {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 1fr 1fr;
+  height: 92px;
+  border: 1px solid var(--light-line);
+  padding: 10px 14px;
+}
+.page-number-position button {
+  width: 14px;
+  height: 14px;
+  justify-self: center;
+  align-self: center;
+  border: 1px solid #bbb;
+  border-radius: 99px;
+  background: #fff;
+}
+.page-number-position button.top-left { justify-self: start; align-self: start; }
+.page-number-position button.top-center { align-self: start; }
+.page-number-position button.top-right { justify-self: end; align-self: start; }
+.page-number-position button.bottom-left { justify-self: start; align-self: end; }
+.page-number-position button.bottom-center { align-self: end; }
+.page-number-position button.bottom-right { justify-self: end; align-self: end; }
+.page-number-position button.active {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.page-numbers-panel small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.page-number-pair {
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.page-number-custom-text {
+  display: grid;
+  gap: 8px;
+}
+.page-number-custom-text label {
+  display: grid;
+  gap: 4px;
+}
+.page-number-custom-text input,
+.page-number-pair input[type="number"] {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--light-line);
+  background: var(--paper);
+  padding: 6px 8px;
+  font: inherit;
+}
+.page-numbers-panel input[type="range"] {
+  width: 100%;
+  accent-color: var(--ink);
+}
+.page-number-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.page-number-colours {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.page-number-colours button,
+.page-number-custom-colour {
+  width: 22px;
+  height: 22px;
+  border: 2px solid transparent;
+  border-radius: 99px;
+  padding: 0;
+}
+.page-number-colours button.active { border-color: var(--ink); }
+.page-number-custom-colour {
+  overflow: hidden;
+  border: 1px solid var(--light-line);
+}
+.page-number-custom-colour input {
+  width: 150%;
+  height: 150%;
+  margin: -25%;
+  border: 0;
+  padding: 0;
+  background: none;
+}
+.page-numbers-panel .selected-document-card {
+  margin: 0;
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px solid var(--light-line);
+}
+.page-numbers-panel .merge-button { width: 100%; }
+.page-numbers-panel .merge-output-name {
+  display: grid;
+  gap: 4px;
+}
+.page-numbers-panel .merge-output-name input {
+  min-width: 0;
+  width: 100%;
+}
+.page-numbers-saved {
+  margin: 0;
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .page-numbers-shell { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 960px) {
+  .discuss-staff-bar-account > .site-theme-control {
+
+/* DearPDF polish on top of ported page-numbers rules */
+.stitch-tool-shell .page-numbers-shell {
+  gap: 20px;
+  padding: 8px 4px 16px;
+}
+.stitch-tool-shell .page-number-live {
+  border-radius: 12px;
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+}
+.stitch-tool-shell .page-numbers-pager button {
+  border-radius: 8px;
+  min-height: 36px;
+  padding: 6px 12px;
+}
+.stitch-tool-shell .page-number-formats,
+.stitch-tool-shell .page-number-weight {
+  gap: 8px;
+}
+.stitch-tool-shell .page-number-formats button,
+.stitch-tool-shell .page-number-weight button {
+  border-radius: 8px;
+  border-color: color-mix(in srgb, var(--line) 60%, transparent);
+  background: #fff;
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.stitch-tool-shell .page-number-formats button.active,
+.stitch-tool-shell .page-number-weight button.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, #fff);
+  color: var(--accent-hover);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.stitch-tool-shell .page-number-position {
+  border-radius: 10px;
+  border-color: color-mix(in srgb, var(--line) 60%, transparent);
+  background: #f8fafc;
+}
+.stitch-tool-shell .page-number-position button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.stitch-tool-shell .page-number-custom-text input,
+.stitch-tool-shell .page-number-pair input[type="number"] {
+  border-radius: 8px;
+  border-color: color-mix(in srgb, var(--line) 60%, transparent);
+  background: #fff;
+  min-height: 40px;
+}
+.stitch-tool-shell .page-numbers-panel > section > span,
+.stitch-tool-shell .page-numbers-panel label > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+@media (max-width: 900px) {
+  .page-numbers-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Shared options grid for N-up / Bates / similar */
+.stitch-tool-shell .tool-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  border-radius: 12px;
+  background: #fff;
+}
+.stitch-tool-shell .tool-options-grid > label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.stitch-tool-shell .tool-options-grid > label > span { display: block; line-height: 1.2; }
+.stitch-tool-shell .tool-options-grid input[type="text"],
+.stitch-tool-shell .tool-options-grid input[type="number"],
+.stitch-tool-shell .tool-options-grid input[type="color"],
+.stitch-tool-shell .tool-options-grid select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.stitch-tool-shell .tool-options-grid input[type="color"] { padding: 4px 6px; cursor: pointer; }
+.stitch-tool-shell .tool-options-grid input:focus,
+.stitch-tool-shell .tool-options-grid select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.stitch-tool-shell .tool-layout-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.stitch-tool-shell .tool-layout-pills > button {
+  min-height: 40px; min-width: 4.25rem; padding: 8px 14px; border-radius: 10px;
+  font-size: 0.875rem; font-weight: 650;
+}
+.stitch-tool-shell .tool-check-row {
+  display: flex; align-items: flex-start; gap: 10px; margin: 0; padding: 10px 12px;
+  border-radius: 10px; background: #f8fafc; font-size: 0.875rem; font-weight: 500; color: var(--ink);
+}
+.stitch-tool-shell .tool-check-row input { margin-top: 2px; accent-color: var(--accent); }
+@media (min-width: 960px) {
+  .stitch-tool-shell .tool-options-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .stitch-tool-shell .tool-options-grid { grid-template-columns: 1fr; padding: 12px; }
+}
