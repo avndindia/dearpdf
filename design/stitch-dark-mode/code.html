@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DearPDF - Private &amp; Fast PDF Tools in Your Browser</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            darkBg: '#0a0e17',
+            darkSurface: '#111726',
+            darkCard: '#151c2d',
+            darkBorder: '#1f2a3f',
+            darkMuted: '#94a3b8'
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style data-purpose="base-typography">
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0a0e17;
+      color: #f1f5f9;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 22;
+      vertical-align: middle;
+    }
+  </style>
+<style data-purpose="custom-decorations">
+    .glow-border {
+      box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.15);
+    }
+    .card-hover {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+      border-color: #38bdf8;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -10px rgba(2, 132, 199, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-[#0a0e17] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 backdrop-blur-md bg-[#0a0e17]/90 border-b border-[#1f2a3f]/70 transition-colors">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Brand Logo & Client Badge -->
+<div class="flex items-center space-x-3">
+<a class="flex items-center space-x-2 text-white font-bold text-xl tracking-tight" href="/">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+<span class="material-symbols-outlined text-lg">description</span>
+</div>
+<span class="text-white text-lg">DearPDF<span class="text-sky-400 font-semibold">.in</span></span>
+</a>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Client-Side Only
+        </span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center space-x-7 text-sm font-medium text-slate-300">
+<a class="hover:text-white transition-colors" href="#tools">All Tools</a>
+<a class="hover:text-white transition-colors" href="#how-it-works">How it Works</a>
+<a class="hover:text-white transition-colors" href="#privacy">Privacy Architecture</a>
+<a class="hover:text-white transition-colors" href="#about">About</a>
+</nav>
+<!-- Header Actions -->
+<div class="flex items-center space-x-4">
+<!-- Live Status indicator -->
+<div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 bg-[#151c2d] px-2.5 py-1.5 rounded-full border border-slate-800">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span>Nothing uploaded</span>
+</div>
+<!-- Dark Mode Toggle Button -->
+<button aria-label="Toggle Theme" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800/60 transition-colors">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<!-- Open File Primary CTA -->
+<button class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm shadow-md shadow-sky-500/25 transition-all">
+<span class="material-symbols-outlined text-lg">upload_file</span>
+<span>Open File</span>
+</button>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow pb-16">
+<!-- BEGIN: HeroSection -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 pt-12 pb-6 text-center">
+<!-- Top Assurance Badge -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-sky-950/60 text-sky-400 border border-sky-800/60 mb-6">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+        Private PDF Tools • Zero Cloud Uploads • No Limits • No Subscriptions
+      </div>
+<!-- Main Headline -->
+<h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+        Drop a file. <span class="text-sky-400">Get it back fixed.</span>
+</h1>
+<!-- Subtitle -->
+<p class="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
+        Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more. Processed in your browser. Free forever, no subscriptions, no file limits.
+      </p>
+<!-- Large Drop Zone -->
+<div class="relative group mx-auto border-2 border-dashed border-sky-500/40 hover:border-sky-400/80 bg-[#101625]/90 rounded-2xl p-8 sm:p-10 transition-all glow-border" data-purpose="dropzone-container">
+<div class="flex flex-col items-center justify-center">
+<!-- Icon Circle -->
+<div class="w-12 h-12 rounded-full bg-sky-950/80 border border-sky-500/30 flex items-center justify-center text-sky-400 mb-3 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl">cloud_sync</span>
+</div>
+<!-- Dropzone Action Text -->
+<p class="text-base sm:text-lg font-medium text-slate-200">
+            Drop your PDF here, or <button class="text-sky-400 hover:text-sky-300 font-semibold underline underline-offset-4 decoration-sky-400/50">browse files</button>
+</p>
+<p class="text-xs text-slate-400 mt-1 mb-6">
+            PDF, JPG, or PNG · up to 500MB · stays on this device
+          </p>
+<!-- Fast Actions Strip -->
+<div class="w-full pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-center gap-2">
+<span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mr-1">Fast Actions:</span>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#merge">
+<span class="material-symbols-outlined text-sm text-sky-400">call_merge</span> Merge
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#compress">
+<span class="material-symbols-outlined text-sm text-sky-400">compress</span> Compress
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#split">
+<span class="material-symbols-outlined text-sm text-sky-400">content_cut</span> Split
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#convert">
+<span class="material-symbols-outlined text-sm text-sky-400">sync_alt</span> Convert
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#sign">
+<span class="material-symbols-outlined text-sm text-sky-400">draw</span> Sign
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#ocr">
+<span class="material-symbols-outlined text-sm text-sky-400">document_scanner</span> OCR
+            </a>
+<a class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-[#161f33] hover:bg-sky-950 hover:text-sky-300 border border-slate-700/70 hover:border-sky-600 transition-all text-slate-300" href="#summary">
+<span class="material-symbols-outlined text-sm text-sky-400">auto_awesome</span> Summary
+            </a>
+</div>
+</div>
+</div>
+<!-- Assurance Pills Row -->
+<div class="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-400">
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121826] border border-slate-800">
+<span class="material-symbols-outlined text-base text-emerald-400">verified</span>
+<span><strong class="font-semibold text-slate-200">Nothing</strong> uploaded</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121826] border border-slate-800">
+<span class="material-symbols-outlined text-base text-sky-400">shield</span>
+<span><strong class="font-semibold text-slate-200">Runs</strong> in your browser</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121826] border border-slate-800">
+<span class="material-symbols-outlined text-base text-sky-400">wifi_off</span>
+<span><strong class="font-semibold text-slate-200">Works offline</strong> after first visit</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121826] border border-slate-800">
+<span class="material-symbols-outlined text-base text-sky-400">lock_open</span>
+<span><strong class="font-semibold text-slate-200">No subscriptions</strong> · 100% free</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121826] border border-slate-800">
+<span class="material-symbols-outlined text-base text-sky-400">all_inclusive</span>
+<span><strong class="font-semibold text-slate-200">No limits</strong> on files or size</span>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: SearchAndFilters -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-8" id="tools">
+<div class="flex flex-col md:flex-row items-center justify-between gap-4">
+<!-- Search Field -->
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
+<input class="w-full bg-[#121827] border border-slate-800/90 text-sm text-slate-200 rounded-lg pl-10 pr-9 py-2 placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors" placeholder="Filter 26 tools (e.g., merge, compr..." type="text"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500 border border-slate-700/80 px-1.5 py-0.5 rounded bg-slate-800/50">/</span>
+</div>
+<!-- Filter Chips -->
+<div class="flex flex-wrap items-center gap-1.5 self-start md:self-auto text-xs font-medium">
+<button class="px-3.5 py-1.5 rounded-full bg-slate-900 border border-sky-500 text-sky-400 flex items-center gap-1.5">
+<span>All</span>
+<span class="bg-sky-500/20 text-sky-300 text-[10px] px-1.5 py-0.2 rounded-full font-bold">26</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#121827] text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700 flex items-center gap-1.5 transition-colors">
+<span>Assemble</span>
+<span class="text-slate-500 text-[10px]">10</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#121827] text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700 flex items-center gap-1.5 transition-colors">
+<span>Edit &amp; Sign</span>
+<span class="text-slate-500 text-[10px]">5</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#121827] text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700 flex items-center gap-1.5 transition-colors">
+<span>Convert</span>
+<span class="text-slate-500 text-[10px]">8</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-full bg-[#121827] text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700 flex items-center gap-1.5 transition-colors">
+<span>Security</span>
+<span class="text-slate-500 text-[10px]">3</span>
+</button>
+</div>
+</div>
+</section>
+<!-- END: SearchAndFilters -->
+<!-- BEGIN: ToolCategories -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+<!-- SECTION 1: Assemble -->
+<section data-purpose="category-assemble">
+<div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-sky-400 text-xl">layers</span>
+<h2 class="text-lg font-bold text-white tracking-tight">Assemble</h2>
+<span class="text-xs text-slate-400 hidden sm:inline">— Combine, split, extract, and arrange pages</span>
+</div>
+<span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">10 Utilities</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Merge PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/merge">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">call_merge</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Popular</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Merge PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Combine PDFs and images in the exact order you choose.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Lossless stitching</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Split & Extract -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/split">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">call_split</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Precise</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Split &amp; Extract</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Save selected pages or page ranges as a new PDF.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Custom page ranges</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Organise Pages -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/organise">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">grid_view</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Visual</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Organise Pages</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Reorder, rotate, flip, or remove pages with a visual preview.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Drag &amp; reorder</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Rotate PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/rotate">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">rotate_right</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">90°</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Rotate PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Rotate all or selected pages by 90° steps.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Same engine as Organise</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Flip PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/flip">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">flip</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Mirror</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Flip PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Mirror pages horizontally or vertically.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>H / V flip</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Pages Per Sheet -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/n-up">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">dashboard</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/60">N-up</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Pages Per Sheet</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">2/4/6/9/16-up handouts on A4, Letter, or Legal.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Vector embed &amp; scale</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Bates Numbering -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/bates">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">pin</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Legal</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Bates Numbering</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Continuous Bates stamps across a multi-file production with CSV log.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Cross-file sequence</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Compress PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/compress">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">compress</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/60">3 Presets</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Compress PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Reduce PDF size, or split it into parts under a limit.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Adjustable DPI</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Add Page Numbers -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/page-numbers">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">format_list_numbered</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Layout</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Add Page Numbers</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Number selected pages with custom placement and formatting.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>6 Position presets</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Crop PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/crop">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">crop</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Lossless</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Crop PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Trim unwanted margins from selected pages without rasterising.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Vector fidelity retained</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+</div>
+</section>
+<!-- SECTION 2: Edit & Sign -->
+<section data-purpose="category-edit-sign">
+<div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-sky-400 text-xl">edit_note</span>
+<h2 class="text-lg font-bold text-white tracking-tight">Edit &amp; Sign</h2>
+<span class="text-xs text-slate-400 hidden sm:inline">— Annotate, redact, stamp, and fill documents</span>
+</div>
+<span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">5 Utilities</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Edit PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/edit">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">draw</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Full Suite</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Edit PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Add text, drawings, highlights, shapes, redaction, and images visually.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>In-browser canvas</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Sign PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/sign">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">signature</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Private</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Sign PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Draw and place a visible signature without uploading.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Zero cloud storage</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Watermark PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/watermark">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">branding_watermark</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Text &amp; Image</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Watermark PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Add text or an image watermark without uploading the document.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Opacity &amp; angle control</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Edit Metadata -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/metadata">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">manage_search</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Sanitize</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Edit Metadata</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Update the PDF title, author, subject, and keywords.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Metadata cleaning</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Flatten PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/flatten">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">layers_clear</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Archive</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Flatten PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Bake forms, annotations, and edits into fixed page images.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Image bake</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+</div>
+</section>
+<!-- SECTION 3: Convert -->
+<section data-purpose="category-convert">
+<div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-sky-400 text-xl">sync_alt</span>
+<h2 class="text-lg font-bold text-white tracking-tight">Convert</h2>
+<span class="text-xs text-slate-400 hidden sm:inline">— Format conversion, OCR, scan, handwriting, summaries, and image exports</span>
+</div>
+<span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">8 Utilities</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- PDF OCR -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/pdf-to-text">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">document_scanner</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">EN · HI · MR</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">PDF OCR</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Extract text or save a searchable PDF from scanned English, Hindi, and Marathi pages.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>On-device OCR</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- AI Summary of PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/ai-summary">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">auto_awesome</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">On-device</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">AI Summary of PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Private DistilBART summary on-device — OCR when needed, nothing uploaded.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>DistilBART in browser</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- PDF to Word -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/pdf-to-word">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">description</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">DOCX</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">PDF to Word</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Turn PDF text and scanned pages into an editable Word document.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Local paragraph parsing</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Images to PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/images-to-pdf">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">photo_library</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Batch</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Images to PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Turn JPG, PNG, and WebP images into one clean PDF document.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Custom margins &amp; order</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- PDF to Images -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/pdf-to-images">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">image</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">High DPI</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">PDF to Images</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Export selected pages as PNG, JPG, or WebP images.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Lossless canvas render</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Scan to PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/scan-to-pdf">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">photo_camera</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Camera</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Scan to PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Live edge detect, auto-crop, Document or Book mode, Auto Scan, Save PDF.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>No app install</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- PDF to Handwriting -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/pdf-to-handwriting">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">edit</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Notebook</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">PDF to Handwriting</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Turn PDF text into notebook-style handwritten notes on this device.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>On-device Caveat font</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Grayscale PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/grayscale">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">filter_b_and_w</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Print Ready</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Grayscale PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Convert colour pages to print-friendly grayscale.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Conserves ink &amp; toner</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+</div>
+</section>
+<!-- SECTION 4: Security & Repair -->
+<section data-purpose="category-security-repair">
+<div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-sky-400 text-xl">security</span>
+<h2 class="text-lg font-bold text-white tracking-tight">Security &amp; Repair</h2>
+<span class="text-xs text-slate-400 hidden sm:inline">— Local cryptographic lock, unlock, and document recovery</span>
+</div>
+<span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">3 Utilities</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Repair PDF -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/repair">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">build_circle</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">XREF Fix</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Repair PDF</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Rebuild a PDF with a fresh, cleaner internal structure.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Structural recovery</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Remove Password -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/unlock">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">lock_open</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">Authorised</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Remove Password</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Remove an open password by rebuilding an authorised local copy.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Instant local rebuild</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+<!-- Add Password -->
+<a class="card-hover bg-[#141b2c] border border-slate-800/90 rounded-xl p-4 flex flex-col justify-between group" href="/pdf-tools/lock">
+<div>
+<div class="flex items-start justify-between mb-3">
+<span class="material-symbols-outlined text-sky-400 text-2xl">lock</span>
+<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-sky-950/80 text-sky-400 border border-sky-800/60">AES-256</span>
+</div>
+<h3 class="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">Add Password</h3>
+<p class="text-xs text-slate-400 mt-1 leading-relaxed">Add an open password with local 256-bit PDF encryption.</p>
+</div>
+<div class="mt-4 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+<span>Zero server passphrases</span>
+<span class="material-symbols-outlined text-base text-slate-500 group-hover:text-sky-400 group-hover:translate-x-1 transition-all">arrow_forward</span>
+</div>
+</a>
+</div>
+</section>
+</div>
+<!-- END: ToolCategories -->
+<!-- BEGIN: PrivacyArchitectureSection -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16" id="privacy">
+<div class="bg-[#111726] border border-slate-800/90 rounded-2xl p-6 sm:p-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Left Column: Explanation & Steps -->
+<div class="lg:col-span-7 space-y-6">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-950/70 text-sky-400 border border-sky-800/60">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span>Why "Nothing uploaded" matters</span>
+</div>
+<h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+              Your PDFs are edited on this device — not on our servers.
+            </h3>
+<p class="text-sm text-slate-400 leading-relaxed">
+              Most online converters upload your documents. DearPDF does the work in your browser instead. Open a file, get the result back, and download it — without sending the document anywhere.
+            </p>
+<!-- 3 Steps Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+<div class="bg-[#161f32] p-4 rounded-xl border border-slate-800">
+<span class="text-xs font-bold text-sky-400 block mb-1">1. Open</span>
+<p class="text-xs text-slate-300 font-medium">File stays on this device</p>
+</div>
+<div class="bg-[#161f32] p-4 rounded-xl border border-slate-800">
+<span class="text-xs font-bold text-sky-400 block mb-1">2. Edit</span>
+<p class="text-xs text-slate-300 font-medium">Tools run in your browser</p>
+</div>
+<div class="bg-[#161f32] p-4 rounded-xl border border-slate-800">
+<span class="text-xs font-bold text-sky-400 block mb-1">3. Download</span>
+<p class="text-xs text-slate-300 font-medium">Nothing sent to a server</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Terminal/Audit Window Graphic -->
+<div class="lg:col-span-5">
+<div class="bg-[#0b0f19] rounded-xl border border-slate-800 p-5 font-mono text-xs shadow-2xl">
+<!-- Window Header -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-4">
+<div class="flex items-center space-x-2">
+<div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+<span class="text-slate-400 text-[11px] ml-2 font-sans font-medium">What happens to your file</span>
+</div>
+<span class="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Private
+                </span>
+</div>
+<!-- Status Rows -->
+<div class="space-y-3.5 py-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-slate-300 font-sans text-xs">
+<span class="material-symbols-outlined text-emerald-400 text-sm">check</span>
+<span>Your document</span>
+</div>
+<span class="text-emerald-400 font-mono text-[11px]">Stays on this device</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-slate-300 font-sans text-xs">
+<span class="material-symbols-outlined text-emerald-400 text-sm">check</span>
+<span>Processing</span>
+</div>
+<span class="text-slate-400 font-mono text-[11px]">In your browser only</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-slate-300 font-sans text-xs">
+<span class="material-symbols-outlined text-emerald-400 text-sm">check</span>
+<span>Upload to DearPDF</span>
+</div>
+<span class="text-red-400 font-mono text-[11px] font-bold">Never</span>
+</div>
+</div>
+<!-- Terminal Link Footnote -->
+<div class="mt-5 pt-3.5 border-t border-slate-800/80 flex items-center justify-between font-sans text-xs">
+<span class="text-slate-500">Want the technical details?</span>
+<a class="inline-flex items-center gap-1 text-sky-400 hover:text-sky-300 font-medium" href="/privacy-architecture">
+<span>Privacy architecture</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PrivacyArchitectureSection -->
+<!-- BEGIN: SecurityBanner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+<div class="rounded-xl bg-[#0f172a]/60 border border-emerald-500/30 p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
+<span class="material-symbols-outlined text-xl">verified_user</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-white">Files stay on this device</h4>
+<p class="text-xs text-slate-400">PDF tools run in your browser — nothing is uploaded to DearPDF servers.</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+<span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-800 text-slate-300">No cloud upload</span>
+<span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-800 text-slate-300">Works offline</span>
+<span class="px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-800 text-slate-300">Free forever</span>
+</div>
+</div>
+</section>
+<!-- END: SecurityBanner -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="border-t border-slate-800/80 bg-[#080c14] py-8 text-xs text-slate-500">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+<!-- Version & Copyright -->
+<div class="flex items-center space-x-2">
+<span>© 2026 DearPDF.in</span>
+<span>•</span>
+<span class="font-mono bg-slate-800 px-2 py-0.5 rounded text-[11px] text-slate-400">v2.5.0</span>
+</div>
+<!-- Footer Quick Links -->
+<div class="flex items-center space-x-6 font-medium">
+<a class="hover:text-slate-300 transition-colors" href="#tools">Tools</a>
+<a class="hover:text-slate-300 transition-colors" href="/privacy-architecture">Architecture</a>
+<a class="hover:text-slate-300 transition-colors" href="/how-it-works">How it Works</a>
+<a class="hover:text-slate-300 transition-colors" href="/privacy-architecture">Privacy</a>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

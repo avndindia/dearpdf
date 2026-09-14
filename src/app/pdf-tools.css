@@ -7214,9 +7214,10 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 0;
 }
 
-/* ===== DearPDF dark mode — stitch / page-numbers / bates chrome ===== */
+/* ===== DearPDF dark mode — Stitch tokens for tool chrome ===== */
 html.dark .pdf-page {
   color: var(--ink);
+  background: var(--paper, #0a0e17);
 }
 
 html.dark .stitch-tool-shell .compress-workspace,
@@ -7225,20 +7226,22 @@ html.dark .stitch-tool-shell .organise-workspace,
 html.dark .stitch-tool-shell .utility-workspace,
 html.dark .stitch-tool-shell .lock-workspace,
 html.dark .stitch-tool-shell .sign-workspace {
-  background: var(--surface-card, #111827) !important;
-  border-color: color-mix(in srgb, var(--line) 80%, transparent) !important;
+  background: var(--surface-card, #151c2d) !important;
+  border-color: var(--stitch-border, #1f2a3f) !important;
 }
 
 html.dark .stitch-tool-shell .pdf-drop-zone,
 html.dark .stitch-tool-shell .pdf-drop-zone.compact {
-  background: #0f172a !important;
-  border-color: color-mix(in srgb, var(--line) 75%, transparent) !important;
+  background: #101625 !important;
+  border-color: color-mix(in srgb, #38bdf8 40%, transparent) !important;
   color: var(--ink) !important;
+  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.12);
 }
 
 html.dark .stitch-tool-shell .pdf-drop-zone:hover,
 html.dark .stitch-tool-shell .pdf-drop-zone.is-dragging {
-  background: #111827 !important;
+  background: #111726 !important;
+  border-color: color-mix(in srgb, #38bdf8 70%, transparent) !important;
 }
 
 html.dark .stitch-tool-shell .pdf-drop-zone strong {
@@ -7259,7 +7262,7 @@ html.dark .bates-file-list > li,
 html.dark .bates-results li,
 html.dark .stitch-tool-shell .selected-document-card > button,
 html.dark .page-numbers-pager button {
-  background: #0f172a !important;
+  background: #151c2d !important;
   border-color: color-mix(in srgb, var(--line) 70%, transparent) !important;
   color: var(--ink) !important;
 }
@@ -7267,18 +7270,18 @@ html.dark .page-numbers-pager button {
 html.dark .stitch-tool-shell .page-number-formats button.active,
 html.dark .stitch-tool-shell .page-number-weight button.active {
   border-color: var(--accent) !important;
-  background: color-mix(in srgb, var(--accent) 18%, #0f172a) !important;
+  background: color-mix(in srgb, var(--accent) 18%, #151c2d) !important;
   color: var(--accent-hover) !important;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 html.dark .stitch-tool-shell .page-number-position {
-  background: #111827 !important;
+  background: #111726 !important;
   border-color: color-mix(in srgb, var(--line) 70%, transparent) !important;
 }
 
 html.dark .page-number-position button {
-  background: #1e293b;
+  background: #1f2a3f;
   border-color: #64748b;
 }
 
@@ -7302,13 +7305,13 @@ html.dark .stitch-tool-shell .selected-document-card {
 }
 
 html.dark .stitch-tool-privacy {
-  background: #0f172a;
+  background: #151c2d;
   border-color: var(--line);
   color: var(--muted);
 }
 
 html.dark .secondary-button {
-  background: #0f172a !important;
+  background: #151c2d !important;
   color: var(--ink) !important;
   border-color: var(--line) !important;
 }

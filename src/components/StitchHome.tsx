@@ -34,15 +34,15 @@ function badgeClass(tone: StitchBadgeTone) {
     case "brand":
     case "primaryFixed":
     case "popular":
-      return "bg-sky-50 text-primary-container border border-brand-300";
+      return "bg-sky-50 text-primary-container border border-brand-300 dark:bg-sky-950/80 dark:text-sky-400 dark:border-sky-800/60";
     case "secondary":
     case "emerald":
-      return "text-emerald-700 bg-emerald-50 border border-emerald-200";
+      return "text-emerald-700 bg-emerald-50 border border-emerald-200 dark:text-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-500/30";
     case "amber":
     case "tertiary":
-      return "text-amber-800 bg-amber-50 border border-amber-200";
+      return "text-amber-800 bg-amber-50 border border-amber-200 dark:text-amber-400 dark:bg-amber-950/80 dark:border-amber-800/60";
     default:
-      return "text-slate-600 bg-slate-100 border border-slate-200";
+      return "text-slate-600 bg-slate-100 border border-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700";
   }
 }
 
@@ -118,13 +118,13 @@ export default function StitchHome() {
       <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6">
         {/* Hero + dropzone */}
         <section className="mx-auto flex max-w-4xl flex-col items-center pb-10 pt-8 text-center">
-          <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-300 bg-white px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider shadow-sm">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-primary-container" />
-            <span className="font-bold text-on-surface">Private PDF Tools</span>
-            <span className="h-1 w-1 rounded-full bg-brand-300" />
-            <span className="font-medium text-secondary">Zero Cloud Uploads</span>
-            <span className="hidden h-1 w-1 rounded-full bg-brand-300 sm:inline" />
-            <span className="hidden font-bold text-primary-container sm:inline">
+          <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-300 bg-white px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider shadow-sm dark:border-sky-800/60 dark:bg-sky-950/60 dark:text-sky-400 dark:shadow-none">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary-container dark:bg-sky-400" />
+            <span className="font-bold text-on-surface dark:text-sky-400">Private PDF Tools</span>
+            <span className="h-1 w-1 rounded-full bg-brand-300 dark:bg-sky-700" />
+            <span className="font-medium text-secondary dark:text-sky-400">Zero Cloud Uploads</span>
+            <span className="hidden h-1 w-1 rounded-full bg-brand-300 dark:bg-sky-700 sm:inline" />
+            <span className="hidden font-bold text-primary-container dark:text-sky-400 sm:inline">
               No Limits · No Subscriptions
             </span>
           </div>
@@ -132,11 +132,11 @@ export default function StitchHome() {
           <h1 className="mb-4 text-[2rem] font-extrabold leading-10 tracking-tight text-on-surface sm:text-[2.75rem] sm:leading-[3.25rem]">
             Drop a file.{" "}
             <br className="sm:hidden" />
-            <span className="bg-gradient-to-r from-sky-700 via-blue-700 to-cyan-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-sky-700 via-blue-700 to-cyan-600 bg-clip-text text-transparent dark:bg-none dark:bg-clip-border dark:text-sky-400">
               Get it back fixed.
             </span>
           </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-slate-500">
+          <p className="mx-auto mb-8 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base dark:text-slate-400">
             Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
             Processed in your browser. Free forever, no subscriptions, no file limits.
           </p>
@@ -172,14 +172,13 @@ export default function StitchHome() {
               setDragging(false);
               handleFiles(e.dataTransfer.files);
             }}
-            className={`group relative w-full max-w-4xl cursor-pointer rounded-3xl border-2 border-dashed p-6 shadow-lg transition-all duration-300 hover:shadow-2xl sm:p-8 ${
+            className={`group relative w-full max-w-4xl cursor-pointer rounded-2xl border-2 border-dashed p-6 transition-all duration-300 sm:p-8 stitch-glow-border ${
               dragging
-                ? "border-sky-500 bg-sky-50 shadow-[0_0_0_4px_rgba(3,105,161,0.12)]"
-                : "border-brand-300 bg-white"
+                ? "border-sky-400 bg-sky-50 shadow-[0_0_0_4px_rgba(3,105,161,0.12)] dark:border-sky-400/80 dark:bg-[#101625] dark:shadow-[0_0_25px_-5px_rgba(14,165,233,0.25)]"
+                : "border-brand-300 bg-white dark:border-sky-500/40 dark:bg-[#101625]/90 dark:hover:border-sky-400/80"
             }`}
-            style={dragging ? undefined : { borderColor: "#0369a1" }}
           >
-            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-white" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-sky-50/60 via-white to-white dark:hidden" />
             <input
               ref={fileRef}
               type="file"
@@ -193,33 +192,33 @@ export default function StitchHome() {
               }}
             />
             <div className="relative z-10 flex flex-col items-center text-center">
-              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-sky-100 bg-sky-50 text-primary-container shadow-sm transition-all duration-300 group-hover:border-primary-container group-hover:bg-primary-container group-hover:text-white">
-                <MaterialIcon name="cloud_sync" className="text-[32px] transition-transform group-hover:scale-110" />
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-sky-100 bg-sky-50 text-primary-container shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:border-primary-container group-hover:bg-primary-container group-hover:text-white dark:border-sky-500/30 dark:bg-sky-950/80 dark:text-sky-400 dark:group-hover:border-sky-500/50 dark:group-hover:bg-sky-950 dark:group-hover:text-sky-300">
+                <MaterialIcon name="cloud_sync" className="text-[24px] transition-transform group-hover:scale-110" />
               </div>
-              <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-semibold text-on-surface">
+              <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-medium text-on-surface dark:text-slate-200 sm:text-lg">
                 <span>Drop your PDF here, or</span>
-                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-sky-800">
+                <span className="font-semibold text-primary-container underline underline-offset-4 decoration-sky-400/50 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300">
                   browse files
                 </span>
               </div>
-              <p className="mb-6 font-mono text-[12px] text-slate-500">
+              <p className="mb-6 font-mono text-[12px] text-slate-500 dark:text-slate-400">
                 PDF, JPG, or PNG · up to 500MB · stays on this device
               </p>
 
-              <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/90 px-2.5 py-2.5 sm:flex-row sm:items-center sm:gap-2 sm:px-3">
-                <span className="hidden whitespace-nowrap pl-0.5 text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-secondary xl:inline">
+              <div className="flex w-full flex-col items-center justify-center gap-2 border-t border-slate-200/70 pt-4 sm:flex-row sm:items-center sm:gap-2 dark:border-slate-800/80">
+                <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-secondary dark:mr-1 dark:text-slate-400">
                   Fast Actions:
                 </span>
-                <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:flex-nowrap sm:justify-end sm:overflow-x-auto">
+                <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:justify-center">
                   {FAST_ACTIONS.map((action) =>
                     action.href ? (
                       <Link
                         key={action.label}
                         href={action.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[12px]"
+                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:rounded-md sm:px-3 sm:py-1 sm:text-xs sm:shadow-none dark:border-slate-700/70 dark:bg-[#161f33] dark:text-slate-300 dark:shadow-none dark:hover:border-sky-600 dark:hover:bg-sky-950 dark:hover:text-sky-300"
                       >
-                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-sm dark:text-sky-400" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>
                       </Link>
                     ) : (
@@ -230,9 +229,9 @@ export default function StitchHome() {
                           e.stopPropagation();
                           applyConvertFilter();
                         }}
-                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[12px]"
+                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:rounded-md sm:px-3 sm:py-1 sm:text-xs sm:shadow-none dark:border-slate-700/70 dark:bg-[#161f33] dark:text-slate-300 dark:shadow-none dark:hover:border-sky-600 dark:hover:bg-sky-950 dark:hover:text-sky-300"
                       >
-                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-sm dark:text-sky-400" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>
                       </button>
                     ),
@@ -242,21 +241,64 @@ export default function StitchHome() {
             </div>
           </div>
 
-          {/* Trust strip — once */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-slate-500">
+          {/* Trust strip — once — full Stitch labels */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 sm:gap-3 dark:text-slate-400">
             {[
-              { icon: "verified", color: "text-security-emerald", label: (<><span className="font-medium text-on-surface">Nothing</span> uploaded</>) },
-              { icon: "shield", color: "text-primary-container", label: (<><span className="font-medium text-on-surface">Runs</span> in your browser</>) },
-              { icon: "wifi_off", color: "text-secondary", label: (<><span className="font-medium text-on-surface">Works offline</span> after first visit</>) },
-              { icon: "lock_open", color: "text-security-emerald", label: (<><span className="font-medium text-on-surface">No subscriptions</span> · 100% free</>) },
-              { icon: "all_inclusive", color: "text-primary-container", label: (<><span className="font-medium text-on-surface">No limits</span> on files or size</>) },
+              {
+                icon: "verified",
+                color: "text-security-emerald dark:text-emerald-400",
+                label: (
+                  <>
+                    <strong className="font-semibold text-on-surface dark:text-slate-200">Nothing</strong> uploaded
+                  </>
+                ),
+              },
+              {
+                icon: "shield",
+                color: "text-primary-container dark:text-sky-400",
+                label: (
+                  <>
+                    <strong className="font-semibold text-on-surface dark:text-slate-200">Runs</strong> in your browser
+                  </>
+                ),
+              },
+              {
+                icon: "wifi_off",
+                color: "text-secondary dark:text-sky-400",
+                label: (
+                  <>
+                    <strong className="font-semibold text-on-surface dark:text-slate-200">Works offline</strong> after
+                    first visit
+                  </>
+                ),
+              },
+              {
+                icon: "lock_open",
+                color: "text-secondary dark:text-sky-400",
+                label: (
+                  <>
+                    <strong className="font-semibold text-on-surface dark:text-slate-200">No subscriptions</strong> ·
+                    100% free
+                  </>
+                ),
+              },
+              {
+                icon: "all_inclusive",
+                color: "text-primary-container dark:text-sky-400",
+                label: (
+                  <>
+                    <strong className="font-semibold text-on-surface dark:text-slate-200">No limits</strong> on files or
+                    size
+                  </>
+                ),
+              },
             ].map((item) => (
               <div
                 key={item.icon}
-                className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-3.5 py-1.5 text-[13px] shadow-sm"
+                className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-border-subtle bg-white px-3 py-1.5 shadow-sm dark:border-slate-800 dark:bg-[#121826] dark:shadow-none"
               >
-                <MaterialIcon name={item.icon} className={`text-[18px] ${item.color}`} />
-                <span>{item.label}</span>
+                <MaterialIcon name={item.icon} className={`shrink-0 text-base ${item.color}`} />
+                <span className="whitespace-normal text-left leading-snug">{item.label}</span>
               </div>
             ))}
           </div>
@@ -268,11 +310,11 @@ export default function StitchHome() {
           ref={toolsRef}
           className="sticky top-16 z-40 mb-10 bg-canvas-bg/90 py-3 backdrop-blur-md scroll-mt-16 sm:top-20 sm:scroll-mt-20"
         >
-          <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-border-subtle bg-white p-2 shadow-md md:flex-row">
+          <div className="flex flex-col items-center justify-between gap-3 md:flex-row dark:gap-4">
             <div className="relative flex w-full items-center md:w-80">
               <MaterialIcon
                 name="search"
-                className="pointer-events-none absolute left-3 text-[18px] text-slate-400"
+                className="pointer-events-none absolute left-3.5 text-lg text-slate-400 dark:text-slate-500"
               />
               <input
                 ref={searchRef}
@@ -280,13 +322,13 @@ export default function StitchHome() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress...)`}
-                className="w-full rounded-xl bg-slate-100 py-2 pl-9 pr-8 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-sky-50/50 focus:ring-1 focus:ring-primary-container"
+                className="w-full rounded-xl border border-transparent bg-slate-100 py-2 pl-10 pr-9 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-sky-50/50 focus:ring-1 focus:ring-primary-container dark:rounded-lg dark:border-slate-800/90 dark:bg-[#121827] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-sky-500 dark:focus:bg-[#121827] dark:focus:ring-0"
               />
-              <kbd className="absolute right-2.5 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[12px] text-slate-400 shadow-sm">
+              <kbd className="absolute right-3 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[12px] text-slate-400 shadow-sm dark:border-slate-700/80 dark:bg-slate-800/50 dark:text-slate-500 dark:shadow-none">
                 /
               </kbd>
             </div>
-            <div className="no-scrollbar flex min-w-0 w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1 md:w-auto">
+            <div className="no-scrollbar flex min-w-0 w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1 text-xs font-medium md:w-auto dark:bg-transparent dark:p-0">
               {(
                 [
                   { id: "all" as const, label: "All", count: STITCH_TOOL_COUNT },
@@ -305,16 +347,16 @@ export default function StitchHome() {
                     onClick={() => setCategory(btn.id)}
                     className={
                       active
-                        ? "flex items-center gap-2 whitespace-nowrap rounded-lg bg-tech-black px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all"
-                        : "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:text-on-surface"
+                        ? "flex items-center gap-2 whitespace-nowrap rounded-lg bg-tech-black px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all dark:rounded-full dark:border dark:border-sky-500 dark:bg-slate-900 dark:px-3.5 dark:text-sky-400 dark:shadow-none"
+                        : "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:text-on-surface dark:rounded-full dark:border dark:border-slate-800/80 dark:bg-[#121827] dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-200"
                     }
                   >
                     <span>{btn.label}</span>
                     <span
                       className={
                         active
-                          ? "rounded-full bg-primary-container px-1.5 font-mono text-[12px] font-bold text-white"
-                          : "rounded-full border border-slate-200 bg-white px-1.5 font-mono text-[12px] text-slate-500"
+                          ? "rounded-full bg-primary-container px-1.5 font-mono text-[12px] font-bold text-white dark:bg-sky-500/20 dark:font-bold dark:text-[10px] dark:text-sky-300"
+                          : "rounded-full border border-slate-200 bg-white px-1.5 font-mono text-[12px] text-slate-500 dark:border-0 dark:bg-transparent dark:text-[10px] dark:text-slate-500"
                       }
                     >
                       {btn.count}
@@ -329,7 +371,7 @@ export default function StitchHome() {
         {/* Tool directory */}
         <div className="space-y-12" aria-label="Tool directory">
           {grouped.length === 0 ? (
-            <p className="rounded-2xl border border-border-subtle bg-white p-6 text-center text-sm text-slate-500">
+            <p className="rounded-2xl border border-border-subtle bg-white p-6 text-center text-sm text-slate-500 dark:border-[#1f2a3f] dark:bg-[#151c2d] dark:text-slate-400">
               No tools match “{query}”. Try merge, compress, or OCR.
             </p>
           ) : (
@@ -337,17 +379,17 @@ export default function StitchHome() {
               <section key={group.id} className="space-y-4">
                 <div className="flex items-center justify-between pb-1">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container">
-                      <MaterialIcon name={group.icon} className="text-[18px]" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container dark:border-transparent dark:bg-transparent dark:text-sky-400">
+                      <MaterialIcon name={group.icon} className="text-[18px] dark:text-xl" />
                     </div>
-                    <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl">
+                    <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl dark:text-lg dark:text-white">
                       {group.title}
                     </h2>
                     <span className="hidden text-[13px] text-slate-500 sm:inline">
                       — {group.blurb}
                     </span>
                   </div>
-                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] uppercase text-secondary">
+                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] uppercase text-secondary dark:border-0 dark:bg-transparent dark:px-0 dark:font-semibold dark:tracking-wider dark:text-slate-400">
                     {group.tools.length} utilit{group.tools.length === 1 ? "y" : "ies"}
                   </span>
                 </div>
@@ -356,15 +398,15 @@ export default function StitchHome() {
                     <Link
                       key={tool.id}
                       href={tool.href}
-                      className="group flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl sm:p-5"
+                      className="group stitch-card-hover flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl sm:p-5 dark:rounded-xl dark:border-slate-800/90 dark:bg-[#151c2d] dark:shadow-none dark:hover:border-sky-400 dark:hover:bg-[#151c2d]"
                     >
                       <div>
                         <div className="mb-3 flex items-center justify-between sm:mb-4">
                           <div
                             className={
                               tool.iconTone === "amber"
-                                ? "flex h-11 w-11 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-all group-hover:bg-amber-600 group-hover:text-white"
-                                : "flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container transition-all group-hover:bg-primary-container group-hover:text-white"
+                                ? "flex h-11 w-11 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-all group-hover:bg-amber-600 group-hover:text-white dark:border-transparent dark:bg-transparent dark:text-amber-400 dark:group-hover:bg-transparent dark:group-hover:text-amber-300"
+                                : "flex h-11 w-11 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container transition-all group-hover:bg-primary-container group-hover:text-white dark:border-transparent dark:bg-transparent dark:text-sky-400 dark:group-hover:bg-transparent dark:group-hover:text-sky-300"
                             }
                           >
                             <MaterialIcon name={tool.icon} className="text-[22px]" />
@@ -377,18 +419,18 @@ export default function StitchHome() {
                             {tool.badge}
                           </span>
                         </div>
-                        <h3 className="mb-1 text-[15px] font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary-container sm:text-base">
+                        <h3 className="mb-1 text-[15px] font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary-container sm:text-base dark:text-sm dark:text-white dark:group-hover:text-sky-400">
                           {tool.name}
                         </h3>
-                        <p className="line-clamp-2 text-[12px] text-slate-500 sm:text-[13px]">
+                        <p className="line-clamp-2 text-[12px] text-slate-500 sm:text-[13px] dark:mt-1 dark:text-xs dark:leading-relaxed dark:text-slate-400">
                           {tool.description}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center justify-between border-t border-transparent pt-4 font-mono text-[12px] text-secondary">
+                      <div className="mt-2 flex items-center justify-between border-t border-transparent pt-4 font-mono text-[12px] text-secondary dark:mt-4 dark:border-slate-800/60 dark:pt-2.5 dark:font-sans dark:text-xs dark:text-slate-400">
                         <span>{tool.footer}</span>
                         <MaterialIcon
                           name="arrow_forward"
-                          className="text-[16px] text-primary-container transition-transform group-hover:translate-x-1"
+                          className="text-[16px] text-primary-container transition-transform group-hover:translate-x-1 dark:text-base dark:text-slate-500 dark:group-hover:text-sky-400"
                         />
                       </div>
                     </Link>
@@ -400,17 +442,17 @@ export default function StitchHome() {
         </div>
 
         {/* How-it-works strip */}
-        <section className="mt-12 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm sm:p-6">
+        <section className="mt-12 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm sm:p-6 dark:border-[#1f2a3f] dark:bg-[#111726]">
           <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
             <div className="flex flex-col gap-2.5 lg:col-span-6">
-              <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-200 bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-primary-container">
+              <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-200 bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-primary-container dark:border-sky-800/60 dark:bg-sky-950/60 dark:text-sky-400">
                 <MaterialIcon name="verified_user" className="text-[15px]" />
                 Why &quot;Nothing uploaded&quot; matters
               </div>
               <h3 className="text-lg font-bold tracking-tight text-on-surface sm:text-xl">
                 Your PDFs are edited on this device — not on our servers.
               </h3>
-              <p className="text-sm leading-relaxed text-slate-600">
+              <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                 Most online converters upload your documents. DearPDF does the work in your
                 browser instead. Open a file, get the result back, and download it — without
                 sending the document anywhere.
@@ -423,10 +465,10 @@ export default function StitchHome() {
                 ].map((step) => (
                   <div
                     key={step.title}
-                    className="rounded-lg border border-border-subtle bg-surface-slate p-2"
+                    className="rounded-lg border border-border-subtle bg-surface-slate p-2 dark:border-slate-800 dark:bg-[#121826]"
                   >
-                    <div className="text-xs font-bold text-on-surface">{step.title}</div>
-                    <div className="text-[10px] text-slate-500">{step.sub}</div>
+                    <div className="text-xs font-bold text-on-surface dark:text-white">{step.title}</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">{step.sub}</div>
                   </div>
                 ))}
               </div>

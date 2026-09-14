@@ -24,7 +24,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
   return (
     <button
       type="button"
-      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border-subtle bg-surface-slate text-on-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-sky-600/40 dark:bg-slate-800 dark:hover:bg-slate-700 dark:hover:border-sky-500/50 ${className}`}
+      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border-subtle bg-surface-slate text-on-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-sky-600/40 dark:border-transparent dark:bg-transparent dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-white ${className}`}
       aria-label={label}
       title={label}
       disabled={!ready}

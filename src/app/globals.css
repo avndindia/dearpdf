@@ -25,20 +25,9 @@
   --font-text: var(--font-sans);
 }
 
-@theme inline {
+@theme {
   --color-background: var(--paper);
   --color-foreground: var(--ink);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-headline-lg: var(--font-sans);
-  --font-headline-md: var(--font-sans);
-  --font-headline-sm: var(--font-sans);
-  --font-body-lg: var(--font-sans);
-  --font-body-md: var(--font-sans);
-  --font-body-sm: var(--font-sans);
-  --font-label-lg: var(--font-sans);
-  --font-label-md: var(--font-sans);
-  --font-label-sm: var(--font-sans);
 
   /* Brand — Sky & Slate */
   --color-brand-50: #f0f9ff;
@@ -113,6 +102,20 @@
   --color-tech-black: #030712;
   --color-security-emerald: #059669;
   --color-security-bg: #ecfdf5;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-headline-lg: var(--font-sans);
+  --font-headline-md: var(--font-sans);
+  --font-headline-sm: var(--font-sans);
+  --font-body-lg: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-body-sm: var(--font-sans);
+  --font-label-lg: var(--font-sans);
+  --font-label-md: var(--font-sans);
+  --font-label-sm: var(--font-sans);
 
   /* Spacing tokens from Stitch */
   --spacing-space-xs: 0.25rem;
@@ -164,6 +167,7 @@
   --radius-xl: 1.5rem;
   --radius-full: 9999px;
 }
+
 
 html,
 body {
@@ -234,87 +238,102 @@ a {
   background: var(--surface-card, #fff);
 }
 
-/* ===== DearPDF dark mode (class="dark" on <html>) ===== */
+/* ===== DearPDF dark mode (class="dark" on <html>) — Stitch tokens ===== */
 .dark {
   color-scheme: dark;
 
-  --ink: #e2e8f0;
+  /* Stitch palette */
+  --stitch-bg: #0a0e17;
+  --stitch-surface: #111726;
+  --stitch-card: #151c2d;
+  --stitch-border: #1f2a3f;
+  --stitch-muted: #94a3b8;
+  --stitch-text: #f1f5f9;
+  --stitch-dropzone: #101625;
+  --stitch-fast-action: #161f33;
+  --stitch-trust: #121826;
+  --stitch-search: #121827;
+
+  --ink: #f1f5f9;
   --muted: #94a3b8;
   --meta: #94a3b8;
-  --line: #334155;
-  --light-line: #1e293b;
-  --paper: #0b1220;
-  --wash: #0b1220;
-  --soft-wash: #111827;
+  --line: #1f2a3f;
+  --light-line: #1f2a3f;
+  --paper: #0a0e17;
+  --wash: #0a0e17;
+  --soft-wash: #111726;
   --accent: #38bdf8;
-  --accent-hover: #7dd3fc;
-  --accent-soft: #0c4a6e;
-  --surface-card: #111827;
+  --accent-hover: #0ea5e9;
+  --accent-soft: #0284c7;
+  --surface-card: #151c2d;
   --discuss-navy: #38bdf8;
-  --discuss-navy-2: #7dd3fc;
+  --discuss-navy-2: #0ea5e9;
 
   /* Remap Tailwind @theme color tokens used across the site */
-  --color-background: #0b1220;
-  --color-foreground: #e2e8f0;
-  --color-surface: #0f172a;
-  --color-surface-bright: #1e293b;
-  --color-surface-dim: #020617;
-  --color-surface-variant: #1e293b;
-  --color-surface-container: #1e293b;
-  --color-surface-container-low: #111827;
-  --color-surface-container-lowest: #0f172a;
-  --color-surface-container-high: #334155;
-  --color-surface-container-highest: #475569;
-  --color-on-surface: #e2e8f0;
+  --color-background: #0a0e17;
+  --color-foreground: #f1f5f9;
+  --color-surface: #111726;
+  --color-surface-bright: #151c2d;
+  --color-surface-dim: #0a0e17;
+  --color-surface-variant: #1f2a3f;
+  --color-surface-container: #151c2d;
+  --color-surface-container-low: #111726;
+  --color-surface-container-lowest: #151c2d;
+  --color-surface-container-high: #1f2a3f;
+  --color-surface-container-highest: #1f2a3f;
+  --color-on-surface: #f1f5f9;
   --color-on-surface-variant: #94a3b8;
   --color-outline: #94a3b8;
-  --color-outline-variant: #475569;
-  --color-canvas-bg: #0b1220;
-  --color-surface-slate: #111827;
-  --color-border-subtle: #334155;
-  --color-border-strong: #475569;
-  --color-background-md: #0b1220;
-  --color-on-background: #e2e8f0;
-  --color-secondary: #7dd3fc;
+  --color-outline-variant: #1f2a3f;
+  --color-canvas-bg: #0a0e17;
+  --color-surface-slate: #111726;
+  --color-border-subtle: #1f2a3f;
+  --color-border-strong: #1f2a3f;
+  --color-background-md: #0a0e17;
+  --color-on-background: #f1f5f9;
+  --color-secondary: #38bdf8;
   --color-secondary-container: #0c4a6e;
   --color-on-secondary-container: #e0f2fe;
   --color-on-secondary-fixed: #e0f2fe;
   --color-security-bg: rgba(6, 78, 59, 0.35);
   --color-rose-subtle: #0c4a6e;
   --color-rose-tint: #075985;
-  --color-inverse-surface: #e2e8f0;
-  --color-inverse-on-surface: #0f172a;
+  --color-inverse-surface: #f1f5f9;
+  --color-inverse-on-surface: #0a0e17;
 
-  /* Keep brand sky blues readable on dark */
+  /* Brand sky accents on dark */
   --color-primary: #38bdf8;
-  --color-primary-container: #0369a1;
+  --color-primary-container: #0ea5e9;
   --color-on-primary: #082f49;
   --color-on-primary-container: #e0f2fe;
   --color-surface-tint: #38bdf8;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
 }
 
 .dark ::selection {
-  background: #075985;
-  color: #e0f2fe;
+  background: rgba(14, 165, 233, 0.3);
+  color: #a5f3fc;
 }
 
-/* Soften common light-only Tailwind surfaces site-wide */
+/* Soften common light-only Tailwind surfaces site-wide → Stitch */
 .dark .bg-white {
-  background-color: #0f172a;
+  background-color: var(--stitch-card);
 }
 .dark .bg-white\/95 {
-  background-color: rgb(2 6 23 / 0.9);
+  background-color: rgb(10 14 23 / 0.9);
 }
 .dark .hover\:bg-white:hover {
-  background-color: #1e293b;
+  background-color: #1a2438;
 }
 .dark .bg-slate-100 {
-  background-color: #1e293b;
+  background-color: #121827;
 }
 .dark .hover\:bg-sky-50:hover,
 .dark .hover\:bg-sky-50\/50:hover,
 .dark .focus\:bg-sky-50\/50:focus {
-  background-color: rgb(7 89 133 / 0.35);
+  background-color: rgb(14 165 233 / 0.12);
 }
 .dark .text-slate-500 {
   color: #94a3b8;
@@ -322,20 +341,105 @@ a {
 .dark .text-slate-400 {
   color: #94a3b8;
 }
+.dark .text-slate-600 {
+  color: #94a3b8;
+}
+.dark .text-primary-container {
+  color: #38bdf8;
+}
+.dark .text-secondary {
+  color: #38bdf8;
+}
+.dark .placeholder\:text-slate-400::placeholder {
+  color: #64748b;
+}
+
 .dark .border-slate-200,
 .dark .border-slate-200\/60,
+.dark .border-slate-200\/70,
 .dark .border-slate-200\/80 {
-  border-color: #334155;
+  border-color: #1f2a3f;
 }
-.dark .border-brand-300 {
+.dark .border-brand-300,
+.dark .border-brand-200 {
   border-color: rgb(56 189 248 / 0.45);
 }
 .dark .border-emerald-200,
 .dark .border-emerald-200\/60 {
   border-color: rgb(16 185 129 / 0.35);
 }
+
 .dark .shadow-sm,
 .dark .shadow-md,
-.dark .shadow-xl {
+.dark .shadow-xl,
+.dark .shadow-lg,
+.dark .shadow-2xl {
   --tw-shadow-color: rgb(0 0 0 / 0.45);
+}
+
+/* Default Tailwind sky/amber/emerald/slate light washes stay bright unless remapped */
+.dark .bg-sky-50,
+.dark .bg-sky-50\/50,
+.dark .bg-sky-50\/60,
+.dark .bg-sky-50\/70,
+.dark .bg-sky-100\/50 {
+  background-color: rgb(14 165 233 / 0.12);
+}
+.dark .from-sky-100\/50 {
+  --tw-gradient-from: rgb(14 165 233 / 0.12);
+  --tw-gradient-to: rgb(14 165 233 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.dark .via-sky-50\/30 {
+  --tw-gradient-to: rgb(14 165 233 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), rgb(14 165 233 / 0.08), var(--tw-gradient-to);
+}
+.dark .from-sky-50\/60 {
+  --tw-gradient-from: rgb(14 165 233 / 0.1);
+  --tw-gradient-to: rgb(14 165 233 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.dark .via-white {
+  --tw-gradient-to: rgb(16 22 37 / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), #101625, var(--tw-gradient-to);
+}
+.dark .to-white {
+  --tw-gradient-to: #101625;
+}
+.dark .border-sky-100 {
+  border-color: rgb(56 189 248 / 0.25);
+}
+.dark .bg-slate-50\/90 {
+  background-color: transparent;
+}
+.dark .bg-amber-50 {
+  background-color: rgb(120 53 15 / 0.35);
+}
+.dark .border-amber-200 {
+  border-color: rgb(245 158 11 / 0.35);
+}
+.dark .bg-emerald-50 {
+  background-color: rgb(6 78 59 / 0.35);
+}
+.dark .text-emerald-700 {
+  color: #6ee7b7;
+}
+.dark .text-amber-800 {
+  color: #fcd34d;
+}
+.dark .text-amber-600 {
+  color: #fbbf24;
+}
+.dark .bg-slate-300 {
+  background-color: #475569;
+}
+
+/* Stitch glow helper for drop zones */
+.dark .stitch-glow-border {
+  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.15);
+}
+.dark .stitch-card-hover:hover {
+  border-color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px rgba(2, 132, 199, 0.25);
 }
