@@ -11,12 +11,12 @@
   --paper: #f8f9ff;
   --wash: #f8f9ff;
   --soft-wash: #f0f9ff;
-  --accent: #0284c7;
-  --accent-hover: #0369a1;
+  --accent: #0369a1;
+  --accent-hover: #075985;
   --accent-soft: #e0f2fe;
   --site-shell-width: 1280px;
-  --discuss-navy: #0284c7;
-  --discuss-navy-2: #0369a1;
+  --discuss-navy: #0369a1;
+  --discuss-navy-2: #075985;
   --font-sans: var(--font-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-ui: var(--font-sans);
@@ -45,14 +45,14 @@
   --color-brand-300: #7dd3fc;
   --color-brand-400: #38bdf8;
   --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-700: #0369a1;
+  --color-brand-600: #0369a1;
+  --color-brand-700: #075985;
   --color-brand-800: #075985;
   --color-brand-900: #0c4a6e;
 
   /* Material / Stitch Sky & Slate tokens */
-  --color-primary: #0284c7;
-  --color-primary-container: #0284c7;
+  --color-primary: #0369a1;
+  --color-primary-container: #0369a1;
   --color-on-primary: #ffffff;
   --color-on-primary-container: #f0f9ff;
   --color-primary-fixed: #cce5ff;
@@ -72,7 +72,7 @@
   --color-on-surface-variant: #475569;
   --color-outline: #64748b;
   --color-outline-variant: #cbd5e1;
-  --color-secondary: #0369a1;
+  --color-secondary: #075985;
   --color-secondary-container: #dae2fd;
   --color-on-secondary: #ffffff;
   --color-on-secondary-container: #5c647a;
@@ -80,7 +80,7 @@
   --color-secondary-fixed-dim: #bec6e0;
   --color-on-secondary-fixed: #131b2e;
   --color-on-secondary-fixed-variant: #3f465c;
-  --color-tertiary: #0369a1;
+  --color-tertiary: #075985;
   --color-tertiary-container: #007da9;
   --color-tertiary-fixed: #c4e7ff;
   --color-tertiary-fixed-dim: #7bd0ff;
@@ -91,7 +91,7 @@
   --color-inverse-surface: #0f172a;
   --color-inverse-on-surface: #eaf1ff;
   --color-inverse-primary: #93ccff;
-  --color-surface-tint: #0284c7;
+  --color-surface-tint: #0369a1;
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
@@ -100,7 +100,7 @@
   --color-on-background: #0b1c30;
 
   /* Explicit Sky & Slate extras (legacy aliases → sky) */
-  --color-ruby-deep: #0369a1;
+  --color-ruby-deep: #075985;
   --color-crimson-vivid: #0ea5e9;
   --color-rose-subtle: #f0f9ff;
   --color-rose-tint: #e0f2fe;

@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 2 268 82" fill="none">
   <defs>
     <linearGradient id="doc_grad_tight" x1="12" y1="8" x2="68" y2="76" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0284C7"/>
-      <stop offset="100%" stop-color="#0369A1"/>
+      <stop offset="0%" stop-color="#0369A1"/>
+      <stop offset="100%" stop-color="#075985"/>
     </linearGradient>
     <linearGradient id="fold_grad_tight" x1="44" y1="8" x2="68" y2="32" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#7DD3FC"/>
       <stop offset="100%" stop-color="#38BDF8"/>
     </linearGradient>
     <filter id="pdf_shadow_tight" x="2" y="4" width="80" height="84" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0284C7" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0369A1" flood-opacity="0.25"/>
     </filter>
   </defs>
 
@@ -20,7 +20,7 @@
     <path d="M46 20 L68 26 H46 Z" fill="#0C4A6E" opacity="0.3"/>
 
     <rect x="22" y="34" width="40" height="18" rx="4.5" fill="#FFFFFF"/>
-    <text x="42" y="47.5" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="900" font-size="11" fill="#0284C7" text-anchor="middle" letter-spacing="0.06em">
+    <text x="42" y="47.5" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="900" font-size="11" fill="#0369A1" text-anchor="middle" letter-spacing="0.06em">
       PDF
     </text>
 
@@ -30,6 +30,6 @@
 
   <!-- UNIFIED WORDMARK: Ultra-tight inline .in with negative tracking / kerning right touching PDF -->
   <text x="86" y="54" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" letter-spacing="-0.04em" fill="#0F172A">
-    Dear<tspan fill="#0284C7" font-weight="900">PDF</tspan><tspan fill="#0284C7" font-weight="800" font-size="28" letter-spacing="-0.05em" dx="-1">.in</tspan>
+    Dear<tspan fill="#0369A1" font-weight="900">PDF</tspan><tspan fill="#0369A1" font-weight="800" font-size="28" letter-spacing="-0.05em" dx="-1">.in</tspan>
   </text>
 </svg>

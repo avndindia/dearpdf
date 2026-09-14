@@ -132,7 +132,7 @@ export default function StitchHome() {
           <h1 className="mb-4 text-[2rem] font-extrabold leading-10 tracking-tight text-on-surface sm:text-[2.75rem] sm:leading-[3.25rem]">
             Drop a file.{" "}
             <br className="sm:hidden" />
-            <span className="bg-gradient-to-r from-sky-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-sky-700 via-blue-700 to-cyan-600 bg-clip-text text-transparent">
               Get it back fixed.
             </span>
           </h1>
@@ -174,10 +174,10 @@ export default function StitchHome() {
             }}
             className={`group relative w-full max-w-4xl cursor-pointer rounded-3xl border-2 border-dashed p-6 shadow-lg transition-all duration-300 hover:shadow-2xl sm:p-8 ${
               dragging
-                ? "border-sky-500 bg-sky-50 shadow-[0_0_0_4px_rgba(2,132,199,0.12)]"
+                ? "border-sky-500 bg-sky-50 shadow-[0_0_0_4px_rgba(3,105,161,0.12)]"
                 : "border-brand-300 bg-white"
             }`}
-            style={dragging ? undefined : { borderColor: "#0284c7" }}
+            style={dragging ? undefined : { borderColor: "#0369a1" }}
           >
             <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-sky-50/60 via-white to-white" />
             <input
@@ -198,7 +198,7 @@ export default function StitchHome() {
               </div>
               <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-semibold text-on-surface">
                 <span>Drop your PDF here, or</span>
-                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-sky-700">
+                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-sky-800">
                   browse files
                 </span>
               </div>
@@ -206,18 +206,18 @@ export default function StitchHome() {
                 PDF, JPG, or PNG · up to 500MB · stays on this device
               </p>
 
-              <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/90 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-3.5">
-                <span className="hidden whitespace-nowrap pl-1 text-left font-mono text-[11px] font-semibold uppercase text-secondary sm:inline">
+              <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/90 px-2.5 py-2.5 sm:flex-row sm:items-center sm:gap-2 sm:px-3">
+                <span className="hidden whitespace-nowrap pl-0.5 text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-secondary xl:inline">
                   Fast Actions:
                 </span>
-                <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:justify-end">
+                <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:flex-nowrap sm:justify-end sm:overflow-x-auto">
                   {FAST_ACTIONS.map((action) =>
                     action.href ? (
                       <Link
                         key={action.label}
                         href={action.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
+                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[12px]"
                       >
                         <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>
@@ -230,7 +230,7 @@ export default function StitchHome() {
                           e.stopPropagation();
                           applyConvertFilter();
                         }}
-                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
+                        className="inline-flex min-h-[44px] shrink-0 flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-sky-50 hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-1.5 sm:px-2 sm:py-1.5 sm:text-[12px]"
                       >
                         <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
                         <span className="whitespace-nowrap leading-tight">{action.label}</span>

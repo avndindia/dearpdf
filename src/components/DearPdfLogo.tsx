@@ -11,7 +11,7 @@ export default function DearPdfLogo({
   return (
     <span className={`inline-flex min-w-0 items-center gap-2.5 ${className}`}>
       <svg
-        className={`shrink-0 drop-shadow-[0_2px_6px_rgba(2,132,199,0.28)] ${markClassName}`}
+        className={`shrink-0 drop-shadow-[0_2px_6px_rgba(3,105,161,0.28)] ${markClassName}`}
         viewBox="0 0 72 72"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -19,8 +19,8 @@ export default function DearPdfLogo({
       >
         <defs>
           <linearGradient id="dpdf_doc" x1="12" y1="6" x2="62" y2="68" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#0284C7" />
-            <stop offset="1" stopColor="#0369A1" />
+            <stop stopColor="#0369A1" />
+            <stop offset="1" stopColor="#075985" />
           </linearGradient>
           <linearGradient id="dpdf_fold" x1="40" y1="6" x2="62" y2="28" gradientUnits="userSpaceOnUse">
             <stop stopColor="#7DD3FC" />
@@ -34,12 +34,11 @@ export default function DearPdfLogo({
         <path d="M40 3 L62 25 H48 C44.686 25 42 22.314 42 19 V3 Z" fill="url(#dpdf_fold)" />
         <path d="M42 19 L62 25 H42 Z" fill="#0C4A6E" opacity="0.28" />
         <rect x="20" y="31" width="36" height="17" rx="4.5" fill="#FFFFFF" />
-        {/* Inline SVG text uses the site webfont — sharp (unlike <img src=".svg">) */}
         <text
           x="38"
           y="43.5"
           textAnchor="middle"
-          fill="#0284C7"
+          fill="#0369A1"
           fontFamily="var(--font-jakarta), 'Plus Jakarta Sans', system-ui, sans-serif"
           fontWeight="800"
           fontSize="12"
@@ -55,8 +54,8 @@ export default function DearPdfLogo({
         style={{ fontFamily: "var(--font-jakarta), var(--font-sans), system-ui, sans-serif" }}
       >
         Dear
-        <span className="text-sky-600">PDF</span>
-        <span className="text-[0.82em] font-extrabold text-sky-600">.in</span>
+        <span className="text-sky-700">PDF</span>
+        <span className="text-[0.82em] font-extrabold text-sky-700">.in</span>
       </span>
     </span>
   );

@@ -162,7 +162,7 @@ export default function HowItWorksPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/pdf-tools/merge"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(2,132,199,0.3)] hover:bg-sky-700"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(3,105,161,0.3)] hover:bg-sky-800"
             >
               <MaterialIcon name="call_merge" className="text-[16px]" />
               Merge PDF
