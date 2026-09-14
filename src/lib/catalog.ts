@@ -205,8 +205,8 @@ export const tools: PdfTool[] = [
   {
     slug: "flatten",
     title: "Flatten PDF",
-    job: "Bake forms, annotations, and edits into fixed page images.",
-    description: "Rasterise pages so interactive content cannot be removed later. Text may no longer be selectable.",
+    job: "Bake forms, annotations, and edits into fixed page images — one file or many.",
+    description: "Rasterise pages so interactive content cannot be removed later. Multiple PDFs flatten separately; text may no longer be selectable.",
     category: "edit",
     accept: "application/pdf",
     limit: "full",

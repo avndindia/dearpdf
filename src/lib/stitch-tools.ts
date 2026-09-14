@@ -255,7 +255,7 @@ export const stitchTools: StitchTool[] = [
   {
     id: "flatten",
     name: "Flatten PDF",
-    description: "Bake forms, annotations, and edits into fixed page images.",
+    description: "Bake forms, annotations, and edits into fixed page images — one PDF or many.",
     href: "/pdf-tools/flatten",
     category: "edit",
     icon: "layers_clear",
