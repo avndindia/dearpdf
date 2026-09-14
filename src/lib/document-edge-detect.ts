@@ -701,16 +701,31 @@ function quadFromLargestPaperRegion(
       const contour = traceContour(componentMask, w, h, sx, sy, visited);
       if (!contour) continue;
       const filledFrac = region.count / (w * h);
-      const expanded = expandPaperBounds(
-        mask,
-        gray,
-        w,
-        h,
-        region.minX,
-        region.minY,
-        region.maxX,
-        region.maxY,
-      );
+      // Only grow when the page already kisses the frame (partial capture) and
+      // the outward strip looks like plain desk — not busy newspaper.
+      const touchesFrame =
+        region.minX <= 2 ||
+        region.minY <= 2 ||
+        region.maxX >= w - 3 ||
+        region.maxY >= h - 3;
+      let expanded = {
+        minX: region.minX,
+        minY: region.minY,
+        maxX: region.maxX,
+        maxY: region.maxY,
+      };
+      if (touchesFrame) {
+        expanded = expandPaperBounds(
+          mask,
+          gray,
+          w,
+          h,
+          region.minX,
+          region.minY,
+          region.maxX,
+          region.maxY,
+        );
+      }
       const eBw = expanded.maxX - expanded.minX + 1;
       const eBh = expanded.maxY - expanded.minY + 1;
       const padX = Math.max(1, Math.round(eBw * 0.01));
@@ -972,15 +987,21 @@ export function detectDocumentQuad(
     }
   }
 
+  const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
+  // bright.corners are already in source space — compare in work space via scale.
+  if (
+    bright &&
+    isSaneDocumentQuad(bright.corners, sourceWidth, sourceHeight) &&
+    (!best || bright.confidence > best.score + 0.04)
+  ) {
+    return bright;
+  }
+
   if (best) {
     const confidence = clamp(best.score, 0, 1);
     // Require solid score before trusting auto-crop.
-    if (confidence >= 0.42) {
+    if (confidence >= 0.42 && isSaneDocumentQuad(best.corners, w, h)) {
       return { corners: toSource(best.corners), confidence, workWidth: w, workHeight: h };
-    }
-    const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
-    if (bright && bright.confidence > confidence && isSaneDocumentQuad(bright.corners, sourceWidth, sourceHeight)) {
-      return bright;
     }
     // Uncertain: inset guide at low confidence so UI offers adjustable corners
     // instead of applying a wrong crop.
@@ -992,12 +1013,10 @@ export function detectDocumentQuad(
     };
   }
 
-  const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
   if (bright) return bright;
 
-  const guide = defaultGuideQuad(sourceWidth, sourceHeight);
   return {
-    corners: guide,
+    corners: defaultGuideQuad(sourceWidth, sourceHeight),
     confidence: 0.16,
     workWidth: w,
     workHeight: h,
