@@ -1,5 +1,6 @@
 "use client";
 
+import { dismissPdfToolCompletion } from "@/lib/browser-download";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "@/lib/pdf-tool-handoff";
 
 export type OpenFilePending =
@@ -57,6 +58,7 @@ function looksLikeImage(file: File) {
 
 /** Open a local file: PDFs open a tool picker; images go to Images to PDF. */
 export async function openFileIntoDearPdf(file: File) {
+  dismissPdfToolCompletion();
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   if (looksLikePdf(bytes)) {

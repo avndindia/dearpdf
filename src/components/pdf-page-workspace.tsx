@@ -14,6 +14,8 @@ export type PdfVisualPage = {
   rotation?: number;
   flipHorizontal?: boolean;
   flipVertical?: boolean;
+  /** pending = skeleton / still rendering; failed = clear error label; ready/undefined = show image */
+  previewStatus?: "ready" | "pending" | "failed";
 };
 
 type PdfPageWorkspaceProps = {
@@ -31,6 +33,84 @@ type PdfPageWorkspaceProps = {
   emptyMessage?: string;
 };
 
+function yieldToBrowser() {
+  return new Promise<void>((resolve) => {
+    if (typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(() => resolve());
+      return;
+    }
+    setTimeout(resolve, 0);
+  });
+}
+
+async function renderOnePdfPageThumbnail(
+  pdf: { getPage: (n: number) => Promise<{ getViewport: (opts: { scale: number }) => { width: number; height: number }; render: (opts: object) => { promise: Promise<void> }; cleanup: () => void }> },
+  pageNumber: number,
+  idPrefix: string,
+  sourceLabel: string | undefined,
+  maxWidth: number,
+): Promise<PdfVisualPage> {
+  const failed = (): PdfVisualPage => ({
+    id: `${idPrefix}-${pageNumber - 1}`,
+    pageIndex: pageNumber - 1,
+    sourceId: idPrefix,
+    sourceLabel,
+    thumbnail: "",
+    rotation: 0,
+    previewStatus: "failed",
+  });
+
+  let page: Awaited<ReturnType<typeof pdf.getPage>> | null = null;
+  try {
+    page = await pdf.getPage(pageNumber);
+    const original = page.getViewport({ scale: 1 });
+    const scale = Math.min(1.35, maxWidth / Math.max(original.width, 1));
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement("canvas");
+    // Safari mobile: avoid alpha + keep modest pixel count for scanned pages.
+    const context = canvas.getContext("2d", { alpha: false, willReadFrequently: false });
+    if (!context) throw new Error("Page previews are not supported in this browser.");
+    const width = Math.max(1, Math.ceil(viewport.width));
+    const height = Math.max(1, Math.ceil(viewport.height));
+    canvas.width = width;
+    canvas.height = height;
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    const renderTask = page.render({
+      canvas,
+      canvasContext: context,
+      viewport,
+      background: "#ffffff",
+    });
+    await renderTask.promise;
+    const thumbnail = canvas.toDataURL("image/jpeg", 0.72);
+    canvas.width = 1;
+    canvas.height = 1;
+    if (!thumbnail || thumbnail.length < 32) {
+      throw new Error("Empty thumbnail");
+    }
+    return {
+      id: `${idPrefix}-${pageNumber - 1}`,
+      pageIndex: pageNumber - 1,
+      sourceId: idPrefix,
+      sourceLabel,
+      thumbnail,
+      width: original.width,
+      height: original.height,
+      rotation: 0,
+      previewStatus: "ready",
+    };
+  } catch {
+    return failed();
+  } finally {
+    try {
+      page?.cleanup();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 export async function renderPdfPageThumbnails(
   bytes: ArrayBuffer,
   idPrefix: string,
@@ -38,51 +118,52 @@ export async function renderPdfPageThumbnails(
   onProgress?: (page: number, total: number) => void,
   maxWidth = 320,
   pageIndexes?: number[],
+  onPage?: (page: PdfVisualPage, done: number, total: number) => void,
 ): Promise<PdfVisualPage[]> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const data = Uint8Array.from(new Uint8Array(bytes));
+  const task = pdfjs.getDocument({ data, disableFontFace: true, useSystemFonts: true });
   const pdf = await task.promise;
   const pages: PdfVisualPage[] = [];
   const pageNumbers = pageIndexes?.length
     ? pageIndexes.filter((index) => index >= 0 && index < pdf.numPages).map((index) => index + 1)
     : Array.from({ length: pdf.numPages }, (_, index) => index + 1);
 
+  // Large / scanned docs: keep thumbnails modest so Safari can show many cards.
+  const effectiveMaxWidth = pageNumbers.length > 80 ? Math.min(maxWidth, 160) : pageNumbers.length > 40 ? Math.min(maxWidth, 200) : maxWidth;
+
   try {
     for (let previewIndex = 0; previewIndex < pageNumbers.length; previewIndex += 1) {
       const pageNumber = pageNumbers[previewIndex];
       onProgress?.(previewIndex + 1, pageNumbers.length);
-      const page = await pdf.getPage(pageNumber);
-      const original = page.getViewport({ scale: 1 });
-      const scale = Math.min(1.75, maxWidth / Math.max(original.width, 1));
-      const viewport = page.getViewport({ scale });
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d", { alpha: false });
-      if (!context) throw new Error("Page previews are not supported in this browser.");
-      canvas.width = Math.max(1, Math.ceil(viewport.width));
-      canvas.height = Math.max(1, Math.ceil(viewport.height));
-      context.fillStyle = "#fff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      await page.render({ canvas, canvasContext: context, viewport, background: "#fff" }).promise;
-      pages.push({
-        id: `${idPrefix}-${pageNumber - 1}`,
-        pageIndex: pageNumber - 1,
-        sourceId: idPrefix,
-        sourceLabel,
-        thumbnail: canvas.toDataURL("image/jpeg", 0.76),
-        width: original.width,
-        height: original.height,
-        rotation: 0,
-      });
-      canvas.width = 1;
-      canvas.height = 1;
-      page.cleanup();
+      const rendered = await renderOnePdfPageThumbnail(pdf, pageNumber, idPrefix, sourceLabel, effectiveMaxWidth);
+      pages.push(rendered);
+      onPage?.(rendered, previewIndex + 1, pageNumbers.length);
+      // Let the UI paint between pages (critical on mobile Safari for 100+ page PDFs).
+      if (previewIndex % 2 === 1) await yieldToBrowser();
     }
   } finally {
     await task.destroy();
   }
 
   return pages;
+}
+
+export function makePendingPdfPages(
+  pageCount: number,
+  idPrefix: string,
+  sourceLabel?: string,
+): PdfVisualPage[] {
+  return Array.from({ length: pageCount }, (_, index) => ({
+    id: `${idPrefix}-${index}`,
+    pageIndex: index,
+    sourceId: idPrefix,
+    sourceLabel,
+    thumbnail: "",
+    rotation: 0,
+    previewStatus: "pending" as const,
+  }));
 }
 
 export function moveId(ids: string[], fromIndex: number, toIndex: number) {
@@ -296,10 +377,24 @@ export default function PdfPageWorkspace({
                     disabled={disabled}
                   >
                     {/* Generated locally from the selected PDF. */}
-                    {page.thumbnail ? (
-                      <img src={page.thumbnail} alt={`Preview of page ${page.pageIndex + 1}`} style={{ transform: `rotate(${page.rotation ?? 0}deg) scaleX(${page.flipHorizontal ? -1 : 1}) scaleY(${page.flipVertical ? -1 : 1})` }} />
+                    {page.thumbnail && page.previewStatus !== "failed" ? (
+                      <img
+                        src={page.thumbnail}
+                        alt={`Preview of page ${page.pageIndex + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        style={{ transform: `rotate(${page.rotation ?? 0}deg) scaleX(${page.flipHorizontal ? -1 : 1}) scaleY(${page.flipVertical ? -1 : 1})` }}
+                      />
                     ) : (
-                      <span className="page-workspace-placeholder">Page {page.pageIndex + 1}</span>
+                      <span
+                        className={`page-workspace-placeholder${page.previewStatus === "failed" ? " is-failed" : page.previewStatus === "pending" || !page.thumbnail ? " is-pending" : ""}`}
+                      >
+                        {page.previewStatus === "failed"
+                          ? "Couldn't preview"
+                          : page.previewStatus === "pending"
+                            ? "Loading…"
+                            : `Page ${page.pageIndex + 1}`}
+                      </span>
                     )}
                     {selectable ? <span className="page-selection-mark" aria-hidden="true">{isSelected ? "✓" : ""}</span> : null}
                   </button>

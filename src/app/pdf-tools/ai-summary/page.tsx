@@ -135,6 +135,16 @@ export default function AiSummaryPage() {
       setCopied(false);
       setProgress(null);
       setWork({ kind: "idle" });
+      // Auto-load page previews (progressive) — no hunting for "Show page previews".
+      void loadPreviews(bytes, {
+        pageCount,
+        priorityIndexes: Array.from({ length: Math.min(pageCount, 12) }, (_, index) => index),
+      }).catch(() => {
+        setWork({
+          kind: "error",
+          message: "Page previews could not be created for this PDF. You can still summarise by page range.",
+        });
+      });
     } catch {
       resetPreviews();
       setSelected(null);
@@ -372,7 +382,10 @@ export default function AiSummaryPage() {
                 previewState={previewState}
                 onShow={() => {
                   if (selected) {
-                    void loadPreviews(selected.bytes).catch(() =>
+                    void loadPreviews(selected.bytes, {
+                      pageCount: selected.pageCount,
+                      priorityIndexes: selection.pages.slice(0, 40),
+                    }).catch(() =>
                       setWork({ kind: "error", message: "Page previews could not be created for this PDF." }),
                     );
                   }
@@ -566,8 +579,8 @@ export default function AiSummaryPage() {
             ) : null}
 
             {result ? (
-              <div className="ocr-results">
-                <div>
+              <div className="ocr-results ai-summary-results">
+                <div className="ai-summary-results-meta">
                   <span className="pdf-tool-status">On-device summary</span>
                   <h3>
                     {result.selectedCount} key points · {pagesRead}{" "}
@@ -589,15 +602,19 @@ export default function AiSummaryPage() {
                     Download TXT
                   </button>
                 </div>
-                <div className="text-preview">
-                  <strong>Key points</strong>
-                  <ul className="ai-summary-bullets">
-                    {result.bullets.map((bullet, index) => (
-                      <li key={`${index}-${bullet.slice(0, 24)}`}>{bullet}</li>
-                    ))}
-                  </ul>
-                  <strong>Summary</strong>
-                  <pre>{result.paragraph}</pre>
+                <div className="text-preview ai-summary-preview">
+                  <section className="ai-summary-section" aria-label="Key points">
+                    <strong className="ai-summary-section-title">Key points</strong>
+                    <ul className="ai-summary-bullets">
+                      {result.bullets.map((bullet, index) => (
+                        <li key={`${index}-${bullet.slice(0, 24)}`}>{bullet}</li>
+                      ))}
+                    </ul>
+                  </section>
+                  <section className="ai-summary-section" aria-label="Summary">
+                    <strong className="ai-summary-section-title">Summary</strong>
+                    <pre className="ai-summary-paragraph">{result.paragraph}</pre>
+                  </section>
                 </div>
               </div>
             ) : null}

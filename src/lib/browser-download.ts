@@ -1,6 +1,14 @@
 const DOWNLOAD_MIME_TYPE = "application/octet-stream";
 const REVOKE_DELAY_MS = 60_000;
 export const GENERATED_FILE_EVENT = "dearpdf:generated-file";
+export const DISMISS_COMPLETION_EVENT = "dearpdf:dismiss-completion";
+
+/** Clear sticky "PDF ready" panel (header Open, nav, file picker, popstate). */
+export function dismissPdfToolCompletion() {
+  if (typeof window === "undefined") return;
+  window.__dearPdfGeneratedFile = undefined;
+  window.dispatchEvent(new Event(DISMISS_COMPLETION_EVENT));
+}
 
 export type GeneratedFileEventDetail = {
   blob: Blob;

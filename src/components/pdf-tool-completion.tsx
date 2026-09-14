@@ -2,13 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { GENERATED_FILE_EVENT, type GeneratedFileEventDetail } from "../lib/browser-download";
+import {
+  DISMISS_COMPLETION_EVENT,
+  GENERATED_FILE_EVENT,
+  type GeneratedFileEventDetail,
+} from "../lib/browser-download";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "../lib/pdf-tool-handoff";
 import { PDF_NEXT_STEPS } from "./pdf-next-step-selector";
 
 type CompletedPdf = { bytes: Uint8Array; name: string };
 
 const AUTO_DISMISS_MS = 18_000;
+const DOWNLOAD_DISMISS_MS = 900;
 
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -68,6 +73,18 @@ export default function PdfToolCompletion() {
     dismiss();
   }, [pathname]);
 
+  // Soft nav / back-forward / hash edge cases Next.js pathname may miss.
+  useEffect(() => {
+    const onDismiss = () => dismiss();
+    const onPopState = () => dismiss();
+    window.addEventListener(DISMISS_COMPLETION_EVENT, onDismiss);
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener(DISMISS_COMPLETION_EVENT, onDismiss);
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
   // Only accept new files from GENERATED_FILE_EVENT (not focus/pageshow resurrect).
   // One mount revive from global covers hard reloads / late mount after download on same tool.
   useEffect(() => {
@@ -120,7 +137,16 @@ export default function PdfToolCompletion() {
         <button type="button" aria-label="Close completed PDF actions" onClick={dismiss}>×</button>
       </div>
       <div className="pdf-suite-result-actions">
-        <button className="pdf-suite-download" type="button" onClick={() => downloadAgain(result)}>Download PDF</button>
+        <button
+          className="pdf-suite-download"
+          type="button"
+          onClick={() => {
+            downloadAgain(result);
+            window.setTimeout(() => dismiss(), DOWNLOAD_DISMISS_MS);
+          }}
+        >
+          Download PDF
+        </button>
         <details className="pdf-suite-continue">
           <summary>{opening ? "Opening next tool…" : "Continue with another tool"}<span aria-hidden="true">⌄</span></summary>
           <div className="pdf-suite-tool-choices">

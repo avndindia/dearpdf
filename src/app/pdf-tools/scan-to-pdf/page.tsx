@@ -43,7 +43,7 @@ type AdjustDraft = {
 
 const AUTO_STABLE_MS = 800;
 const AUTO_COOLDOWN_MS = 2200;
-const DETECT_MIN_CONFIDENCE = 0.42;
+const DETECT_MIN_CONFIDENCE = 0.34;
 const STABLE_DRIFT = 0.028;
 
 function uid() {
@@ -176,6 +176,36 @@ export default function ScanToPdfPage() {
     [],
   );
 
+  // Camera-first landing: open the viewfinder immediately on secure pages.
+  useEffect(() => {
+    let cancelled = false;
+    async function boot() {
+      if (!secureOk || !navigator.mediaDevices?.getUserMedia) return;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1440 },
+          },
+        });
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        streamRef.current = stream;
+        setCameraOn(true);
+      } catch {
+        // Permission denied — user can still Add photos / tap Start scanning.
+      }
+    }
+    void boot();
+    return () => {
+      cancelled = true;
+    };
+  }, [secureOk]);
+
   const processQuadPage = useCallback(
     async (
       source: CanvasImageSource,
@@ -211,10 +241,13 @@ export default function ScanToPdfPage() {
 
   const captureFromSource = useCallback(
     async (source: CanvasImageSource, w: number, h: number, forcedCorners?: Quad | null) => {
-      const detected = forcedCorners
-        ? { corners: forcedCorners, confidence: 1 }
-        : detectDocumentQuad(source, w, h);
-      const corners = detected?.corners ?? defaultCorners(w, h);
+      let corners: Quad;
+      if (forcedCorners) {
+        corners = forcedCorners;
+      } else {
+        const detected = detectDocumentQuad(source, w, h);
+        corners = detected?.corners ?? defaultCorners(w, h);
+      }
       const encoded = await encodeSourceJpeg(source, w, h, 1600);
       const scaledCorners = scaleCorners(corners, encoded.scale);
 
@@ -595,20 +628,24 @@ export default function ScanToPdfPage() {
           >
             Book (2 pages)
           </button>
+          <button
+            type="button"
+            className={`scan-mode-btn scan-autoscan-btn${autoScan ? " is-active" : ""}`}
+            aria-pressed={autoScan}
+            onClick={() => setAutoScan((v) => !v)}
+          >
+            Auto Scan{autoScan ? " · On" : ""}
+          </button>
         </div>
 
         <div className="scan-range-toolbar">
           <label className="scan-toggle">
             <input type="checkbox" checked={autoEnhance} onChange={(e) => setAutoEnhance(e.target.checked)} />
-            <span>Enhance (document look)</span>
+            <span>Enhance</span>
           </label>
           <label className="scan-toggle">
             <input type="checkbox" checked={colorBoost} onChange={(e) => setColorBoost(e.target.checked)} />
             <span>Color boost</span>
-          </label>
-          <label className="scan-toggle">
-            <input type="checkbox" checked={autoScan} onChange={(e) => setAutoScan(e.target.checked)} />
-            <span>Auto Scan</span>
           </label>
           {mode === "book" ? (
             <>
@@ -635,31 +672,7 @@ export default function ScanToPdfPage() {
           ) : null}
         </div>
 
-        {!cameraOn ? (
-          <div className="scan-start-panel">
-            <button
-              className="merge-button scan-primary-cta"
-              type="button"
-              onClick={() => void startCamera()}
-              disabled={busy}
-            >
-              Start scanning
-            </button>
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={() => galleryRef.current?.click()}
-              disabled={busy}
-            >
-              Add photos
-            </button>
-            <p className="organise-tip">
-              Point at a page — edges outline live. Tap the shutter (or turn on Auto Scan). In Book mode one shot
-              becomes two pages.
-              {!secureOk ? " Camera needs HTTPS; gallery still works." : null}
-            </p>
-          </div>
-        ) : (
+        {cameraOn ? (
           <div className="scan-camera-stage">
             <div className="scan-video-wrap">
               <video ref={videoRef} playsInline muted autoPlay className="scan-video" />
@@ -676,6 +689,17 @@ export default function ScanToPdfPage() {
                       points={outlinePoints}
                       className={edgeLocked ? "scan-edge-poly is-locked" : "scan-edge-poly"}
                     />
+                    {liveCorners
+                      ? liveCorners.map((corner, index) => (
+                          <circle
+                            key={index}
+                            cx={corner.x}
+                            cy={corner.y}
+                            r={Math.max(videoSize.w, videoSize.h) * 0.012}
+                            className={edgeLocked ? "scan-edge-corner is-locked" : "scan-edge-corner"}
+                          />
+                        ))
+                      : null}
                     {mode === "book" && liveCorners ? (
                       <line
                         x1={(liveCorners[0].x + liveCorners[1].x) / 2}
@@ -686,12 +710,20 @@ export default function ScanToPdfPage() {
                       />
                     ) : null}
                   </>
-                ) : null}
+                ) : (
+                  <rect
+                    x={videoSize.w * 0.1}
+                    y={videoSize.h * 0.12}
+                    width={videoSize.w * 0.8}
+                    height={videoSize.h * 0.76}
+                    className="scan-edge-guide"
+                  />
+                )}
               </svg>
               {flash ? <div className="scan-flash" aria-hidden /> : null}
               <div className="scan-camera-hint">
                 {mode === "book" ? "Book" : "Document"} · Page {pages.length + 1}
-                {autoScan ? (edgeLocked ? " · Auto ready" : " · Hold steady…") : null}
+                {autoScan ? (edgeLocked ? " · Auto ready" : " · Hold steady…") : " · Align edges"}
               </div>
             </div>
             <div className="scan-shutter-row">
@@ -711,9 +743,33 @@ export default function ScanToPdfPage() {
                 disabled={busy}
               />
               <button type="button" className="secondary-button" onClick={stopCamera} disabled={busy}>
-                Done
+                Pause
               </button>
             </div>
+          </div>
+        ) : (
+          <div className="scan-start-panel scan-resume-panel">
+            <button
+              className="merge-button scan-primary-cta"
+              type="button"
+              onClick={() => void startCamera()}
+              disabled={busy}
+            >
+              {pages.length ? "Continue scanning" : "Start camera"}
+            </button>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => galleryRef.current?.click()}
+              disabled={busy}
+            >
+              Add photos
+            </button>
+            <p className="organise-tip">
+              Camera-first scan: live edge outline, shutter, then a compact page strip. Auto Scan captures when
+              edges stay steady.
+              {!secureOk ? " Camera needs HTTPS; gallery still works." : null}
+            </p>
           </div>
         )}
 
@@ -737,11 +793,11 @@ export default function ScanToPdfPage() {
               <strong>
                 {pages.length} page{pages.length === 1 ? "" : "s"}
               </strong>
-              <span>Tap a page to adjust edges · reorder or delete · keep scanning until Save PDF</span>
+              <span>Compact strip · tap to adjust edges · camera stays above</span>
             </div>
-            <ol className="scan-page-strip">
+            <ol className="scan-page-strip is-compact">
               {pages.map((page, index) => (
-                <li key={page.id} className="scan-page-card">
+                <li key={page.id} className="scan-page-card is-compact">
                   <button
                     type="button"
                     className="scan-page-thumb"
@@ -751,23 +807,21 @@ export default function ScanToPdfPage() {
                     <img src={page.preview} alt={`Page ${index + 1}`} />
                     <span className="scan-page-num">{index + 1}</span>
                   </button>
-                  <div className="scan-page-actions">
-                    <button type="button" className="text-button" onClick={() => movePage(page.id, -1)} disabled={index === 0}>
+                  <div className="scan-page-actions is-compact">
+                    <button type="button" className="text-button" onClick={() => movePage(page.id, -1)} disabled={index === 0} aria-label="Move left">
                       ←
                     </button>
-                    <button type="button" className="text-button" onClick={() => void openAdjust(page)}>
-                      Edges
+                    <button type="button" className="text-button" onClick={() => removePage(page.id)} aria-label={`Delete page ${index + 1}`}>
+                      ✕
                     </button>
                     <button
                       type="button"
                       className="text-button"
                       onClick={() => movePage(page.id, 1)}
                       disabled={index === pages.length - 1}
+                      aria-label="Move right"
                     >
                       →
-                    </button>
-                    <button type="button" className="text-button" onClick={() => removePage(page.id)}>
-                      Delete
                     </button>
                   </div>
                 </li>
@@ -798,7 +852,7 @@ export default function ScanToPdfPage() {
           </>
         ) : (
           <p className="organise-tip scan-empty-tip">
-            No pages yet. Start scanning or add photos — edges auto-crop on capture.
+            Point the camera at a page — yellow/green outline shows edges. Tap the shutter (or Auto Scan).
           </p>
         )}
 

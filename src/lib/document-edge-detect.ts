@@ -275,7 +275,7 @@ function bestQuadFromContour(contour: Point[], w: number, h: number): { corners:
   const area = polygonArea(corners);
   const frameArea = w * h;
   const areaRatio = area / frameArea;
-  if (areaRatio < 0.12 || areaRatio > 0.98) return null;
+  if (areaRatio < 0.08 || areaRatio > 0.985) return null;
 
   // Rectangularity: compare side ratios and angles loosely.
   const [tl, tr, br, bl] = corners;
@@ -286,21 +286,103 @@ function bestQuadFromContour(contour: Point[], w: number, h: number): { corners:
   if (top < 8 || bottom < 8 || left < 8 || right < 8) return null;
   const widthRatio = Math.min(top, bottom) / Math.max(top, bottom);
   const heightRatio = Math.min(left, right) / Math.max(left, right);
-  if (widthRatio < 0.45 || heightRatio < 0.45) return null;
+  if (widthRatio < 0.38 || heightRatio < 0.38) return null;
 
   const score = areaRatio * 0.55 + widthRatio * 0.225 + heightRatio * 0.225;
   return { corners, score };
 }
 
 function defaultGuideQuad(w: number, h: number): Quad {
-  const ix = w * 0.08;
-  const iy = h * 0.1;
+  // Slightly tighter inset so failed edge-detect still crops desk margins.
+  const ix = w * 0.1;
+  const iy = h * 0.12;
   return [
     { x: ix, y: iy },
     { x: w - ix, y: iy },
     { x: w - ix, y: h - iy },
     { x: ix, y: h - iy },
   ];
+}
+
+
+/**
+ * Fallback when Sobel contours miss: find a bright document-like region vs dark desk.
+ * Returns a padded axis-aligned quad in source coordinates.
+ */
+export function detectBrightDocumentQuad(
+  source: CanvasImageSource,
+  sourceWidth: number,
+  sourceHeight: number,
+): DetectResult | null {
+  if (!sourceWidth || !sourceHeight) return null;
+  const scale = Math.min(1, WORK_MAX / Math.max(sourceWidth, sourceHeight));
+  const w = Math.max(32, Math.round(sourceWidth * scale));
+  const h = Math.max(32, Math.round(sourceHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.drawImage(source, 0, 0, w, h);
+  const { data } = ctx.getImageData(0, 0, w, h);
+
+  // Border sample = desk colour estimate.
+  const border: number[] = [];
+  const pushLuma = (x: number, y: number) => {
+    const i = (y * w + x) * 4;
+    border.push(data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+  };
+  for (let x = 0; x < w; x += 2) {
+    pushLuma(x, 0);
+    pushLuma(x, h - 1);
+  }
+  for (let y = 0; y < h; y += 2) {
+    pushLuma(0, y);
+    pushLuma(w - 1, y);
+  }
+  border.sort((a, b) => a - b);
+  const desk = border[Math.floor(border.length * 0.5)] ?? 40;
+  const brightCut = Math.min(210, desk + 28);
+
+  let minX = w;
+  let minY = h;
+  let maxX = 0;
+  let maxY = 0;
+  let hits = 0;
+  for (let y = 1; y < h - 1; y += 1) {
+    for (let x = 1; x < w - 1; x += 1) {
+      const i = (y * w + x) * 4;
+      const luma = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+      if (luma < brightCut) continue;
+      hits += 1;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+  }
+  const areaRatio = hits / (w * h);
+  if (hits < w * h * 0.04 || maxX <= minX || maxY <= minY) return null;
+  const bw = maxX - minX;
+  const bh = maxY - minY;
+  if (bw * bh < w * h * 0.1 || bw * bh > w * h * 0.96) return null;
+
+  const padX = Math.max(2, Math.round(bw * 0.03));
+  const padY = Math.max(2, Math.round(bh * 0.03));
+  minX = clamp(minX - padX, 0, w - 1);
+  minY = clamp(minY - padY, 0, h - 1);
+  maxX = clamp(maxX + padX, 0, w - 1);
+  maxY = clamp(maxY + padY, 0, h - 1);
+
+  const inv = 1 / scale;
+  const corners: Quad = [
+    { x: minX * inv, y: minY * inv },
+    { x: maxX * inv, y: minY * inv },
+    { x: maxX * inv, y: maxY * inv },
+    { x: minX * inv, y: maxY * inv },
+  ];
+  const confidence = clamp(0.28 + areaRatio * 0.45, 0.28, 0.72);
+  return { corners, confidence, workWidth: w, workHeight: h };
 }
 
 /**
@@ -344,7 +426,7 @@ export function detectDocumentQuad(
     }
   }
   const mean = count ? sum / count : 0;
-  const thresh = Math.max(28, mean * 1.35);
+  const thresh = Math.max(18, mean * 1.18);
 
   let bin = new Uint8Array(w * h);
   for (let i = 0; i < mag.length; i += 1) bin[i] = mag[i] >= thresh ? 1 : 0;
@@ -364,7 +446,7 @@ export function detectDocumentQuad(
       if (!bin[i] || label[i]) continue;
       const id = nextId++;
       const region = floodFillMark(bin, w, h, x, y, label, id);
-      if (region.count < (w * h) * 0.01) continue;
+      if (region.count < (w * h) * 0.006) continue;
 
       // Find a border pixel of this component to start contour.
       let sx = -1;
@@ -399,25 +481,28 @@ export function detectDocumentQuad(
   }
 
   const inv = 1 / scale;
-  if (!best) {
-    // Soft fallback guide — low confidence so auto-scan won't fire.
-    const guide = defaultGuideQuad(sourceWidth, sourceHeight);
-    return {
-      corners: guide,
-      confidence: 0.15,
-      workWidth: w,
-      workHeight: h,
-    };
+  if (best) {
+    const corners: Quad = best.corners.map((p) => ({
+      x: clamp(p.x * inv, 0, sourceWidth - 1),
+      y: clamp(p.y * inv, 0, sourceHeight - 1),
+    })) as Quad;
+    const confidence = clamp(best.score, 0, 1);
+    if (confidence >= 0.34) {
+      return { corners, confidence, workWidth: w, workHeight: h };
+    }
+    const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
+    if (bright && bright.confidence > confidence) return bright;
+    return { corners, confidence, workWidth: w, workHeight: h };
   }
 
-  const corners: Quad = best.corners.map((p) => ({
-    x: clamp(p.x * inv, 0, sourceWidth - 1),
-    y: clamp(p.y * inv, 0, sourceHeight - 1),
-  })) as Quad;
+  const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
+  if (bright) return bright;
 
+  // Soft fallback guide — low confidence so auto-scan won't fire.
+  const guide = defaultGuideQuad(sourceWidth, sourceHeight);
   return {
-    corners,
-    confidence: clamp(best.score, 0, 1),
+    corners: guide,
+    confidence: 0.18,
     workWidth: w,
     workHeight: h,
   };

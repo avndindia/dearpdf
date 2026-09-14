@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import MaterialIcon from "@/components/MaterialIcon";
+import { dismissPdfToolCompletion } from "@/lib/browser-download";
 import {
   chooseOpenFileTool,
   clearOpenFilePending,
@@ -44,6 +45,10 @@ export default function OpenFilePicker() {
   const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => subscribeOpenFilePending(setPending), []);
+
+  useEffect(() => {
+    if (pending) dismissPdfToolCompletion();
+  }, [pending]);
 
   useEffect(() => {
     if (!pending) return;

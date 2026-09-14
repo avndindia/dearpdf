@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import MaterialIcon from "@/components/MaterialIcon";
+import { dismissPdfToolCompletion } from "@/lib/browser-download";
 import { openFileIntoDearPdf } from "@/lib/open-file-handoff";
 
 const NAV = [
@@ -30,7 +31,7 @@ const NAV = [
 
 function LogoLink() {
   return (
-    <Link href="/" className="flex select-none items-center py-1 transition-transform hover:scale-[1.02]">
+    <Link href="/" onClick={() => dismissPdfToolCompletion()} className="flex select-none items-center py-1 transition-transform hover:scale-[1.02]">
       <Image
         src="/logo-dearpdf-lockup.png"
         alt="DearPDF.in"
@@ -78,6 +79,7 @@ export default function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => dismissPdfToolCompletion()}
                 aria-current={active ? "page" : undefined}
                 className={
                   active
@@ -101,7 +103,10 @@ export default function SiteHeader() {
           </div>
           <button
             type="button"
-            onClick={() => inputRef.current?.click()}
+            onClick={() => {
+              dismissPdfToolCompletion();
+              inputRef.current?.click();
+            }}
             className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-container to-ruby-deep px-3 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:from-crimson-vivid hover:to-primary-container hover:shadow-[0_4px_14px_rgba(225,29,72,0.45)] focus:outline-none focus:ring-2 focus:ring-primary-container/40 sm:px-4"
           >
             <MaterialIcon name="upload_file" className="text-[18px]" />
