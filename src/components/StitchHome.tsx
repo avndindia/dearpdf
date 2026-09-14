@@ -206,7 +206,7 @@ export default function StitchHome() {
               </p>
 
               <div className="flex w-full flex-col items-center justify-center gap-2 border-t border-slate-200/70 pt-4 sm:flex-row sm:items-center sm:gap-2 dark:border-slate-800/80">
-                <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-secondary dark:mr-1 dark:text-slate-400">
+                <span className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-secondary dark:text-slate-400">
                   Fast Actions:
                 </span>
                 <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:justify-center">
@@ -310,7 +310,7 @@ export default function StitchHome() {
           ref={toolsRef}
           className="sticky top-16 z-40 mb-10 bg-canvas-bg/90 py-3 backdrop-blur-md scroll-mt-16 sm:top-20 sm:scroll-mt-20"
         >
-          <div className="flex flex-col items-center justify-between gap-3 md:flex-row dark:gap-4">
+          <div className="flex flex-col items-center justify-between gap-3 md:flex-row">
             <div className="relative flex w-full items-center md:w-80">
               <MaterialIcon
                 name="search"
@@ -322,13 +322,13 @@ export default function StitchHome() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress...)`}
-                className="w-full rounded-xl border border-transparent bg-slate-100 py-2 pl-10 pr-9 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-sky-50/50 focus:ring-1 focus:ring-primary-container dark:rounded-lg dark:border-slate-800/90 dark:bg-[#121827] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-sky-500 dark:focus:bg-[#121827] dark:focus:ring-0"
+                className="w-full rounded-xl border border-transparent bg-slate-100 py-2 pl-10 pr-9 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-sky-50/50 focus:ring-1 focus:ring-primary-container dark:border-slate-800/90 dark:bg-[#121827] dark:text-slate-200 dark:placeholder:text-slate-500 dark:focus:border-sky-500 dark:focus:bg-[#121827] dark:focus:ring-1 dark:focus:ring-sky-500/40"
               />
               <kbd className="absolute right-3 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[12px] text-slate-400 shadow-sm dark:border-slate-700/80 dark:bg-slate-800/50 dark:text-slate-500 dark:shadow-none">
                 /
               </kbd>
             </div>
-            <div className="no-scrollbar flex min-w-0 w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1 text-xs font-medium md:w-auto dark:bg-transparent dark:p-0">
+            <div className="no-scrollbar flex min-w-0 w-full max-w-full items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1 text-xs font-medium md:w-auto dark:bg-[#121827]">
               {(
                 [
                   { id: "all" as const, label: "All", count: STITCH_TOOL_COUNT },
@@ -347,16 +347,16 @@ export default function StitchHome() {
                     onClick={() => setCategory(btn.id)}
                     className={
                       active
-                        ? "flex items-center gap-2 whitespace-nowrap rounded-lg bg-tech-black px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all dark:rounded-full dark:border dark:border-sky-500 dark:bg-slate-900 dark:px-3.5 dark:text-sky-400 dark:shadow-none"
-                        : "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:text-on-surface dark:rounded-full dark:border dark:border-slate-800/80 dark:bg-[#121827] dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-200"
+                        ? "flex items-center gap-2 whitespace-nowrap rounded-lg bg-tech-black px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all dark:border dark:border-sky-500 dark:bg-slate-900 dark:text-sky-400 dark:shadow-none"
+                        : "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:text-on-surface dark:border dark:border-slate-800/80 dark:bg-transparent dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-slate-200"
                     }
                   >
                     <span>{btn.label}</span>
                     <span
                       className={
                         active
-                          ? "rounded-full bg-primary-container px-1.5 font-mono text-[12px] font-bold text-white dark:bg-sky-500/20 dark:font-bold dark:text-[10px] dark:text-sky-300"
-                          : "rounded-full border border-slate-200 bg-white px-1.5 font-mono text-[12px] text-slate-500 dark:border-0 dark:bg-transparent dark:text-[10px] dark:text-slate-500"
+                          ? "rounded-full bg-primary-container px-1.5 font-mono text-[12px] font-bold text-white dark:bg-sky-500/20 dark:text-sky-300"
+                          : "rounded-full border border-slate-200 bg-white px-1.5 font-mono text-[12px] text-slate-500 dark:border-slate-700 dark:bg-transparent dark:text-slate-500"
                       }
                     >
                       {btn.count}
@@ -380,16 +380,16 @@ export default function StitchHome() {
                 <div className="flex items-center justify-between pb-1">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-primary-container dark:border-transparent dark:bg-transparent dark:text-sky-400">
-                      <MaterialIcon name={group.icon} className="text-[18px] dark:text-xl" />
+                      <MaterialIcon name={group.icon} className="text-[18px]" />
                     </div>
-                    <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl dark:text-lg dark:text-white">
+                    <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl dark:text-white">
                       {group.title}
                     </h2>
                     <span className="hidden text-[13px] text-slate-500 sm:inline">
                       — {group.blurb}
                     </span>
                   </div>
-                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] uppercase text-secondary dark:border-0 dark:bg-transparent dark:px-0 dark:font-semibold dark:tracking-wider dark:text-slate-400">
+                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] uppercase text-secondary dark:border-slate-700 dark:bg-transparent dark:text-slate-400">
                     {group.tools.length} utilit{group.tools.length === 1 ? "y" : "ies"}
                   </span>
                 </div>
@@ -398,7 +398,7 @@ export default function StitchHome() {
                     <Link
                       key={tool.id}
                       href={tool.href}
-                      className="group stitch-card-hover flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl sm:p-5 dark:rounded-xl dark:border-slate-800/90 dark:bg-[#151c2d] dark:shadow-none dark:hover:border-sky-400 dark:hover:bg-[#151c2d]"
+                      className="group stitch-card-hover flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl sm:p-5 dark:border-slate-800/90 dark:bg-[#151c2d] dark:shadow-none dark:hover:border-sky-400 dark:hover:bg-[#151c2d]"
                     >
                       <div>
                         <div className="mb-3 flex items-center justify-between sm:mb-4">
@@ -419,18 +419,18 @@ export default function StitchHome() {
                             {tool.badge}
                           </span>
                         </div>
-                        <h3 className="mb-1 text-[15px] font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary-container sm:text-base dark:text-sm dark:text-white dark:group-hover:text-sky-400">
+                        <h3 className="mb-1 text-[15px] font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary-container sm:text-base dark:text-white dark:group-hover:text-sky-400">
                           {tool.name}
                         </h3>
-                        <p className="line-clamp-2 text-[12px] text-slate-500 sm:text-[13px] dark:mt-1 dark:text-xs dark:leading-relaxed dark:text-slate-400">
+                        <p className="line-clamp-2 text-[12px] text-slate-500 sm:text-[13px] dark:text-slate-400">
                           {tool.description}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center justify-between border-t border-transparent pt-4 font-mono text-[12px] text-secondary dark:mt-4 dark:border-slate-800/60 dark:pt-2.5 dark:font-sans dark:text-xs dark:text-slate-400">
+                      <div className="mt-2 flex items-center justify-between border-t border-transparent pt-4 font-mono text-[12px] text-secondary dark:border-slate-800/60 dark:text-slate-400">
                         <span>{tool.footer}</span>
                         <MaterialIcon
                           name="arrow_forward"
-                          className="text-[16px] text-primary-container transition-transform group-hover:translate-x-1 dark:text-base dark:text-slate-500 dark:group-hover:text-sky-400"
+                          className="text-[16px] text-primary-container transition-transform group-hover:translate-x-1 dark:text-slate-500 dark:group-hover:text-sky-400"
                         />
                       </div>
                     </Link>

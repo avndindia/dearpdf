@@ -8,6 +8,10 @@
   --paper: #f7f5f0;
   --wash: #fbfaf7;
   --soft-wash: #fbfaf7;
+  --surface-card: #ffffff;
+  --sky-tint: #eff6ff;
+  --sky-tint-strong: #dbeafe;
+  --warn-tint: #fffbeb;
   --site-shell-width: 1100px;
   color: var(--ink);
   margin-left: auto;
@@ -42,7 +46,7 @@
 
 .primary-button, .secondary-button { border: 1.5px solid var(--ink); background: var(--ink); color: #fff; padding: 10px 16px; font-size: 14px; font-weight: 700; }
 
-.secondary-button { background: #fff; color: var(--ink); }
+.secondary-button { background: var(--surface-card, #fff); color: var(--ink); }
 
 .signature-block { width: 260px; margin: 52px 0 26px auto; text-align: center; }
 
@@ -56,11 +60,11 @@
 
 .rich-editor.rich-editor-discuss { overflow: visible; }
 
-.rich-editor-topbar { display: flex; align-items: center; justify-content: space-between; min-height: 38px; border-bottom: 1px solid var(--line); background: #fff; }
+.rich-editor-topbar { display: flex; align-items: center; justify-content: space-between; min-height: 38px; border-bottom: 1px solid var(--line); background: var(--surface-card, #fff); }
 
 .rich-editor-tabs { display: flex; align-self: stretch; }
 
-.rich-editor-tabs button, .rich-editor-expand { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-right: 1px solid var(--line); background: #fff; padding: 0 12px; color: var(--muted); font: inherit; font-size: 10px; }
+.rich-editor-tabs button, .rich-editor-expand { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-right: 1px solid var(--line); background: var(--surface-card, #fff); padding: 0 12px; color: var(--muted); font: inherit; font-size: 10px; }
 
 .rich-editor-tabs svg, .rich-editor-expand svg { width: 15px; height: 15px; stroke-width: 1.8; }
 
@@ -74,11 +78,11 @@
 
 .rich-editor-toolbar > button svg, .rich-editor-table-picker > button svg { width: 16px; height: 16px; stroke-width: 1.8; }
 
-.rich-editor-toolbar button:hover, .rich-editor-toolbar button:focus-visible, .rich-editor-toolbar button.active { background: #fff; box-shadow: inset 0 -2px 0 var(--ink); }
+.rich-editor-toolbar button:hover, .rich-editor-toolbar button:focus-visible, .rich-editor-toolbar button.active { background: var(--surface-card, #fff); box-shadow: inset 0 -2px 0 var(--ink); }
 
 .rich-editor-format { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 
-.rich-editor-format select { min-width: 122px; min-height: 36px; border: 0; background: #fff; padding: 0 28px 0 9px; color: var(--ink); font: inherit; font-size: 10px; }
+.rich-editor-format select { min-width: 122px; min-height: 36px; border: 0; background: var(--surface-card, #fff); padding: 0 28px 0 9px; color: var(--ink); font: inherit; font-size: 10px; }
 
 .rich-editor-table-picker { position: relative; }
 
@@ -118,7 +122,7 @@
 
 .rich-editor-content th, .rich-editor-content td { min-width: 100px; }
 
-.rich-editor-html { display: block; width: 100%; resize: vertical; border: 0; background: #fff; color: var(--ink); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.rich-editor-html { display: block; width: 100%; resize: vertical; border: 0; background: var(--surface-card, #fff); color: var(--ink); font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
 .rich-editor-status { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); background: var(--wash); padding: 7px 10px; color: var(--muted); font-size: 9px; }
 
@@ -221,7 +225,7 @@
   min-height: 32px;
   border: 1px solid #d5d5d5;
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: #17324d;
   padding: 0 8px;
 }
@@ -270,7 +274,7 @@
 
 .pdf-preview-page {
   overflow: hidden;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 4px rgb(0 0 0 / 28%);
 }
 
@@ -334,11 +338,11 @@
 .available-grid.home-title-grid,
 .pdf-tool-grid.home-title-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
 
-.pdf-tool-card { display: flex; min-height: 210px; flex-direction: column; border: 1px solid var(--ink); background: #fff; padding: 20px; color: inherit; text-decoration: none; transition: box-shadow .16s ease, transform .16s ease; }
+.pdf-tool-card { display: flex; min-height: 210px; flex-direction: column; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 20px; color: inherit; text-decoration: none; transition: box-shadow .16s ease, transform .16s ease; }
 
-.pdf-tool-card.available { background: #fff; color: var(--ink); }
+.pdf-tool-card.available { background: var(--surface-card, #fff); color: var(--ink); }
 
-.pdf-tool-card.available:hover { background: #fff; box-shadow: 5px 5px 0 var(--ink); transform: translate(-2px, -2px); }
+.pdf-tool-card.available:hover { background: var(--surface-card, #fff); box-shadow: 5px 5px 0 var(--ink); transform: translate(-2px, -2px); }
 
 .pdf-tool-card.available:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
@@ -414,7 +418,7 @@
 
 .pdf-directory-navigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--ink); padding-bottom: 12px; }
 
-.pdf-directory-navigation button { border: 1px solid var(--ink); background: #fff; padding: 10px 14px; color: var(--ink); font: inherit; font-size: 10px; font-weight: 750; }
+.pdf-directory-navigation button { border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 10px 14px; color: var(--ink); font: inherit; font-size: 10px; font-weight: 750; }
 
 .pdf-directory-navigation button:hover { background: var(--ink); color: #fff; }
 
@@ -600,7 +604,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--surface-card, #fff);
   object-fit: contain;
 }
 
@@ -697,7 +701,7 @@
 .pdf-work-message.reading::before,
 .pdf-work-message.working::before { width: 12px; height: 12px; flex: 0 0 12px; border: 1.5px solid #d2d2d2; border-top-color: #777; border-radius: 50%; content: ""; animation: pdf-subtle-spinner .9s linear infinite; }
 
-.pdf-work-message.error { background: #fff; border-left: 3px solid var(--ink); color: var(--ink); }
+.pdf-work-message.error { background: var(--surface-card, #fff); border-left: 3px solid var(--ink); color: var(--ink); }
 
 .merge-action-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 18px; }
 
@@ -822,19 +826,19 @@
 
 .split-range-field { display: grid; gap: 5px; margin-top: 26px; font-size: 10px; font-weight: 700; }
 
-.split-range-field input { width: 100%; min-height: 44px; border: 1px solid var(--ink); background: #fff; padding: 9px 11px; font-size: 14px; }
+.split-range-field input { width: 100%; min-height: 44px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 9px 11px; font-size: 14px; }
 
 .split-range-field input[aria-invalid="true"] { border-width: 2px; }
 
 .split-range-field small { color: var(--muted); font-size: 9px; font-weight: 400; }
 
-.split-parts-stepper { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: stretch; border: 1px solid var(--ink); background: #fff; }
+.split-parts-stepper { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: stretch; border: 1px solid var(--ink); background: var(--surface-card, #fff); }
 
 .split-parts-stepper input { min-width: 0; width: 100%; min-height: 44px; border: 0; border-left: 1px solid var(--ink); border-right: 1px solid var(--ink); background: transparent; padding: 9px 11px; text-align: center; font-size: 14px; }
 
 .split-parts-stepper input[aria-invalid="true"] { outline: 2px solid var(--ink); outline-offset: -2px; }
 
-.split-parts-stepper button { min-width: 0; min-height: 44px; border: 0; background: #fff; color: var(--ink); padding: 0; font-size: 18px; font-weight: 700; line-height: 1; cursor: pointer; }
+.split-parts-stepper button { min-width: 0; min-height: 44px; border: 0; background: var(--surface-card, #fff); color: var(--ink); padding: 0; font-size: 18px; font-weight: 700; line-height: 1; cursor: pointer; }
 
 .split-parts-stepper button:hover:not(:disabled) { background: var(--wash); }
 
@@ -875,7 +879,7 @@
 
 .organise-page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin: 0; padding: 16px; list-style: none; }
 
-.organise-page-grid > li { display: flex; min-width: 0; flex-direction: column; border: 1px solid var(--ink); background: #fff; cursor: grab; }
+.organise-page-grid > li { display: flex; min-width: 0; flex-direction: column; border: 1px solid var(--ink); background: var(--surface-card, #fff); cursor: grab; }
 
 .organise-page-grid > li.dragging { opacity: .4; }
 
@@ -891,7 +895,7 @@
 
 .organise-page-actions { display: grid; grid-template-columns: repeat(4, 32px) minmax(56px, 1fr); margin-top: auto; border-top: 1px solid var(--line); }
 
-.organise-page-actions button { min-width: 0; min-height: 34px; border: 0; border-right: 1px solid var(--line); background: #fff; padding: 0; font-size: 11px; }
+.organise-page-actions button { min-width: 0; min-height: 34px; border: 0; border-right: 1px solid var(--line); background: var(--surface-card, #fff); padding: 0; font-size: 11px; }
 
 .organise-page-actions button:last-child { border-right: 0; font-size: 8px; }
 
@@ -927,9 +931,9 @@
 
 .image-order-toolbar label { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
 
-.image-order-toolbar select { min-height: 36px; min-width: 170px; border: 1px solid var(--ink); background: #fff; padding: 7px 28px 7px 9px; }
+.image-order-toolbar select { min-height: 36px; min-width: 170px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 7px 28px 7px 9px; }
 
-.image-order-add { min-height: 36px; border: 1px solid var(--ink); background: #fff; padding: 7px 9px; cursor: pointer; }
+.image-order-add { min-height: 36px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 7px 9px; cursor: pointer; }
 
 .image-order-add input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
@@ -939,7 +943,7 @@
 
 .image-page-preview img { display: block; max-width: 100%; max-height: 100%; transition: transform .15s ease; box-shadow: 0 1px 5px rgb(0 0 0 / 16%); }
 
-.image-page-preview > span { position: absolute; display: grid; place-items: center; border: 1px solid var(--ink); background: #fff; font-weight: 700; }
+.image-page-preview > span { position: absolute; display: grid; place-items: center; border: 1px solid var(--ink); background: var(--surface-card, #fff); font-weight: 700; }
 
 .image-preview-drag-mark { top: 7px; left: 7px; width: 34px; height: 34px; font-size: 22px; line-height: 1; }
 
@@ -955,7 +959,7 @@
 
 .images-pdf-settings > label { display: grid; gap: 5px; margin-top: 20px; font-size: 10px; font-weight: 700; }
 
-.images-pdf-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: #fff; padding: 8px; }
+.images-pdf-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 8px; }
 
 .images-pdf-settings small { color: var(--muted); font-size: 8px; font-weight: 400; }
 
@@ -963,7 +967,7 @@
 
 .image-preview-dialog { width: min(760px, 96vw); grid-template-rows: auto minmax(0, 1fr); }
 
-.image-drag-ghost { position: fixed; z-index: 2000; display: flex; max-width: 260px; max-height: 360px; flex-direction: column; overflow: hidden; border: 2px solid var(--ink); background: #fff; box-shadow: 8px 8px 0 rgb(17 17 17 / 35%); opacity: .82; pointer-events: none; transform: rotate(1.2deg); }
+.image-drag-ghost { position: fixed; z-index: 2000; display: flex; max-width: 260px; max-height: 360px; flex-direction: column; overflow: hidden; border: 2px solid var(--ink); background: var(--surface-card, #fff); box-shadow: 8px 8px 0 rgb(17 17 17 / 35%); opacity: .82; pointer-events: none; transform: rotate(1.2deg); }
 
 .image-drag-ghost > div { display: grid; min-height: 150px; flex: 1; place-items: center; overflow: hidden; background: var(--wash); padding: 10px; }
 
@@ -979,7 +983,7 @@
 
 .watermark-kind-tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); }
 
-.watermark-kind-tabs button { min-height: 38px; border: 0; border-right: 1px solid var(--ink); background: #fff; font-weight: 700; }
+.watermark-kind-tabs button { min-height: 38px; border: 0; border-right: 1px solid var(--ink); background: var(--surface-card, #fff); font-weight: 700; }
 
 .watermark-kind-tabs button:last-child { border-right: 0; }
 
@@ -987,9 +991,9 @@
 
 .watermark-settings > label, .watermark-form-row label { display: grid; min-width: 0; gap: 5px; margin-top: 16px; font-size: 10px; font-weight: 700; }
 
-.watermark-settings input:not([type="range"]):not([type="color"]), .watermark-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: #fff; padding: 8px; }
+.watermark-settings input:not([type="range"]):not([type="color"]), .watermark-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 8px; }
 
-.watermark-settings input[type="color"] { width: 100%; min-height: 40px; border: 1px solid var(--line); background: #fff; padding: 3px; }
+.watermark-settings input[type="color"] { width: 100%; min-height: 40px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 3px; }
 
 .watermark-settings small { color: var(--muted); font-size: 8px; font-weight: 400; }
 
@@ -1011,7 +1015,7 @@
 
 .watermark-preview-heading label { display: flex; align-items: center; gap: 7px; }
 
-.watermark-preview-heading select { min-height: 30px; border: 1px solid var(--line); background: #fff; padding: 4px 20px 4px 6px; }
+.watermark-preview-heading select { min-height: 30px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 4px 20px 4px 6px; }
 
 .watermark-preview-stage { display: grid; min-height: 620px; place-items: center; overflow: auto; padding: 24px; }
 
@@ -1075,7 +1079,7 @@
 
 .size-split-controls p, .size-split-result-heading p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 
-.size-split-controls > label { display: flex; align-items: stretch; border: 2px solid var(--ink); background: #fff; }
+.size-split-controls > label { display: flex; align-items: stretch; border: 2px solid var(--ink); background: var(--surface-card, #fff); }
 
 .size-split-controls input { width: 110px; min-height: 52px; border: 0; background: transparent; padding: 8px 10px; font: inherit; font-size: 18px; font-weight: 800; text-align: right; }
 
@@ -1101,7 +1105,7 @@
 
 .size-split-progress > div { display: flex; justify-content: space-between; gap: 18px; font-size: 11px; }
 
-.size-split-progress > span { display: block; height: 8px; overflow: hidden; border: 1px solid var(--ink); background: #fff; }
+.size-split-progress > span { display: block; height: 8px; overflow: hidden; border: 1px solid var(--ink); background: var(--surface-card, #fff); }
 
 .size-split-progress > span > b { display: block; height: 100%; background: var(--ink); transition: width .15s linear; }
 
@@ -1125,7 +1129,7 @@
 
 .size-split-result li > b { font-size: 12px; white-space: nowrap; }
 
-.size-split-result li > button { min-height: 34px; border: 1px solid var(--ink); background: #fff; padding: 7px 10px; font: inherit; font-size: 10px; font-weight: 800; }
+.size-split-result li > button { min-height: 34px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 7px 10px; font: inherit; font-size: 10px; font-weight: 800; }
 
 .page-workspace { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: #f7f7f4; }
 
@@ -1139,7 +1143,7 @@
 
 .page-workspace-tools { display: flex; align-items: center; gap: 7px; }
 
-.page-workspace-tools button, .page-workspace-actions button, .page-preview-heading button, .page-preview-navigation button { min-height: 30px; border: 1px solid var(--line); background: #fff; padding: 6px 9px; font-size: 8px; font-weight: 700; }
+.page-workspace-tools button, .page-workspace-actions button, .page-preview-heading button, .page-preview-navigation button { min-height: 30px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 6px 9px; font-size: 8px; font-weight: 700; }
 
 .page-workspace-tools .page-workspace-view-toggle button { border: 0; border-right: 1px solid var(--ink); }
 
@@ -1147,7 +1151,7 @@
 
 .page-workspace-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 12px; max-height: 620px; margin: 0; padding: 16px; overflow: auto; list-style: none; }
 
-.page-workspace-grid > li { display: flex; min-width: 0; flex-direction: column; border: 1px solid var(--line); background: #fff; }
+.page-workspace-grid > li { display: flex; min-width: 0; flex-direction: column; border: 1px solid var(--line); background: var(--surface-card, #fff); }
 
 .page-workspace-grid > li.selected { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
 
@@ -1165,7 +1169,7 @@
   max-height: 205px;
   min-width: 48px;
   min-height: 64px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 2px 8px #0002;
   object-fit: contain;
   transition: transform .15s ease;
@@ -1175,7 +1179,7 @@
 .page-workspace-placeholder.is-pending { color: var(--muted); font-weight: 600; }
 .page-workspace-placeholder.is-failed { color: #b91c1c; font-weight: 700; }
 
-.page-workspace-drag-mark { position: absolute; top: 7px; left: 7px; z-index: 2; display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--ink); background: #fff; color: var(--ink); padding: 0; font-size: 21px; font-weight: 700; line-height: 1; cursor: grab; touch-action: none; -webkit-touch-callout: none; }
+.page-workspace-drag-mark { position: absolute; top: 7px; left: 7px; z-index: 2; display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--ink); background: var(--surface-card, #fff); color: var(--ink); padding: 0; font-size: 21px; font-weight: 700; line-height: 1; cursor: grab; touch-action: none; -webkit-touch-callout: none; }
 
 .page-workspace-drag-mark:active { cursor: grabbing; }
 
@@ -1185,7 +1189,7 @@
 
 .page-workspace-touch-ghost strong { overflow: hidden; flex: none; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 
-.page-workspace-view-mark { position: absolute; right: 7px; bottom: 8px; display: inline-flex; min-height: 28px; align-items: center; gap: 4px; border: 1px solid var(--ink); background: #fff; padding: 4px 6px; font-size: 8px; font-weight: 700; }
+.page-workspace-view-mark { position: absolute; right: 7px; bottom: 8px; display: inline-flex; min-height: 28px; align-items: center; gap: 4px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 4px 6px; font-size: 8px; font-weight: 700; }
 
 .page-workspace-view-mark svg { width: 13px; height: 13px; stroke-width: 1.8; }
 
@@ -1227,7 +1231,7 @@
 
 .page-preview-modal { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; background: #000b; padding: 24px; }
 
-.page-preview-dialog { display: grid; width: min(900px, 96vw); max-height: 94vh; grid-template-rows: auto minmax(0, 1fr) auto; border: 2px solid var(--ink); background: #fff; box-shadow: 9px 9px 0 #0006; }
+.page-preview-dialog { display: grid; width: min(900px, 96vw); max-height: 94vh; grid-template-rows: auto minmax(0, 1fr) auto; border: 2px solid var(--ink); background: var(--surface-card, #fff); box-shadow: 9px 9px 0 #0006; }
 
 .page-preview-dialog.no-navigation { grid-template-rows: auto minmax(0, 1fr); }
 
@@ -1253,7 +1257,7 @@
 
 .pdf-editor-toolset, .pdf-editor-history { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 
-.pdf-editor-toolbar button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--line); background: #fff; padding: 7px 9px; font-size: 9px; font-weight: 700; }
+.pdf-editor-toolbar button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 7px 9px; font-size: 9px; font-weight: 700; }
 
 .pdf-editor-toolbar button.active, .pdf-editor-toolbar button:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: #fff; }
 
@@ -1283,7 +1287,7 @@
   min-width: 0;
   min-height: 34px;
   border: 1px solid var(--ink);
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 4px 8px;
   font: inherit;
   font-size: 12px;
@@ -1301,7 +1305,7 @@
 
 .pdf-editor-pages ol { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 
-.pdf-editor-pages button { display: grid; width: 100%; gap: 5px; border: 1px solid var(--line); background: #fff; padding: 6px; text-align: left; }
+.pdf-editor-pages button { display: grid; width: 100%; gap: 5px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 6px; text-align: left; }
 
 .pdf-editor-pages button.active { border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink); }
 
@@ -1339,15 +1343,15 @@
 
 .pdf-editor-annotation.image img { display: block; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
 
-.pdf-editor-move-handle { position: absolute; top: -28px; left: -1px; display: grid; width: 28px; height: 27px; place-items: center; border: 1px solid var(--ink); background: #fff; padding: 0; cursor: move; font-size: 18px; line-height: 1; touch-action: none; }
+.pdf-editor-move-handle { position: absolute; top: -28px; left: -1px; display: grid; width: 28px; height: 27px; place-items: center; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 0; cursor: move; font-size: 18px; line-height: 1; touch-action: none; }
 
-.pdf-editor-resize-handle { position: absolute; right: -6px; bottom: -6px; display: none; width: 13px; height: 13px; border: 1px solid var(--ink); background: #fff; padding: 0; cursor: nwse-resize; touch-action: none; }
+.pdf-editor-resize-handle { position: absolute; right: -6px; bottom: -6px; display: none; width: 13px; height: 13px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 0; cursor: nwse-resize; touch-action: none; }
 
 .pdf-editor-annotation.selected .pdf-editor-resize-handle { display: block; }
 
 .pdf-editor-drawing { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
-.pdf-editor-inspector { display: flex; min-width: 0; flex-direction: column; border-left: 1px solid var(--ink); background: #fff; padding: 16px; }
+.pdf-editor-inspector { display: flex; min-width: 0; flex-direction: column; border-left: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 16px; }
 
 .pdf-editor-inspector > strong { margin-top: 12px; font-size: 15px; }
 
@@ -1361,7 +1365,7 @@
 
 .pdf-editor-inspector .pdf-editor-check { display: flex; align-items: center; gap: 7px; }
 
-.pdf-editor-delete { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: 6px; margin-top: 18px; border: 1px solid var(--ink); background: #fff; padding: 7px; font-size: 9px; font-weight: 700; }
+.pdf-editor-delete { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; gap: 6px; margin-top: 18px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 7px; font-size: 9px; font-weight: 700; }
 
 .pdf-editor-delete svg { width: 15px; height: 15px; stroke-width: 1.8; }
 
@@ -1381,9 +1385,9 @@
 
 .unlock-password-field > div { display: grid; grid-template-columns: minmax(0, 1fr) 42px; }
 
-.unlock-password-field input { min-height: 42px; border: 1px solid var(--ink); background: #fff; padding: 9px 11px; font: inherit; }
+.unlock-password-field input { min-height: 42px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 9px 11px; font: inherit; }
 
-.unlock-password-field button { display: grid; place-items: center; border: 1px solid var(--ink); border-left: 0; background: #fff; }
+.unlock-password-field button { display: grid; place-items: center; border: 1px solid var(--ink); border-left: 0; background: var(--surface-card, #fff); }
 
 .unlock-password-field button:hover { background: var(--ink); color: #fff; }
 
@@ -1403,13 +1407,13 @@
 
 .pdf-images-settings > label, .pdf-images-settings .watermark-form-row label { display: grid; gap: 5px; margin-top: 16px; font-size: 10px; font-weight: 700; }
 
-.pdf-images-settings input:not([type="range"]), .pdf-images-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: #fff; padding: 8px; }
+.pdf-images-settings input:not([type="range"]), .pdf-images-settings select { width: 100%; min-height: 40px; border: 1px solid var(--line); background: var(--surface-card, #fff); padding: 8px; }
 
 .pdf-images-settings small { color: var(--muted); font-size: 8px; font-weight: 400; }
 
 .pdf-image-presets { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 18px; border: 1px solid var(--line); }
 
-.pdf-image-presets button { display: grid; gap: 3px; min-height: 58px; border: 0; border-right: 1px solid var(--line); background: #fff; padding: 8px; text-align: left; }
+.pdf-image-presets button { display: grid; gap: 3px; min-height: 58px; border: 0; border-right: 1px solid var(--line); background: var(--surface-card, #fff); padding: 8px; text-align: left; }
 
 .pdf-image-presets button:last-child { border-right: 0; }
 
@@ -1505,7 +1509,7 @@
 
 .ocr-result-actions button { border: 1px solid var(--ink); background: var(--ink); padding: 11px 13px; color: #fff; font: inherit; font-size: 9px; font-weight: 750; }
 
-.ocr-result-actions button + button { background: #fff; color: var(--ink); }
+.ocr-result-actions button + button { background: var(--surface-card, #fff); color: var(--ink); }
 
 .ocr-results .text-preview { grid-column: 1 / -1; min-width: 0; }
 
@@ -1547,7 +1551,7 @@
   word-break: break-word;
   white-space: pre-wrap;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 12px 14px;
   color: var(--ink);
   font: inherit;
@@ -1678,13 +1682,13 @@
 
 .crop-editor-heading span { color: var(--muted); font-size: 11px; }
 
-.crop-editor-heading button { min-height: 34px; border: 1px solid var(--ink); background: #fff; padding: 7px 10px; font: inherit; font-size: 11px; font-weight: 700; }
+.crop-editor-heading button { min-height: 34px; border: 1px solid var(--ink); background: var(--surface-card, #fff); padding: 7px 10px; font: inherit; font-size: 11px; font-weight: 700; }
 
 .crop-editor-layout { display: grid; grid-template-columns: 176px minmax(0, 1fr); height: min(78vh, 860px); min-height: 480px; }
 
 .crop-page-rail { height: 100%; overflow-y: auto; margin: 0; border-right: 1px solid var(--ink); padding: 10px; list-style: none; }
 
-.crop-page-rail li { margin-bottom: 10px; border: 1px solid var(--line); background: #fff; }
+.crop-page-rail li { margin-bottom: 10px; border: 1px solid var(--line); background: var(--surface-card, #fff); }
 
 .crop-page-rail li.active { border: 2px solid var(--ink); }
 
@@ -1692,7 +1696,7 @@
 
 .crop-page-preview img { display: block; max-width: 100%; max-height: 150px; box-shadow: 0 2px 7px #0002; }
 
-.crop-page-selection { display: flex; width: 100%; align-items: center; gap: 7px; border: 0; background: #fff; padding: 8px; font: inherit; font-size: 11px; font-weight: 700; text-align: left; }
+.crop-page-selection { display: flex; width: 100%; align-items: center; gap: 7px; border: 0; background: var(--surface-card, #fff); padding: 8px; font: inherit; font-size: 11px; font-weight: 700; text-align: left; }
 
 .crop-page-selection span { display: grid; width: 18px; height: 18px; place-items: center; border: 1px solid var(--ink); font-size: 11px; }
 
@@ -1724,7 +1728,7 @@
 
 .crop-frame { position: absolute; z-index: 2; border: 2px solid #111; box-shadow: 0 0 0 1px #fff; pointer-events: none; }
 
-.crop-handle { position: absolute; display: block; border: 2px solid #111; background: #fff; padding: 0; pointer-events: auto; }
+.crop-handle { position: absolute; display: block; border: 2px solid #111; background: var(--surface-card, #fff); padding: 0; pointer-events: auto; }
 
 .crop-handle-top, .crop-handle-bottom { left: 50%; width: 38px; height: 12px; transform: translateX(-50%); cursor: ns-resize; }
 
@@ -2229,7 +2233,7 @@ html[data-color-scheme="dark"] .rich-editor-source-results li > button.is-active
     width: auto;
     min-width: max-content;
     border: 1px solid #d5d8da;
-    background: #fff;
+    background: var(--surface-card, #fff);
     padding: 5px 8px;
   }
 
@@ -3504,7 +3508,7 @@ html[data-color-scheme="dark"] .rich-editor-source-results li > button.is-active
   .discuss-resource-hub .discuss-resource-grid > section {
     border: 1px solid #ddd !important;
     border-radius: 6px !important;
-    background: #fff;
+    background: var(--surface-card, #fff);
   }
   .discuss-home-desktop-grid > .discuss-resource-hub { overflow: visible; }
   .discuss-resource-hub .discuss-resource-grid { grid-template-columns: 1fr; gap: 8px; }
@@ -4769,7 +4773,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   gap: 0.4rem;
   border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   border-radius: 999px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 0.3rem 0.7rem;
   font-size: 11px;
   font-weight: 500;
@@ -4875,7 +4879,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .pdf-editor-workspace {
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
   overflow: hidden;
   margin-bottom: 1rem;
@@ -4885,7 +4889,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .organise-workspace .merge-workspace-heading,
 .stitch-tool-shell .utility-workspace .merge-workspace-heading {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  background: color-mix(in srgb, var(--wash) 80%, #fff);
+  background: color-mix(in srgb, var(--wash) 80%, var(--surface-card, #fff));
   padding: 14px 18px;
 }
 
@@ -4907,13 +4911,13 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   border: 2px dashed color-mix(in srgb, var(--accent) 45%, var(--line));
   border-radius: 12px;
   border-bottom-style: dashed;
-  background: color-mix(in srgb, #eff6ff 70%, var(--wash));
+  background: color-mix(in srgb, var(--sky-tint, #eff6ff) 70%, var(--wash));
   gap: 6px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .stitch-tool-shell .pdf-drop-zone:hover {
-  background: color-mix(in srgb, #dbeafe 55%, #fff);
+  background: color-mix(in srgb, var(--sky-tint-strong, #dbeafe) 55%, var(--surface-card, #fff));
   border-color: var(--accent);
 }
 
@@ -4964,7 +4968,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .small-button {
   border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   font-weight: 600;
 }
@@ -5010,14 +5014,14 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .merge-output-name input {
   border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .stitch-tool-shell .merge-actions,
 .stitch-tool-shell .utility-actions,
 .stitch-tool-shell .organise-actions {
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  background: color-mix(in srgb, var(--wash) 60%, #fff);
+  background: color-mix(in srgb, var(--wash) 60%, var(--surface-card, #fff));
 }
 
 /* When files loaded, keep heading compact (no giant intro) */
@@ -5058,7 +5062,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell section[class*="workspace"] {
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
   overflow: hidden;
   margin-bottom: 1rem;
@@ -5078,6 +5082,10 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   --paper: #ffffff;
   --wash: #f2f4f6;
   --soft-wash: #f7f9fb;
+  --surface-card: #ffffff;
+  --sky-tint: #eff6ff;
+  --sky-tint-strong: #dbeafe;
+  --warn-tint: #fffbeb;
   --accent: #0369a1;
   --accent-hover: #075985;
   font-family: var(--font-sans);
@@ -5118,7 +5126,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell section[class*="workspace"] {
   border: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 3px rgb(15 23 42 / 5%);
   overflow: hidden;
   margin-bottom: 1rem;
@@ -5128,7 +5136,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .organise-workspace .merge-workspace-heading,
 .stitch-tool-shell .utility-workspace .merge-workspace-heading {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, var(--wash) 70%, #fff);
+  background: color-mix(in srgb, var(--wash) 70%, var(--surface-card, #fff));
   padding: 14px 18px;
 }
 
@@ -5210,7 +5218,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   min-height: 34px;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 0.35rem 0.75rem;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -5246,7 +5254,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   margin-bottom: 0.35rem;
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
   border-radius: 10px;
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent);
   font-size: 1.25rem;
   font-weight: 600;
@@ -5257,7 +5265,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell.merge-page .pdf-file-list,
 .stitch-tool-shell .merge-page .pdf-file-list {
   border-bottom: 0;
-  background: color-mix(in srgb, var(--wash) 55%, #fff);
+  background: color-mix(in srgb, var(--wash) 55%, var(--surface-card, #fff));
   gap: 12px;
   padding: 14px;
 }
@@ -5266,7 +5274,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .pdf-file-list li {
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
 }
 
@@ -5281,7 +5289,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .merge-reorder-help {
   border-bottom: 1px solid color-mix(in srgb, var(--line) 35%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 10px 16px;
   color: var(--muted);
   font-size: 0.75rem;
@@ -5328,7 +5336,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   min-height: 32px;
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   font-size: 0.75rem;
   font-weight: 600;
@@ -5337,7 +5345,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .pdf-file-actions button:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent-hover);
 }
 
@@ -5360,7 +5368,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .merge-lazy-preview > button {
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -5370,7 +5378,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--line));
   border-radius: 10px;
-  background: #fffbeb;
+  background: var(--warn-tint, #fffbeb);
 }
 
 .stitch-tool-shell .merge-skipped p {
@@ -5391,7 +5399,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   gap: 1rem 1.25rem;
   padding: 14px 18px;
   border-top: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, var(--wash) 65%, #fff);
+  background: color-mix(in srgb, var(--wash) 65%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .merge-action-row strong,
@@ -5424,7 +5432,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   min-height: 40px;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   font-size: 0.875rem;
 }
 
@@ -5461,7 +5469,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   .stitch-tool-shell.has-file .organise-action-row,
   .stitch-tool-shell.has-file .compression-action-row {
     border-top: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
-    background: color-mix(in srgb, #fff 92%, var(--wash));
+    background: color-mix(in srgb, var(--surface-card, #fff) 92%, var(--wash));
     box-shadow: 0 -4px 16px rgb(15 23 42 / 6%);
     backdrop-filter: blur(8px);
   }
@@ -5482,7 +5490,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 14px 18px;
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, var(--wash) 50%, #fff);
+  background: color-mix(in srgb, var(--wash) 50%, var(--surface-card, #fff));
   box-shadow: none;
 }
 
@@ -5491,7 +5499,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   height: 52px;
   border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
   border-radius: 8px;
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent);
   font-size: 0.625rem;
   font-weight: 700;
@@ -5523,7 +5531,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .selected-document-card > button {
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   padding: 0.4rem 0.75rem;
   font: inherit;
@@ -5541,7 +5549,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .compress-page .selected-document-card > button,
 .stitch-tool-shell.compress-page .selected-document-card > button {
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   font-size: 0.8125rem;
 }
@@ -5562,7 +5570,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   align-content: center;
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 12px 14px;
   text-align: left;
   cursor: pointer;
@@ -5585,7 +5593,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .compression-levels > button.active,
 .stitch-tool-shell .compression-levels > button[aria-pressed="true"] {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
@@ -5610,7 +5618,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   align-items: center;
 }
 
@@ -5633,7 +5641,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--wash) 40%, #fff);
+  background: color-mix(in srgb, var(--wash) 40%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .compression-size-heading {
@@ -5654,7 +5662,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   gap: 6px;
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 4px 8px;
 }
 
@@ -5693,7 +5701,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .stitch-tool-shell .compression-progress-track,
@@ -5723,7 +5731,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   margin: 0;
   padding: 16px 18px;
   border-top: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, #eff6ff 40%, #fff);
+  background: color-mix(in srgb, var(--sky-tint, #eff6ff) 40%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .compression-keep-note {
@@ -5745,14 +5753,14 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .size-split-method b {
   border-color: color-mix(in srgb, var(--line) 50%, transparent);
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent);
 }
 
 .stitch-tool-shell .size-split-result li > button {
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   font-weight: 600;
 }
 
@@ -5770,7 +5778,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--wash) 35%, #fff);
+  background: color-mix(in srgb, var(--wash) 35%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .utility-fieldset legend,
@@ -5825,7 +5833,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   min-height: 40px;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 8px 10px;
   font: inherit;
   font-size: 0.875rem;
@@ -5843,7 +5851,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   border: 0;
   border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--ink);
   font-size: 0.8125rem;
   line-height: 1.5;
@@ -5859,7 +5867,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .unlock-password-field button {
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .stitch-tool-shell .unlock-password-field > div {
@@ -5891,13 +5899,13 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   border: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
   border-radius: 10px;
   border-right: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   cursor: pointer;
 }
 
 .stitch-tool-shell .unlock-quality label.active {
   border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
 }
 
 .stitch-tool-shell .unlock-quality strong {
@@ -5916,7 +5924,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 12px 14px;
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .stitch-tool-shell .page-number-preview {
@@ -5948,7 +5956,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-workspace {
   border-top: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, var(--wash) 70%, #fff);
+  background: color-mix(in srgb, var(--wash) 70%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .page-workspace-toolbar {
@@ -5972,7 +5980,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-preview-navigation button {
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -5981,7 +5989,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 10px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
 }
 
@@ -5994,11 +6002,11 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-workspace-view-mark {
   border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .stitch-tool-shell .page-workspace-actions button:hover:not(:disabled) {
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent-hover);
 }
 
@@ -6051,7 +6059,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 .stitch-tool-shell .pdf-image-presets button.active {
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent-hover);
 }
 
@@ -6061,7 +6069,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .pdf-images-result {
   border-top: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  background: color-mix(in srgb, var(--wash) 60%, #fff);
+  background: color-mix(in srgb, var(--wash) 60%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .pdf-editor-workspace,
@@ -6072,7 +6080,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 .stitch-tool-shell .pdf-editor-toolbar {
-  background: color-mix(in srgb, var(--wash) 70%, #fff);
+  background: color-mix(in srgb, var(--wash) 70%, var(--surface-card, #fff));
 }
 
 .stitch-tool-shell .pdf-editor-toolbar button {
@@ -6083,7 +6091,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .pdf-editor-toolbar button.active,
 .stitch-tool-shell .pdf-editor-toolbar button:hover:not(:disabled) {
   border-color: var(--accent);
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--accent-hover);
 }
 
@@ -6119,7 +6127,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 .stitch-tool-shell .ocr-mode-grid label.active {
-  background: #eff6ff;
+  background: var(--sky-tint, #eff6ff);
   color: var(--ink);
 }
 
@@ -6143,7 +6151,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .ocr-result-actions button + button {
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
 }
 
@@ -6182,7 +6190,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 10px 14px;
   border: 1px solid color-mix(in srgb, #f59e0b 30%, var(--line));
   border-radius: 10px;
-  background: #fffbeb;
+  background: var(--warn-tint, #fffbeb);
   font-size: 0.8125rem;
   color: var(--ink);
   box-shadow: none;
@@ -6192,7 +6200,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .small-button {
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   font-weight: 600;
 }
@@ -6227,7 +6235,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   min-height: 40px;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   color: var(--ink);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -6283,7 +6291,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .pdf-suite-result {
   border: 1px solid #e2e8f0 !important;
   border-radius: 16px !important;
-  background: #ffffff !important;
+  background: var(--surface-card, #fff) !important;
   color: #0b1c30 !important;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14) !important;
   padding: 16px 18px !important;
@@ -6330,12 +6338,12 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .pdf-suite-tool-choices {
   border: 1px solid #e2e8f0 !important;
   border-radius: 12px !important;
-  background: #fff !important;
+  background: var(--surface-card, #fff) !important;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14) !important;
 }
 .pdf-suite-tool-choices button {
   border-radius: 8px !important;
-  background: #fff !important;
+  background: var(--surface-card, #fff) !important;
 }
 .pdf-suite-tool-choices button:hover:not(:disabled) {
   background: #f0f9ff !important;
@@ -6393,7 +6401,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 10px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .compression-saving-status {
   margin: 0;
@@ -6469,7 +6477,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer;
 }
 .scan-mode-btn.is-active {
-  background: #fff; color: var(--ink);
+  background: var(--surface-card, #fff); color: var(--ink);
   box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
 .scan-autoscan-btn.is-active {
@@ -6479,11 +6487,11 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .scan-range-toolbar { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
 .scan-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
 .scan-toggle select {
-  border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; background: #fff;
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; background: var(--surface-card, #fff);
 }
 .scan-start-panel {
   display: grid; gap: 12px; justify-items: stretch;
-  padding: 28px 20px; border: 1.5px dashed var(--line); border-radius: 14px; background: #fff;
+  padding: 28px 20px; border: 1.5px dashed var(--line); border-radius: 14px; background: var(--surface-card, #fff);
 }
 .scan-primary-cta { width: 100%; min-height: 52px; font-size: 17px; }
 .scan-camera-stage { display: grid; gap: 14px; }
@@ -6542,7 +6550,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .scan-shutter-row .secondary-button:last-child { justify-self: stretch; }
 .scan-shutter {
   width: 74px; height: 74px; border-radius: 50%;
-  border: 4px solid var(--ink); background: #fff;
+  border: 4px solid var(--ink); background: var(--surface-card, #fff);
   box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--ink);
   cursor: pointer; justify-self: center;
 }
@@ -6557,7 +6565,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 .scan-page-strip.is-compact { gap: 8px; padding-bottom: 4px; }
 .scan-page-card {
-  flex: 0 0 132px; border: 1px solid var(--line); background: #fff; border-radius: 10px;
+  flex: 0 0 132px; border: 1px solid var(--line); background: var(--surface-card, #fff); border-radius: 10px;
   padding: 8px; display: grid; gap: 8px;
 }
 .scan-page-card.is-compact {
@@ -6729,7 +6737,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   align-self: center;
   border: 1px solid #bbb;
   border-radius: 99px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .page-number-position button.top-left { justify-self: start; align-self: start; }
 .page-number-position button.top-center { align-self: start; }
@@ -6881,7 +6889,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-number-weight button {
   border-radius: 8px;
   border-color: color-mix(in srgb, var(--line) 60%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   min-height: 36px;
   padding: 8px 10px;
   font-size: 12px;
@@ -6890,7 +6898,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-number-formats button.active,
 .stitch-tool-shell .page-number-weight button.active {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, #fff);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-card, #fff));
   color: var(--accent-hover);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
 }
@@ -6907,7 +6915,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .page-number-pair input[type="number"] {
   border-radius: 8px;
   border-color: color-mix(in srgb, var(--line) 60%, transparent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   min-height: 40px;
 }
 .stitch-tool-shell .page-numbers-panel > section > span,
@@ -6933,7 +6941,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .stitch-tool-shell .tool-options-grid > label {
   display: grid;
@@ -6967,7 +6975,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .tool-options-grid select:focus {
   outline: none;
   border-color: var(--accent);
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .stitch-tool-shell .tool-layout-pills { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -7000,7 +7008,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   margin: 0 auto;
   border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-card, #fff);
   box-shadow: 0 10px 28px rgb(15 23 42 / 0.08);
 }
 .n-up-sheet-live.has-error {
@@ -7020,7 +7028,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .n-up-sheet-cell.bordered {
   box-shadow: inset 0 0 0 1px #b8b8b8;
@@ -7039,7 +7047,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .n-up-sheet-cell-placeholder {
   color: #94a3b8;
@@ -7116,7 +7124,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   display: grid;
   gap: 4px;
   border: 1px solid var(--light-line);
-  background: #fff;
+  background: var(--surface-card, #fff);
   padding: 8px 10px;
 }
 .bates-file-pick {
@@ -7169,7 +7177,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   align-items: center;
   border: 1px solid var(--line);
   padding: 8px 10px;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 .bates-results li strong {
   flex: 1;
@@ -7215,9 +7223,26 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 /* ===== DearPDF dark mode — Stitch tokens for tool chrome ===== */
-html.dark .pdf-page {
+/* Colour/surface only — do not change type scale, weight, spacing, or layout. */
+
+html.dark .pdf-page,
+html.dark .stitch-tool-shell {
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --meta: #94a3b8;
+  --line: #1f2a3f;
+  --light-line: #1f2a3f;
+  --paper: #0a0e17;
+  --wash: #111726;
+  --soft-wash: #111726;
+  --surface-card: #151c2d;
+  --sky-tint: #101625;
+  --sky-tint-strong: #0c4a6e;
+  --warn-tint: #1c1917;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
   color: var(--ink);
-  background: var(--paper, #0a0e17);
+  background: var(--paper);
 }
 
 html.dark .stitch-tool-shell .compress-workspace,
@@ -7225,14 +7250,48 @@ html.dark .stitch-tool-shell .merge-workspace,
 html.dark .stitch-tool-shell .organise-workspace,
 html.dark .stitch-tool-shell .utility-workspace,
 html.dark .stitch-tool-shell .lock-workspace,
-html.dark .stitch-tool-shell .sign-workspace {
+html.dark .stitch-tool-shell .sign-workspace,
+html.dark .stitch-tool-shell .unlock-workspace,
+html.dark .stitch-tool-shell .split-workspace,
+html.dark .stitch-tool-shell .watermark-workspace,
+html.dark .stitch-tool-shell .images-workspace,
+html.dark .stitch-tool-shell .images-pdf-workspace,
+html.dark .stitch-tool-shell .pdf-images-workspace,
+html.dark .stitch-tool-shell .pdf-editor-workspace,
+html.dark .stitch-tool-shell section[class*="workspace"],
+html.dark .stitch-tool-shell .pdf-editor-shell,
+html.dark .page-numbers-shell,
+html.dark .page-numbers-panel,
+html.dark .page-numbers-preview,
+html.dark .bates-results,
+html.dark .stitch-tool-shell .merge-result-panel {
   background: var(--surface-card, #151c2d) !important;
-  border-color: var(--stitch-border, #1f2a3f) !important;
+  border-color: var(--line, #1f2a3f) !important;
+  box-shadow: none;
+}
+
+html.dark .stitch-tool-shell .merge-workspace-heading,
+html.dark .stitch-tool-shell .organise-workspace .merge-workspace-heading,
+html.dark .stitch-tool-shell .utility-workspace .merge-workspace-heading,
+html.dark .stitch-tool-shell .merge-action-row,
+html.dark .stitch-tool-shell .organise-action-row,
+html.dark .stitch-tool-shell .utility-action-row,
+html.dark .stitch-tool-shell .compression-action-row,
+html.dark .stitch-tool-shell .unlock-action-row,
+html.dark .stitch-tool-shell .merge-actions,
+html.dark .stitch-tool-shell .utility-actions,
+html.dark .stitch-tool-shell .organise-actions,
+html.dark .stitch-tool-shell .selected-document-card,
+html.dark .page-numbers-panel .selected-document-card,
+html.dark .stitch-tool-shell.merge-page .pdf-file-list,
+html.dark .stitch-tool-shell .pdf-file-list {
+  background: var(--wash, #111726) !important;
+  border-color: var(--line, #1f2a3f) !important;
 }
 
 html.dark .stitch-tool-shell .pdf-drop-zone,
 html.dark .stitch-tool-shell .pdf-drop-zone.compact {
-  background: #101625 !important;
+  background: var(--sky-tint, #101625) !important;
   border-color: color-mix(in srgb, #38bdf8 40%, transparent) !important;
   color: var(--ink) !important;
   box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.12);
@@ -7244,8 +7303,24 @@ html.dark .stitch-tool-shell .pdf-drop-zone.is-dragging {
   border-color: color-mix(in srgb, #38bdf8 70%, transparent) !important;
 }
 
-html.dark .stitch-tool-shell .pdf-drop-zone strong {
+html.dark .stitch-tool-shell .pdf-drop-zone strong,
+html.dark .stitch-tool-shell .stitch-tool-heading h1,
+html.dark .stitch-tool-shell .merge-workspace-heading h2 {
   color: var(--ink);
+}
+
+html.dark .stitch-tool-shell .stitch-tool-heading p,
+html.dark .stitch-tool-shell .stitch-tool-back,
+html.dark .stitch-tool-shell .stitch-tool-trust,
+html.dark .stitch-tool-shell .merge-workspace-heading p {
+  color: var(--muted);
+}
+
+html.dark .stitch-tool-shell .drop-zone-mark,
+html.dark .stitch-tool-shell .selected-document-mark {
+  background: var(--sky-tint, #101625) !important;
+  border-color: color-mix(in srgb, #38bdf8 35%, var(--line)) !important;
+  color: var(--accent) !important;
 }
 
 html.dark .stitch-tool-shell .page-numbers-pager button,
@@ -7258,11 +7333,24 @@ html.dark .stitch-tool-shell .tool-options-grid input[type="text"],
 html.dark .stitch-tool-shell .tool-options-grid input[type="number"],
 html.dark .stitch-tool-shell .tool-options-grid select,
 html.dark .stitch-tool-shell .merge-output-name input,
+html.dark .stitch-tool-shell .field input,
+html.dark .stitch-tool-shell .field select,
+html.dark .stitch-tool-shell .field textarea,
+html.dark .stitch-tool-shell .utility-field input,
+html.dark .stitch-tool-shell .utility-field select,
+html.dark .stitch-tool-shell .secondary-button,
+html.dark .stitch-tool-shell .small-button,
+html.dark .stitch-tool-shell .compact-pdf-add,
+html.dark .stitch-tool-shell .pdf-file-list li,
+html.dark .stitch-tool-shell .compression-levels > button,
+html.dark .stitch-tool-shell .selected-document-actions > b,
+html.dark .stitch-tool-shell .selected-document-actions > button,
+html.dark .stitch-tool-shell .selected-document-card > button,
 html.dark .bates-file-list > li,
 html.dark .bates-results li,
-html.dark .stitch-tool-shell .selected-document-card > button,
-html.dark .page-numbers-pager button {
-  background: #151c2d !important;
+html.dark .page-numbers-pager button,
+html.dark .page-number-position button {
+  background: var(--surface-card, #151c2d) !important;
   border-color: color-mix(in srgb, var(--line) 70%, transparent) !important;
   color: var(--ink) !important;
 }
@@ -7280,15 +7368,11 @@ html.dark .stitch-tool-shell .page-number-position {
   border-color: color-mix(in srgb, var(--line) 70%, transparent) !important;
 }
 
-html.dark .page-number-position button {
-  background: #1f2a3f;
-  border-color: #64748b;
-}
-
 html.dark .stitch-tool-shell .page-number-position button.active,
 html.dark .page-number-position button.active {
   background: var(--accent) !important;
   border-color: var(--accent) !important;
+  color: #082f49 !important;
 }
 
 html.dark .page-number-colours button.active {
@@ -7318,6 +7402,7 @@ html.dark .secondary-button {
 
 html.dark .page-number-live {
   border-color: color-mix(in srgb, var(--line) 70%, transparent);
+  background: var(--surface-card, #151c2d);
 }
 
 html.dark .bates-file-pick.active strong {
@@ -7325,5 +7410,10 @@ html.dark .bates-file-pick.active strong {
 }
 
 html.dark .stitch-tool-shell .text-button {
-  color: var(--muted);
+  color: var(--accent);
+}
+
+html.dark .stitch-tool-shell .merge-skipped {
+  background: var(--warn-tint, #1c1917) !important;
+  border-color: color-mix(in srgb, #f59e0b 35%, var(--line)) !important;
 }
