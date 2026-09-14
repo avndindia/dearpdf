@@ -33,10 +33,12 @@ export default function StitchToolShell({
     <div className={`pdf-page stitch-tool-shell ${className}`.trim()}>
       <div className="stitch-tool-topbar">
         <div className="stitch-tool-topbar-left">
-          <Link href="/pdf-tools" className="stitch-tool-back">
-            <MaterialIcon name="arrow_back" className="text-[14px]" />
-            <span>All tools</span>
-          </Link>
+          <nav className="stitch-tool-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/pdf-tools" className="stitch-tool-back">
+              <MaterialIcon name="arrow_back" className="text-[14px]" />
+              <span>All tools</span>
+            </Link>
+          </nav>
         </div>
       </div>
 
@@ -49,7 +51,7 @@ export default function StitchToolShell({
 
       <footer className="stitch-tool-trust">
         <div className="stitch-tool-trust-main">
-          <MaterialIcon name="verified_user" className="text-[16px] text-primary" />
+          <MaterialIcon name="verified_user" className="text-[16px] text-primary-container" />
           <span>
             {note ??
               "Open the download before you file or send it."}

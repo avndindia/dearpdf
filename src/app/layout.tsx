@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import PdfToolsOfflineRoot from "@/components/pdf-tools-offline-root";
 import PdfToolCompletion from "@/components/pdf-tool-completion";
 import "./globals.css";
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-jakarta",
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -34,11 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-surface font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
+    <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-canvas-bg font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
-          <main className="flex-1 pt-14">{children}</main>
+          <main className="flex-1 pt-16 sm:pt-20">{children}</main>
           <SiteFooter />
         </div>
         <PdfToolsOfflineRoot />

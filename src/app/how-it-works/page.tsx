@@ -5,64 +5,186 @@ import MaterialIcon from "@/components/MaterialIcon";
 export const metadata: Metadata = {
   title: "How it Works",
   description:
-    "DearPDF runs PDF tools entirely in your browser with WebAssembly — nothing is uploaded.",
+    "DearPDF runs PDF tools entirely in your browser — nothing is uploaded to our servers.",
 };
+
+const STEPS = [
+  {
+    n: "01",
+    icon: "folder_open",
+    title: "Open on this device",
+    body: "You pick a file with your browser. It is read into this tab’s memory — not posted to a conversion API.",
+    chip: "0 bytes sent",
+  },
+  {
+    n: "02",
+    icon: "memory",
+    title: "Edit in your browser",
+    body: "Merge, compress, OCR, and the other tools run locally on your CPU. Heavy work stays on-device.",
+    chip: "Local processing",
+  },
+  {
+    n: "03",
+    icon: "download_for_offline",
+    title: "Download the result",
+    body: "The finished PDF is saved from a local download link. Close the tab and the working copy is gone.",
+    chip: "Instant download",
+  },
+];
+
+const FAQS = [
+  {
+    q: "Can DearPDF see my confidential documents?",
+    a: "No. Document bytes are not uploaded to DearPDF servers for conversion. Processing happens in your browser tab.",
+  },
+  {
+    q: "Does it work offline?",
+    a: "After the first visit, core tools can keep working offline via the app’s cached assets.",
+  },
+  {
+    q: "Is there a file size limit?",
+    a: "There is no artificial paywall limit. Very large files are constrained only by your device memory.",
+  },
+  {
+    q: "What powers the tools?",
+    a: "Browser-native libraries (including WebAssembly engines) for PDF, images, and OCR — all running locally.",
+  },
+];
 
 export default function HowItWorksPage() {
   return (
-    <div className="mx-auto max-w-[800px] space-y-8 px-4 py-10 sm:px-6">
-      <div className="inline-flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700">
-        <MaterialIcon name="memory" className="text-[15px]" />
-        Client-side architecture
-      </div>
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-        How DearPDF works
-      </h1>
-      <p className="text-base leading-relaxed text-slate-600">
-        Every tool loads a PDF engine into your browser&apos;s WebAssembly sandbox.
-        Files are read into memory with the File API, processed on your CPU, and
-        written back via Blob URLs — with zero document bytes transferred to DearPDF
-        servers.
-      </p>
+    <div className="bg-canvas-bg">
+      <div className="mx-auto max-w-4xl space-y-10 px-4 py-10 sm:px-6">
+        <div>
+          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-rose-subtle px-3 py-1 text-[11px] font-semibold text-primary-container">
+            <MaterialIcon name="verified_user" className="text-[15px]" />
+            Local browser tools — no cloud upload
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface sm:text-4xl">
+            How DearPDF works
+          </h1>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
+            Every tool processes your file in this browser. Open a document, make the change,
+            download the result — without sending the PDF to DearPDF servers.
+          </p>
+        </div>
 
-      <ol className="space-y-4">
-        {[
-          {
-            n: "01",
-            title: "Memory buffers",
-            body: "Your file is opened as an ArrayBuffer in this tab. Nothing is posted to a conversion API.",
-          },
-          {
-            n: "02",
-            title: "Native CPU via Wasm",
-            body: "pdf-lib, PDF.js, qpdf WASM, and Tesseract.js run locally. Heavy work stays on-device.",
-          },
-          {
-            n: "03",
-            title: "Zero network for documents",
-            body: "The result is a Blob URL download. Open DevTools → Network while you work: document transfer stays at 0 B.",
-          },
-        ].map((step) => (
-          <li
-            key={step.n}
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-          >
-            <div className="mb-1 text-xs font-bold uppercase tracking-wider text-brand-600">
-              {step.n}
+        <section>
+          <h2 className="mb-4 text-xl font-bold tracking-tight text-on-surface">
+            The 3-step pipeline
+          </h2>
+          <ol className="space-y-4">
+            {STEPS.map((step) => (
+              <li
+                key={step.n}
+                className="rounded-2xl border border-border-subtle bg-white p-5 shadow-sm"
+              >
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                      <MaterialIcon name={step.icon} className="text-[20px]" />
+                    </div>
+                    <div>
+                      <div className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary-container">
+                        {step.n}
+                      </div>
+                      <h3 className="text-lg font-semibold text-on-surface">{step.title}</h3>
+                    </div>
+                  </div>
+                  <span className="rounded-full border border-emerald-200 bg-security-bg px-2.5 py-0.5 font-mono text-[11px] font-semibold text-security-emerald">
+                    {step.chip}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed text-slate-600">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-2xl border border-border-subtle bg-white p-5 shadow-sm">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              Typical cloud converter
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">{step.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{step.body}</p>
-          </li>
-        ))}
-      </ol>
+            <ul className="space-y-2 text-sm text-slate-600">
+              <li>Upload file to a remote server</li>
+              <li>Wait for server processing</li>
+              <li>Download from a temporary link</li>
+            </ul>
+            <p className="mt-3 text-[12px] text-amber-700">Your document leaves your device.</p>
+          </div>
+          <div className="rounded-2xl border border-brand-200 bg-rose-subtle/40 p-5 shadow-sm">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-primary-container">
+              DearPDF
+            </div>
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Open file in this tab</li>
+              <li>Process locally in the browser</li>
+              <li>Save result from a local download</li>
+            </ul>
+            <p className="mt-3 text-[12px] font-semibold text-security-emerald">
+              Document stays on this device.
+            </p>
+          </div>
+        </section>
 
-      <p className="text-sm text-slate-600">
-        Want the full privacy model?{" "}
-        <Link href="/privacy-architecture" className="font-semibold text-brand-600 underline">
-          Privacy Architecture
-        </Link>
-        .
-      </p>
+        <section>
+          <h2 className="mb-2 text-xl font-bold tracking-tight text-on-surface">FAQ</h2>
+          <p className="mb-4 text-sm text-slate-500">
+            Plain answers about private, in-browser PDF tools.
+          </p>
+          <div className="space-y-3">
+            {FAQS.map((item) => (
+              <details
+                key={item.q}
+                className="group rounded-2xl border border-border-subtle bg-white p-4 shadow-sm open:border-brand-300"
+              >
+                <summary className="cursor-pointer list-none text-sm font-semibold text-on-surface marker:content-none">
+                  <span className="flex items-center justify-between gap-3">
+                    {item.q}
+                    <MaterialIcon
+                      name="expand_more"
+                      className="text-[18px] text-slate-400 transition group-open:rotate-180"
+                    />
+                  </span>
+                </summary>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm sm:flex-row sm:items-center">
+          <div>
+            <h3 className="text-base font-bold text-on-surface">Try a tool now</h3>
+            <p className="text-sm text-slate-500">Nothing uploaded. Start with Merge or Compress.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/pdf-tools/merge"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-container to-ruby-deep px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)]"
+            >
+              <MaterialIcon name="call_merge" className="text-[16px]" />
+              Merge PDF
+            </Link>
+            <Link
+              href="/pdf-tools"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border-subtle bg-white px-4 py-2 text-sm font-semibold text-on-surface hover:border-brand-300 hover:bg-rose-subtle"
+            >
+              All tools
+              <MaterialIcon name="arrow_forward" className="text-[16px]" />
+            </Link>
+          </div>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          Want the full privacy model?{" "}
+          <Link href="/privacy-architecture" className="font-semibold text-primary-container underline">
+            Privacy Architecture
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 }

@@ -19,27 +19,21 @@ const FAST_ACTIONS: {
   icon: string;
   href?: string;
   filter?: CategoryFilter;
-  highlight?: boolean;
 }[] = [
   { label: "Merge", icon: "call_merge", href: "/pdf-tools/merge" },
   { label: "Compress", icon: "compress", href: "/pdf-tools/compress" },
   { label: "Split", icon: "content_cut", href: "/pdf-tools/split" },
   { label: "Convert", icon: "sync_alt", filter: "convert" },
   { label: "Sign", icon: "draw", href: "/pdf-tools/sign" },
-  {
-    label: "OCR",
-    icon: "document_scanner",
-    href: "/pdf-tools/pdf-to-text",
-    highlight: true,
-  },
+  { label: "OCR", icon: "document_scanner", href: "/pdf-tools/pdf-to-text" },
 ];
 
 function badgeClass(tone: StitchBadgeTone) {
   switch (tone) {
     case "brand":
     case "primaryFixed":
-      return "text-brand-700 bg-brand-50 border border-brand-200";
     case "popular":
+      return "bg-rose-subtle text-primary-container border border-brand-300";
     case "secondary":
     case "emerald":
       return "text-emerald-700 bg-emerald-50 border border-emerald-200";
@@ -47,7 +41,7 @@ function badgeClass(tone: StitchBadgeTone) {
     case "tertiary":
       return "text-amber-800 bg-amber-50 border border-amber-200";
     default:
-      return "text-slate-600 bg-slate-100";
+      return "text-slate-600 bg-slate-100 border border-slate-200";
   }
 }
 
@@ -116,25 +110,33 @@ export default function StitchHome() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[1240px] flex-col gap-6 px-4 py-6 sm:px-6">
-      {/* Hero + dropzone */}
-      <section className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Private PDF tools
-          </div>
-          <h1 className="mb-1.5 text-[1.375rem] font-bold leading-snug tracking-tight text-slate-900 text-balance sm:text-3xl sm:leading-tight">
-            Drop a file.
-            <br className="sm:hidden" />{" "}
-            Get it back fixed.
-          </h1>
-          <p className="mx-auto mb-4 max-w-xl text-xs text-slate-500 sm:text-sm">
-            Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
-          </p>
-        </div>
+    <div className="relative w-full overflow-hidden bg-canvas-bg">
+      <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-[360px] w-[820px] -translate-x-1/2 bg-gradient-to-b from-rose-tint/50 via-rose-subtle/30 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute top-20 right-10 -z-10 h-96 w-96 rounded-full bg-rose-subtle/70 blur-3xl" />
 
-        <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+        {/* Hero + dropzone */}
+        <section className="mx-auto flex max-w-4xl flex-col items-center pb-10 pt-8 text-center">
+          <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-300 bg-white px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider shadow-sm">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-primary-container" />
+            <span className="font-bold text-on-surface">Private PDF Tools</span>
+            <span className="h-1 w-1 rounded-full bg-brand-300" />
+            <span className="font-medium text-secondary">Zero Cloud Uploads</span>
+            <span className="hidden h-1 w-1 rounded-full bg-brand-300 sm:inline" />
+            <span className="hidden font-bold text-primary-container sm:inline">
+              No Limits · No Subscriptions
+            </span>
+          </div>
+
+          <h1 className="mb-4 text-[2rem] font-extrabold leading-10 tracking-tight text-on-surface sm:text-[2.75rem] sm:leading-[3.25rem]">
+            Drop a file.
+            <br className="sm:hidden" /> Get it back fixed.
+          </h1>
+          <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-slate-500">
+            Fast tools for everyday PDF fixes — merge, compress, OCR, convert, and more.
+            Processed in your browser. Free forever, no subscriptions, no file limits.
+          </p>
+
           <div
             role="button"
             tabIndex={0}
@@ -166,12 +168,14 @@ export default function StitchHome() {
               setDragging(false);
               handleFiles(e.dataTransfer.files);
             }}
-            className={`relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-4 text-center shadow-sm shadow-blue-100 transition-all sm:p-5 ${
+            className={`group relative w-full max-w-4xl cursor-pointer rounded-3xl border-2 border-dashed p-6 shadow-lg transition-all duration-300 hover:shadow-2xl sm:p-8 ${
               dragging
-                ? "border-brand-600 bg-brand-50/80 ring-2 ring-brand-500"
-                : "border-blue-500 bg-blue-50/60 ring-4 ring-blue-500/10 hover:border-blue-600 hover:bg-blue-100/60"
+                ? "border-crimson-vivid bg-rose-subtle shadow-[0_0_0_4px_rgba(225,29,72,0.12)]"
+                : "border-brand-300 bg-white"
             }`}
+            style={dragging ? undefined : { borderColor: "#fda4af" }}
           >
+            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-rose-subtle/60 via-white to-white" />
             <input
               ref={fileRef}
               type="file"
@@ -184,291 +188,291 @@ export default function StitchHome() {
                 e.target.value = "";
               }}
             />
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600 shadow-sm ring-2 ring-blue-200 transition-all group-hover:scale-105">
-                <MaterialIcon name="cloud_sync" className="text-[22px]" />
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border border-rose-tint bg-rose-subtle text-primary-container shadow-sm transition-all duration-300 group-hover:border-primary-container group-hover:bg-primary-container group-hover:text-white">
+                <MaterialIcon name="cloud_sync" className="text-[32px] transition-transform group-hover:scale-110" />
               </div>
-              <div className="text-left">
-                <div className="text-sm font-semibold text-slate-900">
-                  Drop your PDF here, or{" "}
-                  <span className="text-brand-600 underline underline-offset-2">
-                    browse files
-                  </span>
-                </div>
-                <div className="text-[11px] text-slate-500">
-                  PDF, JPG, or PNG · up to 500MB
-                </div>
+              <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-semibold text-on-surface">
+                <span>Drop your PDF here, or</span>
+                <span className="font-bold text-primary-container underline underline-offset-4 hover:text-ruby-deep">
+                  browse files
+                </span>
               </div>
-            </div>
+              <p className="mb-6 font-mono text-[12px] text-slate-500">
+                PDF, JPG, or PNG · up to 500MB · stays on this device
+              </p>
 
-            <div className="relative z-20 flex w-full flex-col items-stretch gap-1.5 pt-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
-              <span className="text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400 sm:mr-1 sm:shrink-0 sm:text-left">
-                Fast Actions:
-              </span>
-              <div className="grid grid-cols-3 gap-1.5 sm:contents">
-                {FAST_ACTIONS.map((action) =>
-                  action.href ? (
-                    <Link
-                      key={action.label}
-                      href={action.href}
-                      onClick={(e) => e.stopPropagation()}
-                      className={
-                        action.highlight
-                          ? "inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-brand-200/80 bg-brand-50 px-1 py-1.5 text-[10px] font-medium leading-tight text-brand-700 shadow-sm transition-colors hover:bg-brand-600 hover:text-white sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
-                          : "inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-slate-200 bg-white px-1 py-1.5 text-[10px] font-medium leading-tight text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
-                      }
-                    >
-                      <MaterialIcon name={action.icon} className="text-[15px] shrink-0 sm:text-[13px]" />
-                      <span className="whitespace-normal text-center sm:whitespace-nowrap">{action.label}</span>
-                    </Link>
-                  ) : (
-                    <button
-                      key={action.label}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        applyConvertFilter();
-                      }}
-                      className="inline-flex w-full min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-md border border-slate-200 bg-white px-1 py-1.5 text-[10px] font-medium leading-tight text-slate-700 shadow-sm transition-colors hover:bg-brand-50 hover:text-brand-600 sm:min-h-0 sm:w-auto sm:flex-row sm:gap-1 sm:px-2.5 sm:py-1 sm:text-[11px]"
-                    >
-                      <MaterialIcon name={action.icon} className="text-[15px] shrink-0 sm:text-[13px]" />
-                      <span className="whitespace-normal text-center sm:whitespace-nowrap">{action.label}</span>
-                    </button>
-                  ),
-                )}
+              <div className="flex w-full flex-col items-stretch justify-between gap-2 overflow-x-auto rounded-2xl border border-slate-200/70 bg-slate-50/90 px-3.5 py-2.5 sm:flex-row sm:items-center">
+                <span className="hidden whitespace-nowrap pl-1 text-left font-mono text-[11px] font-semibold uppercase text-secondary sm:inline">
+                  Fast Actions:
+                </span>
+                <div className="grid flex-1 grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+                  {FAST_ACTIONS.map((action) =>
+                    action.href ? (
+                      <Link
+                        key={action.label}
+                        href={action.href}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0"
+                      >
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[16px] text-primary-container" />
+                        <span className="whitespace-nowrap">{action.label}</span>
+                      </Link>
+                    ) : (
+                      <button
+                        key={action.label}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          applyConvertFilter();
+                        }}
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0"
+                      >
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[16px] text-primary-container" />
+                        <span className="whitespace-nowrap">{action.label}</span>
+                      </button>
+                    ),
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-1 gap-2 text-center sm:grid-cols-3">
+          {/* Trust strip — once */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-slate-500">
             {[
-              { icon: "verified", label: (<><strong>Nothing</strong> uploaded</>) },
-              { icon: "shield", label: (<><strong>Runs</strong> in your browser</>) },
-              { icon: "wifi_off", label: (<><strong>Works offline</strong> after first visit</>) },
+              { icon: "verified", color: "text-security-emerald", label: (<><span className="font-medium text-on-surface">Nothing</span> uploaded</>) },
+              { icon: "shield", color: "text-primary-container", label: (<><span className="font-medium text-on-surface">Runs</span> in your browser</>) },
+              { icon: "wifi_off", color: "text-secondary", label: (<><span className="font-medium text-on-surface">Works offline</span> after first visit</>) },
+              { icon: "lock_open", color: "text-security-emerald", label: (<><span className="font-medium text-on-surface">No subscriptions</span> · 100% free</>) },
+              { icon: "all_inclusive", color: "text-primary-container", label: (<><span className="font-medium text-on-surface">No limits</span> on files or size</>) },
             ].map((item) => (
               <div
                 key={item.icon}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50 px-3 py-1.5 text-[11px] font-medium text-slate-600"
+                className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-white px-3.5 py-1.5 text-[13px] shadow-sm"
               >
-                <MaterialIcon name={item.icon} className="text-[15px] text-emerald-600" />
+                <MaterialIcon name={item.icon} className={`text-[18px] ${item.color}`} />
                 <span>{item.label}</span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Sticky search + filters */}
-      <section
-        id="tools"
-        ref={toolsRef}
-        className="sticky top-14 z-30 bg-surface/90 py-2 backdrop-blur scroll-mt-14"
-      >
-        <div className="flex flex-col items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-sm sm:flex-row">
-          <div className="relative w-full sm:w-80">
-            <MaterialIcon
-              name="search"
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[17px] text-slate-400"
-            />
-            <input
-              ref={searchRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress)...`}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-8 text-base text-slate-800 outline-none transition-all placeholder:text-slate-400 hover:bg-white focus:border-brand-500 focus:bg-white focus:ring-1 focus:ring-brand-500"
-            />
-            <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-white px-1 font-mono text-[10px] text-slate-400 shadow-sm">
-              /
-            </kbd>
-          </div>
-          <div className="flex w-full items-center gap-1 overflow-x-auto pb-1 sm:w-auto sm:pb-0">
-            {(
-              [
-                { id: "all" as const, label: "All", count: STITCH_TOOL_COUNT },
-                ...stitchCategories.map((c) => ({
-                  id: c.id as CategoryFilter,
-                  label: c.id === "edit" ? "Edit & Sign" : c.id === "secure" ? "Security" : c.title,
-                  count: c.count,
-                })),
-              ] as { id: CategoryFilter; label: string; count: number }[]
-            ).map((btn) => {
-              const active = category === btn.id;
-              return (
-                <button
-                  key={btn.id}
-                  type="button"
-                  onClick={() => setCategory(btn.id)}
-                  className={
-                    active
-                      ? "whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1 text-xs font-semibold text-white shadow-sm transition-all"
-                      : "whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
-                  }
-                >
-                  {btn.label}{" "}
-                  <span
-                    className={`ml-0.5 font-mono text-[10px] ${
-                      active ? "opacity-75" : "text-slate-400"
-                    }`}
+        {/* Sticky search + filters */}
+        <section
+          id="tools"
+          ref={toolsRef}
+          className="sticky top-16 z-40 mb-10 bg-canvas-bg/90 py-3 backdrop-blur-md scroll-mt-16 sm:top-20 sm:scroll-mt-20"
+        >
+          <div className="flex flex-col items-center justify-between gap-3 rounded-2xl border border-border-subtle bg-white p-2 shadow-md md:flex-row">
+            <div className="relative flex w-full items-center md:w-80">
+              <MaterialIcon
+                name="search"
+                className="pointer-events-none absolute left-3 text-[18px] text-slate-400"
+              />
+              <input
+                ref={searchRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g., merge, compress...)`}
+                className="w-full rounded-xl bg-slate-100 py-2 pl-9 pr-8 text-base text-on-surface outline-none transition-all placeholder:text-slate-400 focus:bg-rose-subtle/50 focus:ring-1 focus:ring-primary-container"
+              />
+              <kbd className="absolute right-2.5 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[12px] text-slate-400 shadow-sm">
+                /
+              </kbd>
+            </div>
+            <div className="no-scrollbar flex w-full items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1 md:w-auto">
+              {(
+                [
+                  { id: "all" as const, label: "All", count: STITCH_TOOL_COUNT },
+                  ...stitchCategories.map((c) => ({
+                    id: c.id as CategoryFilter,
+                    label: c.id === "edit" ? "Edit & Sign" : c.id === "secure" ? "Security" : c.title,
+                    count: c.count,
+                  })),
+                ] as { id: CategoryFilter; label: string; count: number }[]
+              ).map((btn) => {
+                const active = category === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    type="button"
+                    onClick={() => setCategory(btn.id)}
+                    className={
+                      active
+                        ? "flex items-center gap-2 whitespace-nowrap rounded-lg bg-tech-black px-4 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all"
+                        : "flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:text-on-surface"
+                    }
                   >
-                    {btn.count}
+                    <span>{btn.label}</span>
+                    <span
+                      className={
+                        active
+                          ? "rounded-full bg-primary-container px-1.5 font-mono text-[12px] font-bold text-white"
+                          : "rounded-full border border-slate-200 bg-white px-1.5 font-mono text-[12px] text-slate-500"
+                      }
+                    >
+                      {btn.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Tool directory */}
+        <div className="space-y-12" aria-label="Tool directory">
+          {grouped.length === 0 ? (
+            <p className="rounded-2xl border border-border-subtle bg-white p-6 text-center text-sm text-slate-500">
+              No tools match “{query}”. Try merge, compress, or OCR.
+            </p>
+          ) : (
+            grouped.map((group) => (
+              <section key={group.id} className="space-y-4">
+                <div className="flex items-center justify-between pb-1">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                      <MaterialIcon name={group.icon} className="text-[18px]" />
+                    </div>
+                    <h2 className="text-xl font-bold tracking-tight text-on-surface sm:text-2xl">
+                      {group.title}
+                    </h2>
+                    <span className="hidden text-[13px] text-slate-500 sm:inline">
+                      — {group.blurb}
+                    </span>
+                  </div>
+                  <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] uppercase text-secondary">
+                    {group.tools.length} utilit{group.tools.length === 1 ? "y" : "ies"}
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Tool grid */}
-      <section className="flex flex-col gap-6" aria-label="Tool directory">
-        {grouped.length === 0 ? (
-          <p className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-            No tools match “{query}”. Try merge, compress, or OCR.
-          </p>
-        ) : (
-          grouped.map((group) => (
-            <div key={group.id}>
-              <div className="mb-3 flex items-center justify-between border-b border-slate-200 pb-2">
-                <div className="flex items-center gap-2">
-                  <MaterialIcon name={group.icon} className="text-[18px] text-brand-600" />
-                  <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
-                    {group.title}
-                  </h2>
-                  <span className="hidden text-xs text-slate-500 sm:inline">{group.blurb}</span>
                 </div>
-                <span className="font-mono text-[11px] uppercase text-slate-400">
-                  {group.tools.length} utilit{group.tools.length === 1 ? "y" : "ies"}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {group.tools.map((tool) => (
-                  <Link
-                    key={tool.id}
-                    href={tool.href}
-                    className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition-all hover:border-brand-500 hover:shadow-sm"
-                  >
-                    <div>
-                      <div className="mb-2.5 flex items-center justify-between">
-                        <div
-                          className={
-                            tool.iconTone === "amber"
-                              ? "flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 transition-colors group-hover:bg-amber-600 group-hover:text-white"
-                              : "flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white"
-                          }
-                        >
-                          <MaterialIcon name={tool.icon} className="text-[18px]" />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {group.tools.map((tool) => (
+                    <Link
+                      key={tool.id}
+                      href={tool.href}
+                      className="group flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl"
+                    >
+                      <div>
+                        <div className="mb-4 flex items-center justify-between">
+                          <div
+                            className={
+                              tool.iconTone === "amber"
+                                ? "flex h-11 w-11 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-all group-hover:bg-amber-600 group-hover:text-white"
+                                : "flex h-11 w-11 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container transition-all group-hover:bg-primary-container group-hover:text-white"
+                            }
+                          >
+                            <MaterialIcon name={tool.icon} className="text-[22px]" />
+                          </div>
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${badgeClass(
+                              tool.badgeTone,
+                            )}`}
+                          >
+                            {tool.badge}
+                          </span>
                         </div>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${badgeClass(
-                            tool.badgeTone,
-                          )}`}
-                        >
-                          {tool.badge}
-                        </span>
+                        <h3 className="mb-1 text-base font-semibold text-on-surface transition-colors group-hover:text-primary-container">
+                          {tool.name}
+                        </h3>
+                        <p className="line-clamp-2 text-[13px] text-slate-500">
+                          {tool.description}
+                        </p>
                       </div>
-                      <h3 className="text-[13px] font-bold text-slate-900 transition-colors group-hover:text-brand-600">
-                        {tool.name}
-                      </h3>
-                      <p className="mt-0.5 line-clamp-1 text-[12px] text-slate-500">
-                        {tool.description}
-                      </p>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-medium text-slate-400 transition-colors group-hover:text-brand-600">
-                      <span>{tool.footer}</span>
-                      <MaterialIcon
-                        name="arrow_forward"
-                        className="text-[15px] transition-transform group-hover:translate-x-0.5"
-                      />
-                    </div>
-                  </Link>
+                      <div className="mt-2 flex items-center justify-between border-t border-transparent pt-4 font-mono text-[12px] text-secondary">
+                        <span>{tool.footer}</span>
+                        <MaterialIcon
+                          name="arrow_forward"
+                          className="text-[16px] text-primary-container transition-transform group-hover:translate-x-1"
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
+        </div>
+
+        {/* How-it-works strip */}
+        <section className="mt-12 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm sm:p-6">
+          <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
+            <div className="flex flex-col gap-2.5 lg:col-span-6">
+              <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-brand-200 bg-rose-subtle px-2 py-0.5 text-[11px] font-semibold text-primary-container">
+                <MaterialIcon name="verified_user" className="text-[15px]" />
+                Why &quot;Nothing uploaded&quot; matters
+              </div>
+              <h3 className="text-lg font-bold tracking-tight text-on-surface sm:text-xl">
+                Your PDFs are edited on this device — not on our servers.
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-600">
+                Most online converters upload your documents. DearPDF does the work in your
+                browser instead. Open a file, get the result back, and download it — without
+                sending the document anywhere.
+              </p>
+              <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                {[
+                  { title: "1. Open", sub: "File stays on this device" },
+                  { title: "2. Edit", sub: "Tools run in your browser" },
+                  { title: "3. Download", sub: "Nothing sent to a server" },
+                ].map((step) => (
+                  <div
+                    key={step.title}
+                    className="rounded-lg border border-border-subtle bg-surface-slate p-2"
+                  >
+                    <div className="text-xs font-bold text-on-surface">{step.title}</div>
+                    <div className="text-[10px] text-slate-500">{step.sub}</div>
+                  </div>
                 ))}
               </div>
             </div>
-          ))
-        )}
-      </section>
 
-      {/* Architecture strip */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
-          <div className="flex flex-col gap-2.5 lg:col-span-6">
-            <div className="inline-flex w-fit items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700">
-              <MaterialIcon name="verified_user" className="text-[15px]" />
-              Why &quot;Nothing uploaded&quot; matters
-            </div>
-            <h3 className="text-lg font-bold tracking-tight text-slate-900">
-              Your PDFs are edited on this device — not on our servers.
-            </h3>
-            <p className="text-xs leading-relaxed text-slate-600">
-              Most online converters upload your documents to their servers.
-              DearPDF does the work in your browser instead. Open a file, get the
-              result back, and download it — without sending the document anywhere.
-            </p>
-            <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-              {[
-                { title: "1. Open", sub: "File stays on this device" },
-                { title: "2. Edit", sub: "Tools run in your browser" },
-                { title: "3. Download", sub: "Nothing sent to a server" },
-              ].map((step) => (
-                <div
-                  key={step.title}
-                  className="rounded-lg border border-slate-200 bg-slate-50 p-2"
-                >
-                  <div className="text-xs font-bold text-slate-900">{step.title}</div>
-                  <div className="text-[10px] text-slate-500">{step.sub}</div>
+            <div className="rounded-xl border border-slate-800 bg-tech-black p-3.5 font-mono text-slate-100 shadow-md lg:col-span-6">
+              <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2 text-[11px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span className="ml-1 text-slate-400">What happens to your file</span>
                 </div>
-              ))}
+                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Private
+                </span>
+              </div>
+              <div className="space-y-2 font-sans text-[11px]">
+                <div className="flex items-start justify-between gap-3 text-slate-300">
+                  <span className="flex items-center gap-1 text-emerald-400">
+                    <MaterialIcon name="check" className="text-[13px]" /> Your document
+                  </span>
+                  <span className="text-right text-emerald-400">Stays on this device</span>
+                </div>
+                <div className="flex items-start justify-between gap-3 text-slate-300">
+                  <span className="flex items-center gap-1 text-emerald-400">
+                    <MaterialIcon name="check" className="text-[13px]" /> Processing
+                  </span>
+                  <span className="text-right text-slate-400">In your browser only</span>
+                </div>
+                <div className="flex items-start justify-between gap-3 text-slate-300">
+                  <span className="flex items-center gap-1 text-emerald-400">
+                    <MaterialIcon name="check" className="text-[13px]" /> Upload to DearPDF
+                  </span>
+                  <span className="text-right font-bold text-emerald-400">Never</span>
+                </div>
+              </div>
+              <div className="mt-2.5 flex items-center justify-between border-t border-slate-800 pt-2 font-sans text-[11px]">
+                <span className="text-slate-400">Want the technical details?</span>
+                <Link
+                  href="/privacy-architecture"
+                  className="inline-flex items-center gap-0.5 font-medium text-brand-400 hover:text-brand-300"
+                >
+                  Privacy architecture <MaterialIcon name="arrow_forward" className="text-[13px]" />
+                </Link>
+              </div>
             </div>
           </div>
-
-          <div className="rounded-xl border border-slate-800 bg-slate-900 p-3.5 font-mono text-slate-100 shadow-md lg:col-span-6">
-            <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2 text-[11px]">
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <span className="ml-1 text-slate-400">What happens to your file</span>
-              </div>
-              <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />{" "}
-                Private
-              </span>
-            </div>
-            <div className="space-y-2 text-[11px] font-sans">
-              <div className="flex items-start justify-between gap-3 text-slate-300">
-                <span className="flex items-center gap-1 text-emerald-400">
-                  <MaterialIcon name="check" className="text-[13px]" /> Your document
-                </span>
-                <span className="text-right text-emerald-400">Stays on this device</span>
-              </div>
-              <div className="flex items-start justify-between gap-3 text-slate-300">
-                <span className="flex items-center gap-1 text-emerald-400">
-                  <MaterialIcon name="check" className="text-[13px]" /> Processing
-                </span>
-                <span className="text-right text-slate-400">In your browser only</span>
-              </div>
-              <div className="flex items-start justify-between gap-3 text-slate-300">
-                <span className="flex items-center gap-1 text-emerald-400">
-                  <MaterialIcon name="check" className="text-[13px]" /> Upload to DearPDF
-                </span>
-                <span className="text-right font-bold text-emerald-400">Never</span>
-              </div>
-            </div>
-            <div className="mt-2.5 flex items-center justify-between border-t border-slate-800 pt-2 font-sans text-[11px]">
-              <span className="text-[11px] text-slate-400">
-                Want the technical details?
-              </span>
-              <Link
-                href="/privacy-architecture"
-                className="inline-flex items-center gap-0.5 text-[11px] font-medium text-brand-400 hover:text-brand-300"
-              >
-                Privacy architecture <MaterialIcon name="arrow_forward" className="text-[13px]" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

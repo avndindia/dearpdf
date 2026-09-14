@@ -4737,7 +4737,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   color: var(--muted);
 }
 
-/* Primary actions — Stitch primary-container blue */
+/* Primary actions — Stitch primary-container ruby */
 .stitch-tool-shell .primary-button,
 .stitch-tool-shell .merge-button,
 .stitch-tool-shell button.primary-button,
@@ -4746,7 +4746,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .split-run {
   border: 0;
   border-radius: 8px;
-  background: #2563eb;
+  background: #e11d48;
   color: #fff;
   min-height: 42px;
   padding: 10px 18px;
@@ -4760,7 +4760,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .merge-button:hover:not(:disabled),
 .stitch-tool-shell .compress-run:hover:not(:disabled),
 .stitch-tool-shell .split-run:hover:not(:disabled) {
-  background: #004ac6;
+  background: #be123c;
 }
 
 .stitch-tool-shell .primary-button:disabled,
@@ -4887,8 +4887,8 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   --paper: #ffffff;
   --wash: #f2f4f6;
   --soft-wash: #f7f9fb;
-  --accent: #2563eb;
-  --accent-hover: #004ac6;
+  --accent: #e11d48;
+  --accent-hover: #be123c;
   font-family: var(--font-sans);
 }
 
@@ -5248,7 +5248,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell button.merge-button {
   border: 0;
   border-radius: 8px;
-  background: #2563eb;
+  background: #e11d48;
   color: #fff;
   min-height: 42px;
   padding: 10px 18px;
@@ -5260,7 +5260,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .merge-button:hover:not(:disabled),
 .stitch-tool-shell .primary-button:hover:not(:disabled) {
-  background: #004ac6;
+  background: #be123c;
 }
 
 /* Sticky mobile action bars — soft, not ink */
@@ -5893,12 +5893,12 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 .stitch-tool-shell .pdf-editor-toolbar .pdf-editor-download {
   border: 0;
-  background: #2563eb;
+  background: #e11d48;
   color: #fff;
 }
 
 .stitch-tool-shell .pdf-editor-toolbar .pdf-editor-download:hover:not(:disabled) {
-  background: #004ac6;
+  background: #be123c;
   color: #fff;
 }
 
@@ -5940,7 +5940,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-shell .ocr-result-actions button {
   border: 0;
   border-radius: 8px;
-  background: #2563eb;
+  background: #e11d48;
   color: #fff;
   font-weight: 600;
 }
@@ -6037,4 +6037,46 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   font-weight: 500;
   letter-spacing: 0;
   text-transform: none;
+}
+
+
+/* DearPDF Ruby & Slate tool chrome polish */
+.stitch-tool-shell {
+  --accent: #e11d48;
+  --accent-hover: #be123c;
+  --accent-soft: #fff1f2;
+}
+.stitch-tool-shell .pdf-drop-zone {
+  border-color: #fda4af;
+  background: linear-gradient(180deg, #fff1f2aa 0%, #ffffff 55%);
+}
+.stitch-tool-shell .pdf-drop-zone:hover,
+.stitch-tool-shell .pdf-drop-zone.is-dragging {
+  border-color: #ff2647;
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.12);
+  background: #fff1f2;
+}
+.stitch-tool-shell .primary-button,
+.stitch-tool-shell .merge-button,
+.stitch-tool-shell button.primary-button,
+.stitch-tool-shell .pdf-action.primary,
+.stitch-tool-shell .compress-run,
+.stitch-tool-shell .split-run {
+  background: linear-gradient(90deg, #e11d48 0%, #be123c 100%);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28);
+}
+.stitch-tool-shell .primary-button:hover:not(:disabled),
+.stitch-tool-shell .merge-button:hover:not(:disabled),
+.stitch-tool-shell .compress-run:hover:not(:disabled),
+.stitch-tool-shell .split-run:hover:not(:disabled) {
+  background: linear-gradient(90deg, #ff2647 0%, #e11d48 100%);
+}
+.stitch-tool-back:hover,
+.stitch-tool-trust-link:hover,
+.stitch-tool-related a:hover {
+  color: #e11d48;
+}
+.stitch-tool-heading h1 {
+  letter-spacing: -0.02em;
 }

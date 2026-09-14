@@ -3,21 +3,21 @@
 @import "./pdf-tools.css";
 
 :root {
-  --ink: #191c1e;
-  --muted: #434655;
-  --meta: #434655;
-  --line: #c3c6d7;
-  --light-line: #e0e3e5;
-  --paper: #f7f9fb;
-  --wash: #f7f9fb;
-  --soft-wash: #f2f4f6;
-  --accent: #2563eb;
-  --accent-hover: #004ac6;
-  --accent-soft: #dbe1ff;
-  --site-shell-width: 1240px;
-  --discuss-navy: #2563eb;
-  --discuss-navy-2: #004ac6;
-  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ink: #0b1c30;
+  --muted: #5c3f40;
+  --meta: #565e74;
+  --line: #e5bdbe;
+  --light-line: #e2e8f0;
+  --paper: #fbfcfd;
+  --wash: #f8fafc;
+  --soft-wash: #fff1f2;
+  --accent: #e11d48;
+  --accent-hover: #be123c;
+  --accent-soft: #ffe4e6;
+  --site-shell-width: 1280px;
+  --discuss-navy: #e11d48;
+  --discuss-navy-2: #be123c;
+  --font-sans: var(--font-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-ui: var(--font-sans);
   --font-text: var(--font-sans);
@@ -38,37 +38,40 @@
   --font-label-md: var(--font-sans);
   --font-label-sm: var(--font-sans);
 
-  /* Brand (shared with home) */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #004ac6;
+  /* Brand — Ruby & Slate */
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #f43f5e;
+  --color-brand-600: #e11d48;
+  --color-brand-700: #be123c;
+  --color-brand-800: #9f1239;
+  --color-brand-900: #881337;
 
-  /* Material Design tokens from Stitch All Tools */
-  --color-primary: #004ac6;
-  --color-primary-container: #2563eb;
+  /* Material / Stitch Ruby & Slate tokens */
+  --color-primary: #b80035;
+  --color-primary-container: #e11d48;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #eeefff;
-  --color-primary-fixed: #dbe1ff;
-  --color-primary-fixed-dim: #b4c5ff;
-  --color-on-primary-fixed: #00174b;
-  --color-on-primary-fixed-variant: #003ea8;
-  --color-surface: #f7f9fb;
-  --color-surface-bright: #f7f9fb;
-  --color-surface-dim: #d8dadc;
-  --color-surface-variant: #e0e3e5;
-  --color-surface-container: #eceef0;
-  --color-surface-container-low: #f2f4f6;
+  --color-on-primary-container: #fffaf9;
+  --color-primary-fixed: #ffdada;
+  --color-primary-fixed-dim: #ffb3b6;
+  --color-on-primary-fixed: #40000c;
+  --color-on-primary-fixed-variant: #920028;
+  --color-surface: #fbfcfd;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-variant: #d3e4fe;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-low: #eff4ff;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #434655;
-  --color-outline: #737686;
-  --color-outline-variant: #c3c6d7;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #5c3f40;
+  --color-outline: #906f70;
+  --color-outline-variant: #e5bdbe;
   --color-secondary: #565e74;
   --color-secondary-container: #dae2fd;
   --color-on-secondary: #ffffff;
@@ -77,53 +80,69 @@
   --color-secondary-fixed-dim: #bec6e0;
   --color-on-secondary-fixed: #131b2e;
   --color-on-secondary-fixed-variant: #3f465c;
-  --color-tertiary: #46566c;
-  --color-tertiary-container: #5e6e85;
-  --color-tertiary-fixed: #d3e4fe;
-  --color-tertiary-fixed-dim: #b7c8e1;
+  --color-tertiary: #006848;
+  --color-tertiary-container: #00845c;
+  --color-tertiary-fixed: #85f8c4;
+  --color-tertiary-fixed-dim: #68dba9;
   --color-on-tertiary: #ffffff;
-  --color-on-tertiary-container: #e9f0ff;
-  --color-on-tertiary-fixed: #0b1c30;
-  --color-on-tertiary-fixed-variant: #38485d;
-  --color-inverse-surface: #2d3133;
-  --color-inverse-on-surface: #eff1f3;
-  --color-inverse-primary: #b4c5ff;
-  --color-surface-tint: #0053db;
+  --color-on-tertiary-container: #eefff3;
+  --color-on-tertiary-fixed: #002114;
+  --color-on-tertiary-fixed-variant: #005137;
+  --color-inverse-surface: #213145;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-inverse-primary: #ffb3b6;
+  --color-surface-tint: #be0037;
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
-  --color-background-md: #f7f9fb;
-  --color-on-background: #191c1e;
+  --color-background-md: #f8f9ff;
+  --color-on-background: #0b1c30;
+
+  /* Explicit Ruby & Slate extras */
+  --color-ruby-deep: #be123c;
+  --color-crimson-vivid: #ff2647;
+  --color-rose-subtle: #fff1f2;
+  --color-rose-tint: #ffe4e6;
+  --color-canvas-bg: #fbfcfd;
+  --color-surface-slate: #f8fafc;
+  --color-border-subtle: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-tech-black: #030712;
+  --color-security-emerald: #059669;
+  --color-security-bg: #ecfdf5;
 
   /* Spacing tokens from Stitch */
-  --spacing-space-xs: 0.125rem;
-  --spacing-space-sm: 0.25rem;
-  --spacing-space-md: 0.5rem;
-  --spacing-space-lg: 0.75rem;
-  --spacing-space-xl: 1rem;
-  --spacing-gutter: 0.5rem;
-  --spacing-margin: 0.75rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter: 1rem;
+  --spacing-gutter-lg: 1.5rem;
+  --spacing-margin: 1rem;
+  --spacing-margin-md: 2rem;
+  --spacing-margin-lg: 3rem;
 
   /* Type scale */
-  --text-headline-lg: 20px;
-  --text-headline-lg--line-height: 28px;
-  --text-headline-lg--letter-spacing: -0.015em;
-  --text-headline-lg--font-weight: 600;
+  --text-headline-lg: 24px;
+  --text-headline-lg--line-height: 32px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
   --text-headline-md: 16px;
-  --text-headline-md--line-height: 22px;
+  --text-headline-md--line-height: 24px;
   --text-headline-md--letter-spacing: -0.01em;
   --text-headline-md--font-weight: 600;
-  --text-headline-sm: 14px;
-  --text-headline-sm--line-height: 20px;
-  --text-headline-sm--letter-spacing: -0.005em;
+  --text-headline-sm: 16px;
+  --text-headline-sm--line-height: 24px;
+  --text-headline-sm--letter-spacing: -0.01em;
   --text-headline-sm--font-weight: 600;
-  --text-body-lg: 14px;
-  --text-body-lg--line-height: 20px;
-  --text-body-md: 13px;
-  --text-body-md--line-height: 18px;
-  --text-body-sm: 12px;
-  --text-body-sm--line-height: 16px;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 26px;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 22px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
   --text-label-lg: 12px;
   --text-label-lg--line-height: 16px;
   --text-label-lg--letter-spacing: 0.02em;
@@ -137,10 +156,11 @@
   --text-label-sm--letter-spacing: 0.03em;
   --text-label-sm--font-weight: 600;
 
-  --radius-DEFAULT: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
 }
 
 html,
@@ -149,8 +169,8 @@ body {
 }
 
 body {
-  background: #f7f9fb;
-  color: #191c1e;
+  background: #fbfcfd;
+  color: #0b1c30;
   font-family: var(--font-sans);
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
@@ -173,8 +193,8 @@ a {
 }
 
 ::selection {
-  background: #dbe1ff;
-  color: #003ea8;
+  background: #ffdada;
+  color: #920028;
 }
 
 .no-scrollbar {

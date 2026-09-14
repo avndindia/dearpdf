@@ -18,24 +18,23 @@ const FILTERS: { id: CategoryFilter; label: string; count: number }[] = [
   { id: "assemble", label: "Assemble", count: 6 },
   { id: "edit", label: "Edit & Sign", count: 5 },
   { id: "convert", label: "Convert", count: 5 },
-  { id: "secure", label: "Security & Repair", count: 3 },
+  { id: "secure", label: "Security", count: 3 },
 ];
 
 function badgeClass(tone: StitchBadgeTone) {
   switch (tone) {
     case "popular":
+    case "brand":
+    case "primaryFixed":
+      return "bg-rose-subtle text-primary-container border border-brand-300 font-semibold";
     case "secondary":
     case "emerald":
-      return "bg-secondary-container text-on-secondary-fixed font-semibold";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold";
     case "tertiary":
-      return "bg-tertiary-fixed text-on-tertiary-fixed font-medium";
-    case "primaryFixed":
-    case "brand":
-      return "bg-primary-fixed text-on-primary-fixed-variant font-semibold";
     case "amber":
-      return "bg-secondary-container text-on-secondary-fixed font-semibold";
+      return "bg-amber-50 text-amber-800 border border-amber-200 font-medium";
     default:
-      return "bg-surface-container text-on-surface-variant";
+      return "bg-slate-100 text-slate-600 border border-slate-200";
   }
 }
 
@@ -91,45 +90,42 @@ export default function StitchAllTools() {
   };
 
   return (
-    <div className="flex w-full flex-col bg-surface text-on-surface">
-      {/* Command Header & Search Strip */}
-      <div className="w-full border-b border-outline-variant/30 bg-surface-container-lowest px-space-xl py-space-xl md:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-space-lg">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="group inline-flex items-center gap-1.5 font-label-md text-label-md text-on-surface-variant transition-colors hover:text-primary"
-            >
-              <MaterialIcon
-                name="arrow_back"
-                className="text-[14px] transition-transform group-hover:-translate-x-0.5"
-              />
-              <span>Back to DearPDF home</span>
-            </Link>
-          </div>
+    <div className="flex w-full flex-col bg-canvas-bg text-on-surface">
+      <div className="w-full border-b border-border-subtle bg-white px-4 py-8 sm:px-6 md:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6">
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-1.5 text-[13px] text-slate-500 transition-colors hover:text-primary-container"
+          >
+            <MaterialIcon
+              name="arrow_back"
+              className="text-[14px] transition-transform group-hover:-translate-x-0.5"
+            />
+            <span>Back to DearPDF home</span>
+          </Link>
 
-          <div className="flex flex-col justify-between gap-space-md pt-space-xs md:flex-row md:items-end">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div className="flex max-w-3xl flex-col gap-1">
-              <div className="flex flex-wrap items-center gap-space-md">
-                <h1 className="font-headline-lg text-headline-lg tracking-tight text-on-surface">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-2xl font-bold tracking-tight text-on-surface sm:text-3xl">
                   All PDF Tools
                 </h1>
-                <span className="rounded-full bg-secondary-container px-space-md py-0.5 font-label-sm text-label-sm text-on-secondary-fixed">
+                <span className="rounded-full border border-brand-200 bg-rose-subtle px-3 py-0.5 text-[11px] font-semibold text-primary-container">
                   {STITCH_TOOL_COUNT} Utilities Available
                 </span>
               </div>
-              <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                Merge, compress, OCR, convert, and more — every tool runs in your
-                browser. Works offline after the first visit.
+              <p className="text-sm leading-relaxed text-slate-500">
+                Merge, compress, OCR, convert, and more — every tool runs in your browser.
+                Works offline after the first visit.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col items-stretch justify-between gap-space-md pt-space-xs md:flex-row md:items-center">
+          <div className="flex flex-col items-stretch justify-between gap-3 md:flex-row md:items-center">
             <div className="relative max-w-xl flex-1">
               <MaterialIcon
                 name="search"
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px] text-slate-400"
               />
               <input
                 ref={searchRef}
@@ -138,16 +134,16 @@ export default function StitchAllTools() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={`Filter ${STITCH_TOOL_COUNT} tools (e.g. merge, compress, ocr, split)...`}
-                className="h-10 w-full rounded border border-outline-variant/60 bg-surface pl-9 pr-12 text-base text-on-surface shadow-sm transition-all placeholder:text-on-surface-variant/60 focus:border-primary focus:bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-primary"
+                className="h-10 w-full rounded-xl border border-border-subtle bg-surface-slate py-2 pl-9 pr-12 text-base text-on-surface shadow-sm transition-all placeholder:text-slate-400 focus:border-primary-container focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary-container"
               />
               <div className="pointer-events-none absolute right-2.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
-                <kbd className="rounded border border-outline-variant/40 bg-surface-container-high px-1.5 py-0.5 font-mono text-[10px] text-on-surface-variant">
+                <kbd className="rounded border border-border-subtle bg-white px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
                   /
                 </kbd>
               </div>
             </div>
 
-            <div className="no-scrollbar flex shrink-0 items-center gap-1 overflow-x-auto pb-1 md:pb-0">
+            <div className="no-scrollbar flex shrink-0 items-center gap-1.5 overflow-x-auto rounded-xl bg-slate-100 p-1">
               {FILTERS.map((btn) => {
                 const active = category === btn.id;
                 return (
@@ -157,11 +153,20 @@ export default function StitchAllTools() {
                     onClick={() => setCategory(btn.id)}
                     className={
                       active
-                        ? "rounded bg-primary-container px-space-md py-1 font-label-md text-label-md text-on-primary transition-all"
-                        : "rounded bg-surface-container px-space-md py-1 font-label-md text-label-md text-on-surface-variant transition-all hover:bg-surface-container-high hover:text-on-surface"
+                        ? "whitespace-nowrap rounded-lg bg-tech-black px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all"
+                        : "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] text-slate-500 transition-all hover:bg-white hover:text-on-surface"
                     }
                   >
-                    {btn.label} ({btn.count})
+                    {btn.label}{" "}
+                    <span
+                      className={
+                        active
+                          ? "ml-1 rounded-full bg-primary-container px-1.5 font-mono text-[11px] font-bold"
+                          : "ml-1 font-mono text-[11px] text-slate-400"
+                      }
+                    >
+                      {btn.count}
+                    </span>
                   </button>
                 );
               })}
@@ -170,43 +175,39 @@ export default function StitchAllTools() {
         </div>
       </div>
 
-      {/* Main Tools Grid */}
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-space-xl py-space-xl md:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 md:px-8">
         {grouped.map((group) => (
-          <section key={group.id} className="flex flex-col gap-space-md" data-category={group.id}>
-            <div className="flex items-center justify-between border-b border-outline-variant/30 pb-2">
-              <div className="flex items-baseline gap-2">
-                <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-primary">
-                  {group.index}
-                </span>
-                <h2 className="font-headline-sm text-headline-sm uppercase tracking-tight text-on-surface">
+          <section key={group.id} className="flex flex-col gap-4" data-category={group.id}>
+            <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container">
+                  <MaterialIcon name={group.icon} className="text-[18px]" />
+                </div>
+                <h2 className="text-lg font-bold tracking-tight text-on-surface">
                   {group.title}
                 </h2>
-                <span className="font-body-sm text-body-sm text-outline-variant">·</span>
-                <span className="font-body-sm text-body-sm text-on-surface-variant">
-                  {group.blurb}
-                </span>
+                <span className="hidden text-[13px] text-slate-500 sm:inline">— {group.blurb}</span>
               </div>
-              <span className="rounded bg-surface-container-low px-2 py-0.5 font-mono font-label-sm text-label-sm text-on-surface-variant">
+              <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-mono text-[12px] text-secondary">
                 {group.tools.length} tools
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {group.tools.map((tool) => (
                 <Link
                   key={tool.id}
                   href={tool.href}
                   prefetch={false}
-                  className="group flex flex-col justify-between gap-3 rounded border border-outline-variant/40 bg-surface-container-lowest p-3.5 transition-all hover:border-primary/60 hover:shadow-md"
+                  className="group flex flex-col justify-between gap-3 rounded-2xl border border-border-subtle bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl"
                 >
                   <div className="flex flex-col gap-2">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded bg-primary-fixed/30 text-primary transition-colors group-hover:bg-primary group-hover:text-on-primary">
-                        <MaterialIcon name={tool.icon} className="text-[20px]" />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle text-primary-container transition-colors group-hover:bg-primary-container group-hover:text-white">
+                        <MaterialIcon name={tool.icon} className="text-[22px]" />
                       </div>
                       <span
-                        className={`rounded px-1.5 py-0.5 font-label-sm text-[10px] ${badgeClass(
+                        className={`rounded-full px-2.5 py-0.5 text-[11px] ${badgeClass(
                           tool.badgeTone,
                         )}`}
                       >
@@ -215,24 +216,22 @@ export default function StitchAllTools() {
                     </div>
                     <div>
                       <div className="flex items-center justify-between">
-                        <h3 className="font-headline-sm text-headline-sm text-on-surface transition-colors group-hover:text-primary">
+                        <h3 className="text-base font-semibold text-on-surface transition-colors group-hover:text-primary-container">
                           {tool.name}
                         </h3>
                         <MaterialIcon
                           name="arrow_forward"
-                          className="text-[16px] text-on-surface-variant transition-all group-hover:translate-x-0.5 group-hover:text-primary"
+                          className="text-[16px] text-primary-container transition-all group-hover:translate-x-1"
                         />
                       </div>
-                      <p className="mt-1 line-clamp-2 font-body-sm text-body-sm text-on-surface-variant">
+                      <p className="mt-1 line-clamp-2 text-[13px] text-slate-500">
                         {tool.description}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between border-t border-outline-variant/20 pt-2 font-label-sm text-[11px] text-on-surface-variant">
-                    <span className="font-mono text-[10px] text-tertiary">{tool.footer}</span>
-                    <span className="rounded bg-surface-container px-1.5 py-0.5 font-mono text-[10px]">
-                      {tool.tag}
-                    </span>
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-3 font-mono text-[12px] text-secondary">
+                    <span>{tool.footer}</span>
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px]">{tool.tag}</span>
                   </div>
                 </Link>
               ))}
@@ -241,46 +240,42 @@ export default function StitchAllTools() {
         ))}
 
         {grouped.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-space-md rounded border border-outline-variant/30 bg-surface-container-lowest py-16 text-center">
-            <MaterialIcon name="search_off" className="text-4xl text-on-surface-variant" />
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border-subtle bg-white py-16 text-center">
+            <MaterialIcon name="search_off" className="text-4xl text-slate-400" />
             <div className="flex flex-col gap-1">
-              <h3 className="font-headline-sm text-headline-sm text-on-surface">
-                No matching PDF utilities
-              </h3>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Try searching for alternative keywords like &quot;watermark&quot;,
-                &quot;split&quot;, &quot;word&quot;, or &quot;sign&quot;.
+              <h3 className="text-base font-semibold text-on-surface">No matching PDF utilities</h3>
+              <p className="text-[13px] text-slate-500">
+                Try searching for &quot;watermark&quot;, &quot;split&quot;, &quot;word&quot;, or
+                &quot;sign&quot;.
               </p>
             </div>
             <button
               type="button"
               onClick={resetSearch}
-              className="rounded bg-surface-container px-space-md py-1 font-label-md text-label-md text-on-surface transition-colors hover:bg-surface-container-high"
+              className="rounded-lg bg-slate-100 px-4 py-1.5 text-[13px] font-medium text-on-surface transition-colors hover:bg-rose-subtle hover:text-primary-container"
             >
               Reset Search Filter
             </button>
           </div>
         ) : null}
 
-        {/* Official Document Notice */}
-        <div className="mt-2 flex w-full flex-col items-start justify-between gap-4 rounded border border-outline-variant/40 bg-surface-container-low p-4 md:flex-row md:items-center md:p-5">
+        <div className="mt-2 flex w-full flex-col items-start justify-between gap-4 rounded-2xl border border-border-subtle bg-surface-slate p-4 md:flex-row md:items-center md:p-5">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded bg-surface-container-highest">
-              <MaterialIcon name="verified_user" className="text-[18px] text-tertiary" />
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-rose-tint bg-rose-subtle">
+              <MaterialIcon name="verified_user" className="text-[18px] text-primary-container" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="font-label-sm text-label-sm font-semibold uppercase tracking-wider text-on-surface">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface">
                 Official Document Notice
               </span>
-              <p className="max-w-3xl font-body-sm text-body-sm leading-normal text-on-surface-variant">
-                For important documents, always open the downloaded result before
-                sharing or filing.
+              <p className="max-w-3xl text-[13px] leading-normal text-slate-500">
+                For important documents, always open the downloaded result before sharing or filing.
               </p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center justify-end gap-2 self-stretch border-t border-outline-variant/30 pt-2 md:self-auto md:border-t-0 md:pt-0">
-            <div className="flex items-center gap-1.5 rounded border border-outline-variant/30 bg-surface-container-lowest px-2.5 py-1 font-label-sm text-label-sm text-on-surface-variant">
-              <MaterialIcon name="offline_bolt" className="text-[14px] text-primary" />
+          <div className="flex shrink-0 items-center justify-end gap-2 self-stretch border-t border-border-subtle pt-2 md:self-auto md:border-t-0 md:pt-0">
+            <div className="flex items-center gap-1.5 rounded-lg border border-border-subtle bg-white px-2.5 py-1 text-[11px] text-slate-500">
+              <MaterialIcon name="offline_bolt" className="text-[14px] text-primary-container" />
               <span className="font-medium">Works offline</span>
             </div>
           </div>
