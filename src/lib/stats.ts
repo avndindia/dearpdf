@@ -11,6 +11,7 @@ export const STAT_TOOLS = [
   "metadata",
   "flatten",
   "pdf-to-text",
+  "ai-summary",
   "pdf-to-word",
   "images-to-pdf",
   "pdf-to-images",
@@ -40,6 +41,7 @@ export function toolFromPath(pathname: string): StatTool | null {
   const slug = match[1];
   if (slug === "compress-split") return "compress";
   if (slug === "searchable-pdf") return "pdf-to-text";
+  if (slug === "summary") return "ai-summary";
   return isStatTool(slug) ? slug : null;
 }
 

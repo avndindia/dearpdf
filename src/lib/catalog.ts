@@ -39,7 +39,7 @@ export const categories: { id: ToolCategoryId; title: string; blurb: string }[] 
   {
     id: "convert",
     title: "Convert",
-    blurb: "Images ↔ PDF, Word export, and OCR.",
+    blurb: "Images ↔ PDF, Word export, OCR, and on-device summary.",
   },
   {
     id: "secure",
@@ -212,6 +212,17 @@ export const tools: PdfTool[] = [
     limit: "partial",
     limitNote: "Layout is simplified. Complex multi-column pages may need cleanup in Word.",
     keywords: ["docx", "word", "editable"],
+  },
+  {
+    slug: "ai-summary",
+    title: "AI Summary of PDF",
+    job: "Private on-device summary of PDF text.",
+    description: "Extractive summary that runs in your browser. Nothing leaves this device.",
+    category: "convert",
+    accept: "application/pdf",
+    limit: "partial",
+    limitNote: "Uses the PDF text layer. Scanned pages need OCR first. Picks key sentences — not a cloud LLM rewrite.",
+    keywords: ["summary", "summarise", "summarize", "ai", "on-device", "private"],
   },
   {
     slug: "ocr",

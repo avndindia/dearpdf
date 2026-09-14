@@ -100,6 +100,13 @@ export const pdfTools: PdfToolCatalogItem[] = [
     category: "Convert",
   },
   {
+    title: "AI Summary of PDF",
+    description: "Private on-device summary of your PDF — nothing leaves this device.",
+    href: "/pdf-tools/ai-summary",
+    category: "Convert",
+    popular: true,
+  },
+  {
     title: "Grayscale PDF",
     description: "Convert colour pages to print-friendly grayscale.",
     href: "/pdf-tools/grayscale",

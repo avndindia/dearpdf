@@ -26,6 +26,7 @@ const FAST_ACTIONS: {
   { label: "Convert", icon: "sync_alt", filter: "convert" },
   { label: "Sign", icon: "draw", href: "/pdf-tools/sign" },
   { label: "OCR", icon: "document_scanner", href: "/pdf-tools/pdf-to-text" },
+  { label: "Summary", icon: "auto_awesome", href: "/pdf-tools/ai-summary" },
 ];
 
 function badgeClass(tone: StitchBadgeTone) {

@@ -55,9 +55,9 @@ export const stitchCategories: StitchCategory[] = [
     id: "convert",
     index: "03",
     title: "Convert",
-    blurb: "Format conversion, OCR extraction, and image exports",
+    blurb: "Format conversion, OCR extraction, summaries, and image exports",
     icon: "sync_alt",
-    count: 5,
+    count: 6,
   },
   {
     id: "secure",
@@ -226,6 +226,21 @@ export const stitchTools: StitchTool[] = [
     footer: "On-device OCR",
     tag: "Neural OCR",
     searchText: "pdf ocr text recognition tesseract english hindi marathi searchable",
+    iconTone: "amber",
+  },
+
+  {
+    id: "ai-summary",
+    name: "AI Summary of PDF",
+    description: "Private on-device summary of your PDF — nothing leaves this device.",
+    href: "/pdf-tools/ai-summary",
+    category: "convert",
+    icon: "auto_awesome",
+    badge: "On-device",
+    badgeTone: "popular",
+    footer: "Runs in your browser",
+    tag: "Private summary",
+    searchText: "ai summary summarise summarize pdf private on-device extractive textrank",
     iconTone: "amber",
   },
   {

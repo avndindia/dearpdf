@@ -1495,6 +1495,22 @@
 
 .ocr-results .text-preview { grid-column: 1 / -1; }
 
+.ai-summary-bullets {
+  margin: 10px 0 16px;
+  padding-left: 1.2em;
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ai-summary-bullets li + li { margin-top: 8px; }
+
+.stitch-tool-shell .ai-summary-bullets {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
 .signature-controls { grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); align-items: start; }
 
 .signature-pad-wrap { display: grid; grid-row: span 2; gap: 10px; min-width: 0; }

@@ -19,6 +19,8 @@ const SLUG_MAP: Record<string, string> = {
   "pdf-to-word": "/pdf-tools/pdf-to-word",
   ocr: "/pdf-tools/pdf-to-text",
   "pdf-to-text": "/pdf-tools/pdf-to-text",
+  "ai-summary": "/pdf-tools/ai-summary",
+  summary: "/pdf-tools/ai-summary",
   "add-password": "/pdf-tools/lock",
   lock: "/pdf-tools/lock",
   "remove-password": "/pdf-tools/unlock",

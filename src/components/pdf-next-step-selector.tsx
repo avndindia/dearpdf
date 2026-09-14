@@ -11,6 +11,7 @@ export const PDF_NEXT_STEPS = [
   { href: "/pdf-tools/page-numbers", label: "Add page numbers" },
   { href: "/pdf-tools/watermark", label: "Add watermark" },
   { href: "/pdf-tools/sign", label: "Sign PDF" },
+  { href: "/pdf-tools/ai-summary", label: "AI Summary" },
   { href: "/pdf-tools/lock", label: "Add password" },
 ] as const;
 

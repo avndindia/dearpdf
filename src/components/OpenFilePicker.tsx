@@ -28,6 +28,7 @@ const PDF_TOOLS: ToolChoice[] = [
   { label: "Organise", icon: "grid_view", path: "/pdf-tools/organise", group: "more" },
   { label: "Flatten", icon: "layers_clear", path: "/pdf-tools/flatten", group: "more" },
   { label: "Unlock", icon: "lock_open", path: "/pdf-tools/unlock", group: "more" },
+  { label: "AI Summary", icon: "auto_awesome", path: "/pdf-tools/ai-summary", group: "more" },
 ];
 
 /**

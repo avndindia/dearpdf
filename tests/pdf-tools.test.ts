@@ -6,6 +6,7 @@ import { PDFDocument, StandardFonts } from "pdf-lib";
 import { strFromU8 } from "fflate";
 import { createEditableDocx } from "../src/lib/docx.ts";
 import { downloadGeneratedFile } from "../src/lib/browser-download.ts";
+import { summarizeExtractive, splitSentences } from "../src/lib/on-device-summary.ts";
 import { applyPdfEdits, pageIndexesNeedingRedaction, replacePdfPagesWithImages } from "../src/lib/pdf-editor.ts";
 import {
   addPageNumbersPdf,
@@ -1037,4 +1038,25 @@ test("natural filename sort keeps 2 before 10", () => {
   const names = ["10.pdf", "2.pdf", "1.pdf"];
   names.sort((left, right) => left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" }));
   assert.deepEqual(names, ["1.pdf", "2.pdf", "10.pdf"]);
+});
+
+
+test("on-device extractive summary picks key sentences offline", () => {
+  const text = [
+    "DearPDF keeps documents on your device.",
+    "Cloud converters upload files to remote servers for processing.",
+    "An on-device summary scores sentences without leaving the browser.",
+    "Users can download the result as a plain text file.",
+    "Scanned image PDFs should be run through OCR first.",
+    "Short, medium, and long lengths change how many points are kept.",
+    "Privacy is the product, not an afterthought.",
+    "Nothing about the PDF content is sent to a language model API.",
+  ].join(" ");
+  const sentences = splitSentences(text);
+  assert.ok(sentences.length >= 6);
+  const summary = summarizeExtractive(text, "short");
+  assert.ok(summary.bullets.length >= 2);
+  assert.ok(summary.paragraph.length > 20);
+  assert.match(summary.fullText, /On-device summary/);
+  assert.match(summary.fullText, /Private summary/);
 });
