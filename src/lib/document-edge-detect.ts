@@ -357,7 +357,7 @@ export function isSaneDocumentQuad(corners: Quad, frameW: number, frameH: number
   const area = polygonArea(corners);
   const frameArea = Math.max(1, frameW * frameH);
   const areaRatio = area / frameArea;
-  if (areaRatio < 0.1 || areaRatio > 0.98) return false;
+  if (areaRatio < 0.12 || areaRatio > 0.97) return false;
   const [tl, tr, br, bl] = corners;
   const top = dist(tl, tr);
   const bottom = dist(bl, br);
@@ -366,9 +366,22 @@ export function isSaneDocumentQuad(corners: Quad, frameW: number, frameH: number
   if (top < 8 || bottom < 8 || left < 8 || right < 8) return false;
   const widthRatio = Math.min(top, bottom) / Math.max(top, bottom);
   const heightRatio = Math.min(left, right) / Math.max(left, right);
-  if (widthRatio < 0.3 || heightRatio < 0.3) return false;
+  // Strong perspective is OK; collapsed sides (text-column / bad contour) are not.
+  if (widthRatio < 0.55 || heightRatio < 0.55) return false;
   const aspect = Math.max(top, bottom) / Math.max(left, right);
-  if (aspect > 2.35 || aspect < 0.42) return false;
+  if (aspect > 2.5 || aspect < 0.4) return false;
+  // Reject when a corner sits far inside the AABB (diagonal slash through page).
+  const minX = Math.min(tl.x, tr.x, br.x, bl.x);
+  const maxX = Math.max(tl.x, tr.x, br.x, bl.x);
+  const minY = Math.min(tl.y, tr.y, br.y, bl.y);
+  const maxY = Math.max(tl.y, tr.y, br.y, bl.y);
+  const bw = Math.max(1, maxX - minX);
+  const bh = Math.max(1, maxY - minY);
+  for (const p of [tl, tr, br, bl]) {
+    const insetX = Math.min(p.x - minX, maxX - p.x) / bw;
+    const insetY = Math.min(p.y - minY, maxY - p.y) / bh;
+    if (insetX > 0.22 && insetY > 0.22) return false;
+  }
   return true;
 }
 
@@ -549,8 +562,85 @@ function buildPaperMask(data: Uint8ClampedArray, w: number, h: number): {
   return { mask, gray, mag };
 }
 
+
+/** Grow a paper AABB while neighboring pixels still look paper-like. */
+function expandPaperBounds(
+  mask: Uint8Array,
+  gray: Float32Array,
+  w: number,
+  h: number,
+  minX: number,
+  minY: number,
+  maxX: number,
+  maxY: number,
+) {
+  const paperLuma = (() => {
+    let s = 0;
+    let n = 0;
+    for (let y = minY; y <= maxY; y += 3) {
+      for (let x = minX; x <= maxX; x += 3) {
+        if (!mask[y * w + x]) continue;
+        s += gray[y * w + x];
+        n += 1;
+      }
+    }
+    return n ? s / n : 180;
+  })();
+  const thr = paperLuma - 28;
+
+  const tryExpand = (dir: "left" | "right" | "up" | "down") => {
+    for (let step = 0; step < Math.max(w, h); step += 1) {
+      let hits = 0;
+      let total = 0;
+      if (dir === "down") {
+        const y = maxY + 1;
+        if (y >= h - 1) return;
+        for (let x = minX; x <= maxX; x += 2) {
+          total += 1;
+          if (gray[y * w + x] >= thr) hits += 1;
+        }
+        if (hits / Math.max(1, total) < 0.55) return;
+        maxY = y;
+      } else if (dir === "up") {
+        const y = minY - 1;
+        if (y <= 0) return;
+        for (let x = minX; x <= maxX; x += 2) {
+          total += 1;
+          if (gray[y * w + x] >= thr) hits += 1;
+        }
+        if (hits / Math.max(1, total) < 0.55) return;
+        minY = y;
+      } else if (dir === "left") {
+        const x = minX - 1;
+        if (x <= 0) return;
+        for (let y = minY; y <= maxY; y += 2) {
+          total += 1;
+          if (gray[y * w + x] >= thr) hits += 1;
+        }
+        if (hits / Math.max(1, total) < 0.55) return;
+        minX = x;
+      } else {
+        const x = maxX + 1;
+        if (x >= w - 1) return;
+        for (let y = minY; y <= maxY; y += 2) {
+          total += 1;
+          if (gray[y * w + x] >= thr) hits += 1;
+        }
+        if (hits / Math.max(1, total) < 0.55) return;
+        maxX = x;
+      }
+    }
+  };
+  tryExpand("up");
+  tryExpand("down");
+  tryExpand("left");
+  tryExpand("right");
+  return { minX, minY, maxX, maxY };
+}
+
 function quadFromLargestPaperRegion(
   mask: Uint8Array,
+  gray: Float32Array,
   mag: Float32Array,
   w: number,
   h: number,
@@ -611,27 +701,46 @@ function quadFromLargestPaperRegion(
       const contour = traceContour(componentMask, w, h, sx, sy, visited);
       if (!contour) continue;
       const filledFrac = region.count / (w * h);
-      const quad = bestQuadFromContour(contour, w, h, mag, filledFrac);
-      if (quad) {
-        const scored = { corners: quad.corners, score: quad.score * centerBoost };
-        if (!best || scored.score > best.score) best = scored;
-      }
-
-      // Axis-aligned fallback from bbox (helps low-contrast tan desks).
-      const padX = Math.max(1, Math.round(bw * 0.01));
-      const padY = Math.max(1, Math.round(bh * 0.01));
+      const expanded = expandPaperBounds(
+        mask,
+        gray,
+        w,
+        h,
+        region.minX,
+        region.minY,
+        region.maxX,
+        region.maxY,
+      );
+      const eBw = expanded.maxX - expanded.minX + 1;
+      const eBh = expanded.maxY - expanded.minY + 1;
+      const padX = Math.max(1, Math.round(eBw * 0.01));
+      const padY = Math.max(1, Math.round(eBh * 0.01));
       const aa: Quad = [
-        { x: clamp(region.minX - padX, 0, w - 1), y: clamp(region.minY - padY, 0, h - 1) },
-        { x: clamp(region.maxX + padX, 0, w - 1), y: clamp(region.minY - padY, 0, h - 1) },
-        { x: clamp(region.maxX + padX, 0, w - 1), y: clamp(region.maxY + padY, 0, h - 1) },
-        { x: clamp(region.minX - padX, 0, w - 1), y: clamp(region.maxY + padY, 0, h - 1) },
+        { x: clamp(expanded.minX - padX, 0, w - 1), y: clamp(expanded.minY - padY, 0, h - 1) },
+        { x: clamp(expanded.maxX + padX, 0, w - 1), y: clamp(expanded.minY - padY, 0, h - 1) },
+        { x: clamp(expanded.maxX + padX, 0, w - 1), y: clamp(expanded.maxY + padY, 0, h - 1) },
+        { x: clamp(expanded.minX - padX, 0, w - 1), y: clamp(expanded.maxY + padY, 0, h - 1) },
       ];
       const aaScore = scoreQuad(aa, w, h, mag, { preferLarge: true, filledFrac });
-      if (aaScore != null) {
-        // Slightly discount AABB vs true perspective quad.
-        const scored = { corners: aa, score: aaScore * 0.92 * centerBoost };
-        if (!best || scored.score > best.score) best = scored;
+      const aaCandidate =
+        aaScore != null
+          ? { corners: aa, score: aaScore * 0.96 * centerBoost }
+          : null;
+
+      const quad = bestQuadFromContour(contour, w, h, mag, filledFrac);
+      let contourCandidate: { corners: Quad; score: number } | null = null;
+      if (quad && isSaneDocumentQuad(quad.corners, w, h)) {
+        contourCandidate = { corners: quad.corners, score: quad.score * centerBoost };
       }
+
+      // Prefer paper AABB unless a sane perspective contour clearly wins.
+      const pick =
+        contourCandidate && aaCandidate
+          ? contourCandidate.score > aaCandidate.score * 1.06
+            ? contourCandidate
+            : aaCandidate
+          : contourCandidate || aaCandidate;
+      if (pick && (!best || pick.score > best.score)) best = pick;
     }
   }
   return best;
@@ -696,7 +805,7 @@ function quadFromSobelEdges(
   }
 
   // Sobel-only hits are less trustworthy (text columns look rectangular).
-  if (best) best = { corners: best.corners, score: best.score * 0.85 };
+  if (best) best = { corners: best.corners, score: best.score * 0.72 };
   void gray;
   return best;
 }
@@ -826,16 +935,19 @@ export function detectDocumentQuad(
   const { w, h, scale, data } = work;
   const { mask, gray, mag } = buildPaperMask(data, w, h);
 
-  const paper = quadFromLargestPaperRegion(mask, mag, w, h);
+  const paper = quadFromLargestPaperRegion(mask, gray, mag, w, h);
   const edges = quadFromSobelEdges(gray, mag, w, h);
 
   let best: { corners: Quad; score: number } | null = null;
   if (paper) best = paper;
-  if (edges && (!best || edges.score > best.score)) best = edges;
-
-  // Prefer paper region when scores are close — fewer text-column false positives.
-  if (paper && edges && Math.abs(paper.score - edges.score) < 0.08) {
-    best = paper;
+  // Sobel contours often latch onto text columns — only win over paper when
+  // clearly stronger and geometrically sane.
+  if (
+    edges &&
+    isSaneDocumentQuad(edges.corners, w, h) &&
+    (!paper || edges.score > paper.score * 1.18)
+  ) {
+    best = edges;
   }
 
   const inv = 1 / scale;
@@ -867,12 +979,14 @@ export function detectDocumentQuad(
       return { corners: toSource(best.corners), confidence, workWidth: w, workHeight: h };
     }
     const bright = detectBrightDocumentQuad(source, sourceWidth, sourceHeight);
-    if (bright && bright.confidence > confidence) return bright;
-    // Uncertain: still return candidate corners at reduced confidence so the
-    // adjust UI can start from them, but auto-scan / hard crop should ignore.
+    if (bright && bright.confidence > confidence && isSaneDocumentQuad(bright.corners, sourceWidth, sourceHeight)) {
+      return bright;
+    }
+    // Uncertain: inset guide at low confidence so UI offers adjustable corners
+    // instead of applying a wrong crop.
     return {
-      corners: toSource(best.corners),
-      confidence: Math.min(confidence, 0.33),
+      corners: defaultGuideQuad(sourceWidth, sourceHeight),
+      confidence: Math.min(confidence, 0.28),
       workWidth: w,
       workHeight: h,
     };

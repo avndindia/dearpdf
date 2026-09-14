@@ -334,6 +334,7 @@ export default function ScanToPdfPage() {
             autoScanRef.current &&
             !processingRef.current &&
             result.confidence >= DETECT_MIN_CONFIDENCE &&
+            isSaneDocumentQuad(result.corners, vw, vh) &&
             prev &&
             quadDrift(prev, result.corners, vw, vh) < STABLE_DRIFT
           ) {
@@ -411,8 +412,13 @@ export default function ScanToPdfPage() {
     setFlash(true);
     window.setTimeout(() => setFlash(false), 120);
     try {
+      const live = liveCornersRef.current;
       const corners =
-        liveConfRef.current >= DETECT_MIN_CONFIDENCE ? liveCornersRef.current : null;
+        live &&
+        liveConfRef.current >= DETECT_MIN_CONFIDENCE &&
+        isSaneDocumentQuad(live, video.videoWidth, video.videoHeight)
+          ? live
+          : null;
       await captureFromSource(video, video.videoWidth, video.videoHeight, corners);
       setWork({ kind: "idle" });
     } catch (error) {
@@ -610,7 +616,10 @@ export default function ScanToPdfPage() {
   const outlinePoints = liveCorners
     ? liveCorners.map((c) => `${c.x},${c.y}`).join(" ")
     : "";
-  const edgeLocked = liveConfidence >= DETECT_MIN_CONFIDENCE;
+  const edgeLocked =
+    liveConfidence >= DETECT_MIN_CONFIDENCE &&
+    !!liveCorners &&
+    isSaneDocumentQuad(liveCorners, videoSize.w, videoSize.h);
 
   return (
     <StitchToolShell
