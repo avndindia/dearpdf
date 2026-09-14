@@ -168,7 +168,7 @@ export default function HowItWorksPage() {
               Merge PDF
             </Link>
             <Link
-              href="/pdf-tools"
+              href="/#tools"
               className="inline-flex items-center gap-1.5 rounded-xl border border-border-subtle bg-white px-4 py-2 text-sm font-semibold text-on-surface hover:border-brand-300 hover:bg-rose-subtle"
             >
               All tools

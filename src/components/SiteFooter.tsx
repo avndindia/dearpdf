@@ -38,7 +38,7 @@ export default function SiteFooter() {
             </span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-5 text-[13px]">
-            <Link href="/pdf-tools" className="text-slate-500 transition-colors hover:text-primary-container">
+            <Link href="/#tools" className="text-slate-500 transition-colors hover:text-primary-container">
               Tools
             </Link>
             <Link

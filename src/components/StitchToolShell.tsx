@@ -34,7 +34,7 @@ export default function StitchToolShell({
       <div className="stitch-tool-topbar">
         <div className="stitch-tool-topbar-left">
           <nav className="stitch-tool-breadcrumb" aria-label="Breadcrumb">
-            <Link href="/pdf-tools" className="stitch-tool-back">
+            <Link href="/#tools" className="stitch-tool-back">
               <MaterialIcon name="arrow_back" className="text-[14px]" />
               <span>All tools</span>
             </Link>
@@ -65,11 +65,7 @@ export default function StitchToolShell({
               </Link>
             ))}
           </div>
-        ) : (
-          <Link href="/pdf-tools" className="stitch-tool-trust-link">
-            Browse all tools
-          </Link>
-        )}
+        ) : null}
       </footer>
     </div>
   );

@@ -37,6 +37,6 @@ export default async function LegacyToolRedirectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const target = SLUG_MAP[slug] ?? "/pdf-tools";
+  const target = SLUG_MAP[slug] ?? "/#tools";
   return <LegacyToolRedirectClient target={target} />;
 }

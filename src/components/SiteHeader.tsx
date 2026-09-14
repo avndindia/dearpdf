@@ -10,9 +10,10 @@ import { openFileIntoDearPdf } from "@/lib/open-file-handoff";
 const NAV = [
   { href: "/", label: "Home", match: (p: string) => p === "/" },
   {
-    href: "/pdf-tools",
+    href: "/#tools",
     label: "All Tools",
-    match: (p: string) => p === "/pdf-tools" || p.startsWith("/pdf-tools/"),
+    // Home hosts the tool directory at #tools — highlight on home, not on individual tools.
+    match: (p: string) => p === "/",
   },
   {
     href: "/how-it-works",

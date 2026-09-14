@@ -31,7 +31,7 @@ export function togglePdfToolBookmark(href: string) {
   return next.includes(href);
 }
 
-export const PDF_TOOLS_HUB_HREF = "/pdf-tools";
+export const PDF_TOOLS_HUB_HREF = "/#tools";
 
 export function isPdfToolsHubBookmarked() {
   return isPdfToolBookmarked(PDF_TOOLS_HUB_HREF);

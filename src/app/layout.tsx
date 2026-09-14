@@ -4,6 +4,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import PdfToolsOfflineRoot from "@/components/pdf-tools-offline-root";
 import PdfToolCompletion from "@/components/pdf-tool-completion";
+import OpenFilePicker from "@/components/OpenFilePicker";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -44,6 +45,7 @@ export default function RootLayout({
         </div>
         <PdfToolsOfflineRoot />
         <PdfToolCompletion />
+        <OpenFilePicker />
       </body>
     </html>
   );

@@ -213,10 +213,10 @@ export default function StitchHome() {
                         key={action.label}
                         href={action.href}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0"
+                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
                       >
-                        <MaterialIcon name={action.icon} className="shrink-0 text-[16px] text-primary-container" />
-                        <span className="whitespace-nowrap">{action.label}</span>
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
+                        <span className="whitespace-nowrap leading-tight">{action.label}</span>
                       </Link>
                     ) : (
                       <button
@@ -226,10 +226,10 @@ export default function StitchHome() {
                           e.stopPropagation();
                           applyConvertFilter();
                         }}
-                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0"
+                        className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white px-2 py-2 text-[13px] font-medium text-on-surface shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:bg-rose-subtle hover:text-primary-container sm:min-h-0 sm:flex-row sm:gap-2 sm:px-3 sm:py-1.5"
                       >
-                        <MaterialIcon name={action.icon} className="shrink-0 text-[16px] text-primary-container" />
-                        <span className="whitespace-nowrap">{action.label}</span>
+                        <MaterialIcon name={action.icon} className="shrink-0 text-[18px] text-primary-container sm:text-[16px]" />
+                        <span className="whitespace-nowrap leading-tight">{action.label}</span>
                       </button>
                     ),
                   )}
