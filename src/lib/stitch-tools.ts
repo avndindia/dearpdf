@@ -337,7 +337,7 @@ export const stitchTools: StitchTool[] = [
   {
     id: "scan-to-pdf",
     name: "Scan to PDF",
-    description: "Camera or gallery capture, crop edges, enhance, and save a multi-page PDF.",
+    description: "Range-scan pages with your camera, enhance, and save one multi-page PDF.",
     href: "/pdf-tools/scan-to-pdf",
     category: "convert",
     icon: "photo_camera",

@@ -562,3 +562,65 @@ export async function imagesJpegToPdf(
   }
   return output.save({ addDefaultPage: false, useObjectStreams: true });
 }
+
+/** Fast full-frame (or inset) JPEG with optional document auto-levels. No perspective warp. */
+export async function documentFrameToJpeg(
+  image: CanvasImageSource,
+  sourceWidth: number,
+  sourceHeight: number,
+  options: {
+    maxWidth?: number;
+    enhance?: boolean;
+    /** Fractional inset from each edge (0–0.2). */
+    inset?: number;
+    quality?: number;
+  } = {},
+): Promise<{ bytes: Uint8Array; width: number; height: number }> {
+  const maxWidth = options.maxWidth ?? 1600;
+  const enhance = options.enhance ?? true;
+  const inset = Math.max(0, Math.min(0.2, options.inset ?? 0));
+  const quality = options.quality ?? 0.88;
+
+  const sx = Math.round(sourceWidth * inset);
+  const sy = Math.round(sourceHeight * inset);
+  const sw = Math.max(1, sourceWidth - sx * 2);
+  const sh = Math.max(1, sourceHeight - sy * 2);
+  const scale = Math.min(1, maxWidth / sw);
+  const width = Math.max(32, Math.round(sw * scale));
+  const height = Math.max(32, Math.round(sh * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: enhance });
+  if (!ctx) throw new Error("Canvas is not available in this browser.");
+  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
+
+  if (enhance) {
+    const out = ctx.getImageData(0, 0, width, height);
+    let min = 255;
+    let max = 0;
+    for (let i = 0; i < out.data.length; i += 4) {
+      const g = out.data[i] * 0.299 + out.data[i + 1] * 0.587 + out.data[i + 2] * 0.114;
+      if (g < min) min = g;
+      if (g > max) max = g;
+    }
+    // Ignore extreme outliers a bit by shrinking the range slightly.
+    const pad = (max - min) * 0.02;
+    min = Math.max(0, min + pad);
+    max = Math.min(255, max - pad);
+    const range = Math.max(1, max - min);
+    for (let i = 0; i < out.data.length; i += 4) {
+      for (let c = 0; c < 3; c += 1) {
+        let v = ((out.data[i + c] - min) / range) * 255;
+        v = (v - 128) * 1.22 + 128;
+        out.data[i + c] = Math.max(0, Math.min(255, Math.round(v)));
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+  if (!blob) throw new Error("Could not encode the scanned page.");
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), width, height };
+}

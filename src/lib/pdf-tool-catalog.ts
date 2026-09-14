@@ -133,7 +133,7 @@ export const pdfTools: PdfToolCatalogItem[] = [
   },
   {
     title: "Scan to PDF",
-    description: "Camera or gallery → crop → enhance → multi-page PDF.",
+    description: "Scan pages with your camera, then download a PDF.",
     href: "/pdf-tools/scan-to-pdf",
     category: "Convert",
     popular: true,

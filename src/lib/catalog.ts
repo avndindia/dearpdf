@@ -279,8 +279,8 @@ export const tools: PdfTool[] = [
   {
     slug: "scan-to-pdf",
     title: "Scan to PDF",
-    job: "Camera or gallery → cropped multi-page PDF.",
-    description: "Capture pages, crop to document edges, optional contrast enhance, bundle locally.",
+    job: "Camera range scan → multi-page PDF.",
+    description: "Capture page after page with your camera (or gallery), auto-enhance, then download one PDF — all on-device.",
     category: "convert",
     accept: "image/jpeg,image/png,image/jpg",
     multiple: true,
