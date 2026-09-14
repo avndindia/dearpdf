@@ -25,6 +25,8 @@ const POSITIONS: Array<{ value: PageNumberPosition; label: string }> = [
   { value: "bottom-right", label: "Bottom right" },
 ];
 
+const COLOURS = ["#4b4b4b", "#111111", "#c0392b", "#2980b9", "#27ae60", "#8e44ad", "#d35400"];
+
 function moveItem<T>(list: T[], from: number, to: number) {
   const next = [...list];
   const [item] = next.splice(from, 1);
@@ -48,6 +50,7 @@ export default function BatesNumberingPage() {
   const [margin, setMargin] = useState(28);
   const [fontSize, setFontSize] = useState(12);
   const [color, setColor] = useState("#c0392b");
+  const [bold, setBold] = useState(true);
   const [whitePlate, setWhitePlate] = useState(true);
   const [results, setResults] = useState<BatesFileResult[] | null>(null);
   const [csv, setCsv] = useState("");
@@ -171,7 +174,7 @@ export default function BatesNumberingPage() {
     try {
       const { results: stamped, csv: log } = await applyBatesNumbering(
         files.map((f) => ({ name: f.file.name, bytes: f.bytes })),
-        { prefix, suffix, startNumber, digits, position, margin, fontSize, color, whitePlate },
+        { prefix, suffix, startNumber, digits, position, margin, fontSize, color, whitePlate, bold },
       );
       setResults(stamped);
       setCsv(log);
@@ -223,7 +226,7 @@ export default function BatesNumberingPage() {
                 )}
                 <b
                   className={`page-number-live-mark ${position}${whitePlate ? " bates-plate" : ""}`}
-                  style={{ color, fontSize: `${Math.max(11, fontSize)}px`, fontWeight: 700 }}
+                  style={{ color, fontSize: `${Math.max(11, fontSize)}px`, fontWeight: bold ? 700 : 500 }}
                 >
                   {previewLabel}
                 </b>
@@ -329,26 +332,141 @@ export default function BatesNumberingPage() {
                 <strong>Add more PDFs</strong>
               </label>
 
-              <div className="tool-options-grid">
-                <label><span>Prefix</span><input value={prefix} disabled={busy} onChange={(e) => setPrefix(e.target.value)} /></label>
-                <label><span>Suffix</span><input value={suffix} disabled={busy} onChange={(e) => setSuffix(e.target.value)} /></label>
-                <label><span>Start number</span><input type="number" min={0} value={startNumber} disabled={busy} onChange={(e) => setStartNumber(Math.max(0, Number(e.target.value) || 0))} /></label>
-                <label><span>Digits</span><input type="number" min={1} max={12} value={digits} disabled={busy} onChange={(e) => setDigits(Math.min(12, Math.max(1, Number(e.target.value) || 6)))} /></label>
+              <section className="page-number-custom-text">
+                <span>Custom text</span>
                 <label>
-                  <span>Position</span>
-                  <select value={position} disabled={busy} onChange={(e) => setPosition(e.target.value as PageNumberPosition)}>
-                    {POSITIONS.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-                  </select>
+                  <span>Before</span>
+                  <input
+                    value={prefix}
+                    disabled={busy}
+                    placeholder="ABC"
+                    aria-label="Bates prefix"
+                    onChange={(event) => setPrefix(event.target.value)}
+                  />
                 </label>
-                <label><span>Margin</span><input type="number" min={8} max={72} value={margin} disabled={busy} onChange={(e) => setMargin(Number(e.target.value) || 28)} /></label>
-                <label><span>Font size</span><input type="number" min={6} max={72} value={fontSize} disabled={busy} onChange={(e) => setFontSize(Number(e.target.value) || 12)} /></label>
-                <label><span>Colour</span><input type="color" value={color} disabled={busy} onChange={(e) => setColor(e.target.value)} /></label>
+                <label>
+                  <span>After</span>
+                  <input
+                    value={suffix}
+                    disabled={busy}
+                    placeholder=""
+                    aria-label="Bates suffix"
+                    onChange={(event) => setSuffix(event.target.value)}
+                  />
+                </label>
+              </section>
+
+              <section>
+                <span>Position</span>
+                <div className="page-number-position" role="radiogroup" aria-label="Bates position">
+                  {POSITIONS.map((item) => (
+                    <button
+                      key={item.value}
+                      type="button"
+                      className={`${item.value}${position === item.value ? " active" : ""}`}
+                      aria-pressed={position === item.value}
+                      aria-label={item.label}
+                      disabled={busy}
+                      onClick={() => setPosition(item.value)}
+                    />
+                  ))}
+                </div>
+                <small>{positionLabel}</small>
+              </section>
+
+              <div className="page-number-pair">
+                <label>
+                  <span>Start number</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="1"
+                    value={startNumber}
+                    disabled={busy}
+                    onChange={(event) => setStartNumber(Math.max(0, Number(event.target.value) || 0))}
+                  />
+                </label>
+                <label>
+                  <span>Digits</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    step="1"
+                    value={digits}
+                    disabled={busy}
+                    onChange={(event) => setDigits(Math.min(12, Math.max(1, Number(event.target.value) || 6)))}
+                  />
+                </label>
               </div>
 
-              <label className="tool-check-row">
-                <input type="checkbox" checked={whitePlate} disabled={busy} onChange={(e) => setWhitePlate(e.target.checked)} />
-                <span>White plate behind number</span>
+              <div className="page-number-pair">
+                <label>
+                  <span>Font size (pt)</span>
+                  <input
+                    type="number"
+                    min="6"
+                    max="72"
+                    value={fontSize}
+                    disabled={busy}
+                    onChange={(event) => setFontSize(Math.min(72, Math.max(6, Number(event.target.value) || 10)))}
+                  />
+                </label>
+                <label>
+                  <span>Margin</span>
+                  <input
+                    type="number"
+                    min={8}
+                    max={72}
+                    value={margin}
+                    disabled={busy}
+                    onChange={(event) => setMargin(Math.min(72, Math.max(8, Number(event.target.value) || 28)))}
+                  />
+                </label>
+              </div>
+              <input
+                type="range"
+                min="6"
+                max="36"
+                step="1"
+                value={Math.min(36, fontSize)}
+                disabled={busy}
+                aria-label="Font size"
+                onChange={(event) => setFontSize(Number(event.target.value))}
+              />
+
+              <label className="page-number-check">
+                <input type="checkbox" checked={whitePlate} disabled={busy} onChange={(event) => setWhitePlate(event.target.checked)} />
+                White plate behind number
               </label>
+
+              <section>
+                <span>Colour</span>
+                <div className="page-number-colours">
+                  {COLOURS.map((swatch) => (
+                    <button
+                      key={swatch}
+                      type="button"
+                      className={color.toLowerCase() === swatch ? "active" : ""}
+                      style={{ background: swatch }}
+                      aria-label={swatch}
+                      disabled={busy}
+                      onClick={() => setColor(swatch)}
+                    />
+                  ))}
+                  <label className="page-number-custom-colour">
+                    <input type="color" value={color} disabled={busy} onChange={(event) => setColor(event.target.value)} aria-label="Custom colour" />
+                  </label>
+                </div>
+              </section>
+
+              <section>
+                <span>Font weight</span>
+                <div className="page-number-weight" role="radiogroup" aria-label="Font weight">
+                  <button type="button" className={bold ? "" : "active"} aria-pressed={!bold} disabled={busy} onClick={() => setBold(false)}>Regular</button>
+                  <button type="button" className={bold ? "active" : ""} aria-pressed={bold} disabled={busy} onClick={() => setBold(true)}>Bold</button>
+                </div>
+              </section>
 
               <button className="merge-button" type="button" onClick={() => void apply()} disabled={busy || !files.length}>
                 {work.kind === "working" ? "Stamping…" : "Apply Bates numbering"}

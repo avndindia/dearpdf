@@ -174,6 +174,7 @@ export type BatesOptions = {
   fontSize: number;
   color: string;
   whitePlate: boolean;
+  bold?: boolean;
 };
 
 export type BatesFileInput = {
@@ -256,7 +257,9 @@ export async function applyBatesNumbering(
     const document = await PDFDocument.load(input.bytes, { updateMetadata: false });
     const pageCount = document.getPageCount();
     if (!pageCount) throw new Error(`${input.name} has no pages.`);
-    const font = await document.embedFont(StandardFonts.Helvetica);
+    const font = await document.embedFont(
+      options.bold ? StandardFonts.HelveticaBold : StandardFonts.Helvetica,
+    );
     const startNumber = next;
     for (let i = 0; i < pageCount; i += 1) {
       const label = formatBatesLabel(options.prefix, next, options.digits, options.suffix);
