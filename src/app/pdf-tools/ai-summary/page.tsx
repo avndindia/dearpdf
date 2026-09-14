@@ -12,9 +12,9 @@ import StitchToolShell from "../../../components/StitchToolShell";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import {
   extractLinesFromTextItems,
-  summarizeExtractive,
+  summarizeOnDevice,
   textLayerDensity,
-  type ExtractiveSummary,
+  type OnDeviceSummary,
   type SummaryLength,
 } from "../../../lib/on-device-summary";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
@@ -87,7 +87,7 @@ export default function AiSummaryPage() {
   const [length, setLength] = useState<SummaryLength>("medium");
   const [outputName, setOutputName] = useState("summary");
   const [savedNotice, setSavedNotice] = useState("");
-  const [result, setResult] = useState<ExtractiveSummary | null>(null);
+  const [result, setResult] = useState<OnDeviceSummary | null>(null);
   const [pagesRead, setPagesRead] = useState(0);
   const [ocrPagesUsed, setOcrPagesUsed] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -284,13 +284,30 @@ export default function AiSummaryPage() {
         );
       }
 
-      setProgress(null);
-      setWork({ kind: "working", message: "Building a private summary on this device…" });
+      setWork({ kind: "working", message: "Loading DistilBART for a private abstractive summary…" });
+      setProgress({
+        page: orderedSelection.length,
+        total: orderedSelection.length,
+        phase: "Loading DistilBART",
+        percent: 0,
+      });
       await new Promise((resolve) => window.setTimeout(resolve, 16));
       if (cancelledRef.current) throw new Error("SUMMARY_CANCELLED");
 
-      const summary = summarizeExtractive(combined, length);
-      if (!summary.bullets.length) {
+      const summary = await summarizeOnDevice(combined, {
+        length,
+        isCancelled: () => cancelledRef.current,
+        onProgress: (p) => {
+          setProgress({
+            page: Math.max(1, p.chunk ?? orderedSelection.length),
+            total: Math.max(1, p.totalChunks ?? orderedSelection.length),
+            phase: p.message,
+            percent: p.percent,
+          });
+          setWork({ kind: "working", message: p.message });
+        },
+      });
+      if (!summary.bullets.length && !summary.paragraph) {
         throw new Error("Not enough complete sentences to summarise. Try more pages or a different PDF.");
       }
 
@@ -301,9 +318,14 @@ export default function AiSummaryPage() {
         ocrPages > 0
           ? ` · ${ocrPages} ${ocrPages === 1 ? "page" : "pages"} OCR’d on this device`
           : ` · text layer only (${textPages} ${textPages === 1 ? "page" : "pages"})`;
+      const modeNote =
+        summary.mode === "abstractive"
+          ? ` · DistilBART abstractive${summary.chunkCount && summary.chunkCount > 1 ? ` · ${summary.chunkCount} chunks` : ""}`
+          : " · extractive fallback";
       setSavedNotice(
-        `Summarised ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"} · ${summary.selectedCount} key points from ${summary.sentenceCount} sentences${ocrNote}. Nothing left this device.`,
+        `Summarised ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"} · ${summary.selectedCount} key points${modeNote}${ocrNote}. Nothing left this device.`,
       );
+      setProgress(null);
       trackToolEvent("ai-summary", "success");
       setWork({ kind: "idle" });
     } catch (error) {
@@ -358,9 +380,9 @@ export default function AiSummaryPage() {
   return (
     <StitchToolShell
       title="AI Summary of PDF"
-      subtitle="Scores important sentences on this device (not a cloud AI rewrite) — text layer first, OCR only when needed."
+      subtitle="DistilBART abstractive summary on this device — text layer first, OCR when needed, nothing uploaded."
       className={`utility-pdf-page${selected ? " has-file" : ""}`}
-      note="Extractive on-device summary: ranks complete sentences in your browser (not a cloud rewrite). Text layer first; Tesseract OCR only for scanned/thin pages."
+      note="On-device DistilBART (Transformers.js) after OCR/text gather. First model download is cached in your browser. Falls back to extractive ranking if the model cannot load. Text never leaves this device."
       related={[
         { href: "/pdf-tools/pdf-to-text", label: "PDF OCR" },
         { href: "/pdf-tools/pdf-to-word", label: "PDF to Word" },
@@ -513,9 +535,10 @@ export default function AiSummaryPage() {
             </fieldset>
 
             <p className="ocr-language-note">
-              Key points are scored on this device from important sentences (not a cloud AI rewrite).
-              Uses the PDF’s text layer by default; if a page has little or no text (scans), Tesseract
-              OCR runs automatically here — nothing is uploaded.
+              After reading the PDF text layer (and OCR for thin/scan pages), DistilBART writes an
+              abstractive overview entirely in your browser. The model downloads once and is cached
+              locally — nothing is uploaded. If DistilBART cannot load, we fall back to extractive
+              sentence ranking on this device.
             </p>
 
             {progress ? (
@@ -581,7 +604,9 @@ export default function AiSummaryPage() {
             {result ? (
               <div className="ocr-results ai-summary-results">
                 <div className="ai-summary-results-meta">
-                  <span className="pdf-tool-status">On-device summary</span>
+                  <span className="pdf-tool-status">
+                    {result.mode === "abstractive" ? "DistilBART on-device" : "Extractive on-device"}
+                  </span>
                   <h3>
                     {result.selectedCount} key points · {pagesRead}{" "}
                     {pagesRead === 1 ? "page" : "pages"}
@@ -590,9 +615,18 @@ export default function AiSummaryPage() {
                       : ""}
                   </h3>
                   <p>
-                    Scored on this device (not a cloud rewrite) · {result.wordCount.toLocaleString()}{" "}
-                    words read · {result.sentenceCount} sentences scored
+                    {result.mode === "abstractive"
+                      ? `Abstractive DistilBART · ${result.wordCount.toLocaleString()} words read`
+                      : `Extractive fallback · ${result.wordCount.toLocaleString()} words read · ${result.sentenceCount} sentences scored`}
+                    {result.chunkCount && result.chunkCount > 1
+                      ? ` · ${result.chunkCount} chunks`
+                      : ""}
                   </p>
+                  {result.fallbackNote ? (
+                    <p className="ai-summary-fallback-note" role="status">
+                      {result.fallbackNote}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="ocr-result-actions">
                   <button type="button" onClick={() => void copyText()}>

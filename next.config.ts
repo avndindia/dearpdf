@@ -6,10 +6,14 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   reactStrictMode: true,
+  // Transformers.js (DistilBART) is browser-only; keep Node ORT/sharp out of the client graph.
+  serverExternalPackages: ["onnxruntime-node", "sharp"],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
+      sharp: false,
+      "onnxruntime-node": false,
     };
     config.experiments = {
       ...config.experiments,

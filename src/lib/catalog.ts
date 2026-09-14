@@ -257,13 +257,13 @@ export const tools: PdfTool[] = [
   {
     slug: "ai-summary",
     title: "AI Summary of PDF",
-    job: "Private on-device summary — text layer, OCR when needed.",
+    job: "Private DistilBART summary on-device — text layer, OCR when needed.",
     description: "Extractive summary in your browser. Thin or scanned pages are OCR’d automatically on-device.",
     category: "convert",
     accept: "application/pdf",
     limit: "partial",
     limitNote: "Uses the PDF text layer by default; auto-OCR (Tesseract) for thin/scanned pages. Picks key sentences — not a cloud LLM rewrite.",
-    keywords: ["summary", "summarise", "summarize", "ai", "on-device", "private", "ocr", "tesseract"],
+    keywords: ["summary", "summarise", "summarize", "ai", "on-device", "private", "distilbart", "ocr", "tesseract"],
   },
   {
     slug: "pdf-to-handwriting",

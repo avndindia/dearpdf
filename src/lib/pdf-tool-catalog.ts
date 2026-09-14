@@ -126,7 +126,7 @@ export const pdfTools: PdfToolCatalogItem[] = [
   },
   {
     title: "AI Summary of PDF",
-    description: "Private on-device summary — text layer first, OCR only when a page needs it.",
+    description: "Private DistilBART summary on-device — text layer first, OCR only when needed.",
     href: "/pdf-tools/ai-summary",
     category: "Convert",
     popular: true,

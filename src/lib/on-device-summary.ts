@@ -1,12 +1,15 @@
 /**
- * On-device extractive PDF summary (TextRank-style sentence scoring).
- * Runs entirely in the browser — no cloud LLM, no model download.
+ * On-device PDF summary — DistilBART abstractive (Transformers.js) after OCR/text
+ * gather, with TextRank-style extractive fallback if the model cannot load.
+ * Runs entirely in the browser — no cloud LLM, PDF/text never leaves the device.
  *
  * Heuristics clean dual-column table glue, OM letterhead, and numbered
- * ground-list fragments before scoring so Key points read as claims.
+ * ground-list fragments before extractive scoring so Key points read as claims.
  */
 
 export type SummaryLength = "short" | "medium" | "long";
+
+export type SummaryMode = "abstractive" | "extractive";
 
 export type ExtractiveSummary = {
   /** Ordered bullet points (key sentences). */
@@ -19,6 +22,34 @@ export type ExtractiveSummary = {
   /** Combined downloadable text. */
   fullText: string;
 };
+
+/** Result of on-device summarisation (abstractive DistilBART or extractive fallback). */
+export type OnDeviceSummary = ExtractiveSummary & {
+  mode: SummaryMode;
+  /** Hugging Face / Xenova model id when abstractive succeeded. */
+  modelId?: string;
+  /** Shown when DistilBART failed and extractive was used. */
+  fallbackNote?: string;
+  /** Number of text chunks summarised (abstractive only). */
+  chunkCount?: number;
+};
+
+export type AbstractiveProgress = {
+  phase: "loading-model" | "summarizing-chunk" | "combining";
+  chunk?: number;
+  totalChunks?: number;
+  message: string;
+  percent: number;
+};
+
+export type SummarizeOnDeviceOptions = {
+  length?: SummaryLength;
+  onProgress?: (progress: AbstractiveProgress) => void;
+  isCancelled?: () => boolean;
+};
+
+/** DistilBART CNN abstractive summariser (ONNX via Transformers.js). */
+export const DISTILBART_MODEL_ID = "Xenova/distilbart-cnn-12-6";
 
 const STOPWORDS = new Set(
   `
@@ -1017,10 +1048,18 @@ export function summarizeExtractive(
   };
 }
 
-function formatSummaryOutput(bullets: string[], paragraph: string) {
+function formatSummaryOutput(
+  bullets: string[],
+  paragraph: string,
+  mode: SummaryMode = "extractive",
+) {
+  const blurb =
+    mode === "abstractive"
+      ? "Private DistilBART abstractive summary — runs on this device (not a cloud API)"
+      : "Private extractive summary — scores important sentences on this device (fallback; not a cloud AI rewrite)";
   const lines = [
     "On-device summary",
-    "Private summary — scores important sentences on this device (not a cloud AI rewrite)",
+    blurb,
     "",
     "Key points",
     ...bullets.map((b) => `• ${b}`),
@@ -1055,4 +1094,336 @@ export function extractLinesFromTextItems(items: ArrayLike<unknown> | null | und
 /** Characters of non-whitespace text — used to decide when OCR is needed. */
 export function textLayerDensity(text: string): number {
   return text.replace(/\s/g, "").length;
+}
+
+
+// ---------------------------------------------------------------------------
+// DistilBART abstractive summarisation (Transformers.js / WASM · browser cache)
+// ---------------------------------------------------------------------------
+
+type SummarizationOutput = { summary_text: string };
+type SummarizerFn = (
+  texts: string | string[],
+  options?: {
+    max_new_tokens?: number;
+    min_new_tokens?: number;
+  },
+) => Promise<SummarizationOutput | SummarizationOutput[]>;
+
+/** Rough char budget under DistilBART's 1024-token encoder limit (~3.2 chars/token). */
+const CHUNK_TARGET_CHARS = 2800;
+const CHUNK_OVERLAP_CHARS = 180;
+
+function lengthToGenerationConfig(length: SummaryLength) {
+  if (length === "short") {
+    return { max_new_tokens: 72, min_new_tokens: 20 };
+  }
+  if (length === "long") {
+    return { max_new_tokens: 180, min_new_tokens: 56 };
+  }
+  return { max_new_tokens: 120, min_new_tokens: 36 };
+}
+
+function targetBulletCount(length: SummaryLength): number {
+  if (length === "short") return 4;
+  if (length === "long") return 8;
+  return 6;
+}
+
+/**
+ * Pack cleaned document text into overlapping chunks that fit the DistilBART
+ * encoder. Prefer paragraph / sentence boundaries over hard mid-word cuts.
+ */
+export function chunkTextForSummarization(rawText: string): string[] {
+  const cleaned = preCleanDocumentText(repairPdfText(rawText)).replace(/\s+/g, " ").trim();
+  if (!cleaned) return [];
+  if (cleaned.length <= CHUNK_TARGET_CHARS) return [cleaned];
+
+  const paragraphs = cleaned
+    .split(/(?<=[.!?…।؟۔])\s+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const chunks: string[] = [];
+  let current = "";
+
+  const pushCurrent = () => {
+    const t = current.trim();
+    if (t) chunks.push(t);
+    current = "";
+  };
+
+  for (const piece of paragraphs) {
+    if (!current) {
+      if (piece.length <= CHUNK_TARGET_CHARS) {
+        current = piece;
+      } else {
+        // Hard-wrap oversized sentence/clause
+        for (let i = 0; i < piece.length; i += CHUNK_TARGET_CHARS - CHUNK_OVERLAP_CHARS) {
+          chunks.push(piece.slice(i, i + CHUNK_TARGET_CHARS).trim());
+        }
+      }
+      continue;
+    }
+    if (current.length + 1 + piece.length <= CHUNK_TARGET_CHARS) {
+      current = `${current} ${piece}`;
+    } else {
+      pushCurrent();
+      // Overlap: keep a short tail from previous chunk when starting the next
+      const prev = chunks[chunks.length - 1] || "";
+      const overlap =
+        prev.length > CHUNK_OVERLAP_CHARS
+          ? prev.slice(-CHUNK_OVERLAP_CHARS).replace(/^\S*\s+/, "")
+          : "";
+      if (piece.length <= CHUNK_TARGET_CHARS) {
+        current = overlap ? `${overlap} ${piece}` : piece;
+        if (current.length > CHUNK_TARGET_CHARS) current = piece;
+      } else {
+        current = "";
+        for (let i = 0; i < piece.length; i += CHUNK_TARGET_CHARS - CHUNK_OVERLAP_CHARS) {
+          chunks.push(piece.slice(i, i + CHUNK_TARGET_CHARS).trim());
+        }
+      }
+    }
+  }
+  pushCurrent();
+  return chunks.length ? chunks : [cleaned.slice(0, CHUNK_TARGET_CHARS)];
+}
+
+function bulletsFromAbstractiveParagraph(paragraph: string, length: SummaryLength): string[] {
+  const max = targetBulletCount(length);
+  const fromSplit = splitSentences(paragraph)
+    .map(shapeBulletText)
+    .filter((s) => s.length >= 20 && !shouldRejectAsBullet(s));
+  if (fromSplit.length) return fromSplit.slice(0, max);
+
+  // Soft-split on periods if the model returned one dense paragraph
+  const soft = paragraph
+    .split(/(?<=[.!?…])\s+/)
+    .map((s) => s.replace(/\s+/g, " ").trim())
+    .filter((s) => s.length >= 20)
+    .slice(0, max);
+  return soft.length ? soft : [paragraph.trim()].filter((s) => s.length >= 12);
+}
+
+function throwIfCancelled(isCancelled?: () => boolean) {
+  if (isCancelled?.()) throw new Error("SUMMARY_CANCELLED");
+}
+
+let summarizerPromise: Promise<SummarizerFn> | null = null;
+
+async function loadDistilBartSummarizer(
+  onProgress?: (progress: AbstractiveProgress) => void,
+): Promise<SummarizerFn> {
+  if (summarizerPromise) return summarizerPromise;
+
+  summarizerPromise = (async () => {
+    onProgress?.({
+      phase: "loading-model",
+      message: "Loading DistilBART on this device (cached after first download)…",
+      percent: 0,
+    });
+
+    const transformers = await import("@huggingface/transformers");
+    const { pipeline, env } = transformers;
+    env.allowLocalModels = false;
+    env.useBrowserCache = true;
+
+    const summarizer = await pipeline("summarization", DISTILBART_MODEL_ID, {
+      dtype: "q8",
+      progress_callback: (data: { status?: string; progress?: number; file?: string }) => {
+        const status = String(data?.status ?? "loading");
+        const file = data?.file ? ` · ${data.file}` : "";
+        const pct =
+          typeof data?.progress === "number" && Number.isFinite(data.progress)
+            ? Math.max(0, Math.min(100, Math.round(data.progress)))
+            : status === "ready" || status === "done"
+              ? 100
+              : 15;
+        onProgress?.({
+          phase: "loading-model",
+          message: `Loading DistilBART (${status.replace(/_/g, " ")}${file})…`,
+          percent: pct,
+        });
+      },
+    });
+
+    onProgress?.({
+      phase: "loading-model",
+      message: "DistilBART ready on this device.",
+      percent: 100,
+    });
+
+    return summarizer as unknown as SummarizerFn;
+  })();
+
+  try {
+    return await summarizerPromise;
+  } catch (error) {
+    summarizerPromise = null;
+    throw error;
+  }
+}
+
+async function runSummarizerOnText(
+  summarizer: SummarizerFn,
+  text: string,
+  length: SummaryLength,
+): Promise<string> {
+  const gen = lengthToGenerationConfig(length);
+  const raw = await summarizer(text, gen);
+  const row = Array.isArray(raw) ? raw[0] : raw;
+  const summary = (row?.summary_text || "").replace(/\s+/g, " ").trim();
+  return summary;
+}
+
+/**
+ * Abstractive DistilBART summary: chunk → summarise each → optional second-pass
+ * combine. Falls back is handled by summarizeOnDevice.
+ */
+export async function summarizeAbstractive(
+  rawText: string,
+  options: SummarizeOnDeviceOptions = {},
+): Promise<OnDeviceSummary> {
+  const length = options.length ?? "medium";
+  const wordCount = rawText.trim() ? rawText.trim().split(/\s+/).length : 0;
+  throwIfCancelled(options.isCancelled);
+
+  const chunks = chunkTextForSummarization(rawText);
+  if (!chunks.length) {
+    return {
+      bullets: [],
+      paragraph: "",
+      fullText: "",
+      sentenceCount: 0,
+      selectedCount: 0,
+      wordCount,
+      mode: "abstractive",
+      modelId: DISTILBART_MODEL_ID,
+      chunkCount: 0,
+    };
+  }
+
+  const summarizer = await loadDistilBartSummarizer(options.onProgress);
+  throwIfCancelled(options.isCancelled);
+
+  const chunkSummaries: string[] = [];
+  for (let i = 0; i < chunks.length; i += 1) {
+    throwIfCancelled(options.isCancelled);
+    options.onProgress?.({
+      phase: "summarizing-chunk",
+      chunk: i + 1,
+      totalChunks: chunks.length,
+      message:
+        chunks.length === 1
+          ? "Summarising with DistilBART on this device…"
+          : `Summarising chunk ${i + 1} of ${chunks.length} with DistilBART…`,
+      percent: Math.round(((i + 0.15) / chunks.length) * 90),
+    });
+    const piece = await runSummarizerOnText(summarizer, chunks[i], length);
+    if (piece) chunkSummaries.push(piece);
+  }
+
+  throwIfCancelled(options.isCancelled);
+
+  let paragraph = "";
+  if (chunkSummaries.length === 0) {
+    paragraph = "";
+  } else if (chunkSummaries.length === 1) {
+    paragraph = chunkSummaries[0];
+  } else {
+    const joined = chunkSummaries.join(" ");
+    if (joined.length <= CHUNK_TARGET_CHARS) {
+      options.onProgress?.({
+        phase: "combining",
+        chunk: chunks.length,
+        totalChunks: chunks.length,
+        message: "Combining section summaries with DistilBART…",
+        percent: 94,
+      });
+      paragraph = await runSummarizerOnText(summarizer, joined, length);
+      if (!paragraph) paragraph = chunkSummaries.join(" ");
+    } else {
+      // Too long for one combine pass: summarise in batches, then concatenate cleanly
+      options.onProgress?.({
+        phase: "combining",
+        chunk: chunks.length,
+        totalChunks: chunks.length,
+        message: "Combining section summaries…",
+        percent: 92,
+      });
+      const midChunks = chunkTextForSummarization(joined);
+      const mid: string[] = [];
+      for (let i = 0; i < midChunks.length; i += 1) {
+        throwIfCancelled(options.isCancelled);
+        mid.push(await runSummarizerOnText(summarizer, midChunks[i], length));
+      }
+      const midJoined = mid.filter(Boolean).join(" ");
+      if (midJoined.length > 80 && midJoined.length <= CHUNK_TARGET_CHARS) {
+        paragraph = await runSummarizerOnText(summarizer, midJoined, length);
+      }
+      if (!paragraph) paragraph = midJoined || chunkSummaries.join(" ");
+    }
+  }
+
+  paragraph = paragraph.replace(/\s+/g, " ").trim();
+  if (!paragraph) {
+    throw new Error("DistilBART returned an empty summary.");
+  }
+
+  const bullets = bulletsFromAbstractiveParagraph(paragraph, length);
+  // Prefer a few grounded extractive bullets when abstractive yields only 1 short sentence
+  if (bullets.length < 2) {
+    const extractive = summarizeExtractive(rawText, length);
+    for (const b of extractive.bullets) {
+      if (bullets.length >= targetBulletCount(length)) break;
+      if (!bullets.some((x) => x.slice(0, 40) === b.slice(0, 40))) bullets.push(b);
+    }
+  }
+
+  options.onProgress?.({
+    phase: "combining",
+    chunk: chunks.length,
+    totalChunks: chunks.length,
+    message: "DistilBART summary ready.",
+    percent: 100,
+  });
+
+  return {
+    bullets,
+    paragraph,
+    fullText: formatSummaryOutput(bullets, paragraph, "abstractive"),
+    sentenceCount: splitSentences(rawText).length,
+    selectedCount: bullets.length,
+    wordCount,
+    mode: "abstractive",
+    modelId: DISTILBART_MODEL_ID,
+    chunkCount: chunks.length,
+  };
+}
+
+/**
+ * Prefer DistilBART abstractive; on load/runtime failure fall back to extractive
+ * TextRank with a visible note. Cancel still throws SUMMARY_CANCELLED.
+ */
+export async function summarizeOnDevice(
+  rawText: string,
+  options: SummarizeOnDeviceOptions = {},
+): Promise<OnDeviceSummary> {
+  throwIfCancelled(options.isCancelled);
+  try {
+    return await summarizeAbstractive(rawText, options);
+  } catch (error) {
+    if (error instanceof Error && error.message === "SUMMARY_CANCELLED") throw error;
+    throwIfCancelled(options.isCancelled);
+    const extractive = summarizeExtractive(rawText, options.length ?? "medium");
+    const fallbackNote =
+      "DistilBART could not load in this browser — using extractive on-device summary instead.";
+    return {
+      ...extractive,
+      fullText: formatSummaryOutput(extractive.bullets, extractive.paragraph, "extractive"),
+      mode: "extractive",
+      fallbackNote,
+    };
+  }
 }
