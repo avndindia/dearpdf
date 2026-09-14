@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Copy, Eye, FilePlus, Grid2X2, List, RotateCcw, RotateCw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Eye, FilePlus, FlipHorizontal2, FlipVertical2, Grid2X2, List, RotateCcw, RotateCw, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 export type PdfVisualPage = {
@@ -12,6 +12,8 @@ export type PdfVisualPage = {
   sourceId?: string;
   sourceLabel?: string;
   rotation?: number;
+  flipHorizontal?: boolean;
+  flipVertical?: boolean;
 };
 
 type PdfPageWorkspaceProps = {
@@ -20,6 +22,7 @@ type PdfPageWorkspaceProps = {
   onSelectedIdsChange?: (ids: string[]) => void;
   onReorder?: (orderedIds: string[]) => void;
   onRotate?: (id: string, amount: number) => void;
+  onFlip?: (id: string, axis: "horizontal" | "vertical") => void;
   onRemove?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onInsertBlankAfter?: (id: string) => void;
@@ -106,6 +109,7 @@ export default function PdfPageWorkspace({
   onSelectedIdsChange,
   onReorder,
   onRotate,
+  onFlip,
   onRemove,
   onDuplicate,
   onInsertBlankAfter,
@@ -293,7 +297,7 @@ export default function PdfPageWorkspace({
                   >
                     {/* Generated locally from the selected PDF. */}
                     {page.thumbnail ? (
-                      <img src={page.thumbnail} alt={`Preview of page ${page.pageIndex + 1}`} style={{ transform: `rotate(${page.rotation ?? 0}deg)` }} />
+                      <img src={page.thumbnail} alt={`Preview of page ${page.pageIndex + 1}`} style={{ transform: `rotate(${page.rotation ?? 0}deg) scaleX(${page.flipHorizontal ? -1 : 1}) scaleY(${page.flipVertical ? -1 : 1})` }} />
                     ) : (
                       <span className="page-workspace-placeholder">Page {page.pageIndex + 1}</span>
                     )}
@@ -319,16 +323,18 @@ export default function PdfPageWorkspace({
                   <strong>Page {index + 1}</strong>
                   <span>
                     {page.pageIndex < 0
-                      ? `Blank A4${page.rotation ? ` · ${page.rotation}°` : ""}`
-                      : `${page.sourceLabel ? `${page.sourceLabel} · ` : ""}Original ${page.pageIndex + 1}${page.rotation ? ` · ${page.rotation}°` : ""}`}
+                      ? `Blank A4${page.rotation ? ` · ${page.rotation}°` : ""}${page.flipHorizontal ? " · flip H" : ""}${page.flipVertical ? " · flip V" : ""}`
+                      : `${page.sourceLabel ? `${page.sourceLabel} · ` : ""}Original ${page.pageIndex + 1}${page.rotation ? ` · ${page.rotation}°` : ""}${page.flipHorizontal ? " · flip H" : ""}${page.flipVertical ? " · flip V" : ""}`}
                   </span>
                 </div>
-                {onRotate || onRemove || onDuplicate || onInsertBlankAfter ? (
+                {onRotate || onFlip || onRemove || onDuplicate || onInsertBlankAfter ? (
                   <div className="page-workspace-actions">
                     {onReorder ? <button type="button" title="Move up" aria-label={`Move page ${index + 1} up`} onClick={() => movePage(page.id, -1)} disabled={disabled || index === 0}><ArrowUp aria-hidden="true" /></button> : null}
                     {onReorder ? <button type="button" title="Move down" aria-label={`Move page ${index + 1} down`} onClick={() => movePage(page.id, 1)} disabled={disabled || index === pages.length - 1}><ArrowDown aria-hidden="true" /></button> : null}
                     {onRotate ? <button type="button" title="Rotate left" aria-label={`Rotate page ${index + 1} left`} onClick={() => onRotate(page.id, -90)} disabled={disabled}><RotateCcw aria-hidden="true" /></button> : null}
                     {onRotate ? <button type="button" title="Rotate right" aria-label={`Rotate page ${index + 1} right`} onClick={() => onRotate(page.id, 90)} disabled={disabled}><RotateCw aria-hidden="true" /></button> : null}
+                    {onFlip ? <button type="button" title="Flip horizontal" aria-label={`Flip page ${index + 1} horizontally`} onClick={() => onFlip(page.id, "horizontal")} disabled={disabled}><FlipHorizontal2 aria-hidden="true" /></button> : null}
+                    {onFlip ? <button type="button" title="Flip vertical" aria-label={`Flip page ${index + 1} vertically`} onClick={() => onFlip(page.id, "vertical")} disabled={disabled}><FlipVertical2 aria-hidden="true" /></button> : null}
                     {onDuplicate ? <button type="button" title="Duplicate page" aria-label={`Duplicate page ${index + 1}`} onClick={() => onDuplicate(page.id)} disabled={disabled}><Copy aria-hidden="true" /></button> : null}
                     {onInsertBlankAfter ? <button type="button" title="Insert blank A4 after this page" aria-label={`Insert blank A4 after page ${index + 1}`} onClick={() => onInsertBlankAfter(page.id)} disabled={disabled}><FilePlus aria-hidden="true" /></button> : null}
                     {onRemove ? <button type="button" title="Delete page" aria-label={`Delete page ${index + 1}`} onClick={() => onRemove(page.id)} disabled={disabled}><Trash2 aria-hidden="true" /></button> : null}
@@ -367,7 +373,7 @@ export default function PdfPageWorkspace({
             </div>
             <div className="page-preview-stage">
               {/* Generated locally from the selected PDF. */}
-              <img src={previewPage.thumbnail} alt={`Large preview of page ${previewPage.pageIndex + 1}`} style={{ transform: `rotate(${previewPage.rotation ?? 0}deg)` }} />
+              <img src={previewPage.thumbnail} alt={`Large preview of page ${previewPage.pageIndex + 1}`} style={{ transform: `rotate(${previewPage.rotation ?? 0}deg) scaleX(${previewPage.flipHorizontal ? -1 : 1}) scaleY(${previewPage.flipVertical ? -1 : 1})` }} />
             </div>
           </div>
         </div>

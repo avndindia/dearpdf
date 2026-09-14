@@ -15,9 +15,9 @@ type CategoryFilter = "all" | StitchCategoryId;
 
 const FILTERS: { id: CategoryFilter; label: string; count: number }[] = [
   { id: "all", label: "All", count: STITCH_TOOL_COUNT },
-  { id: "assemble", label: "Assemble", count: 6 },
+  { id: "assemble", label: "Assemble", count: 10 },
   { id: "edit", label: "Edit & Sign", count: 5 },
-  { id: "convert", label: "Convert", count: 6 },
+  { id: "convert", label: "Convert", count: 8 },
   { id: "secure", label: "Security", count: 3 },
 ];
 

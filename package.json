@@ -10,6 +10,7 @@
     "deploy": "pnpm build && npx wrangler pages deploy out --project-name=dearpdf"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "fflate": "^0.8.3",
     "lucide-react": "^1.44.0",
     "next": "15.5.25",

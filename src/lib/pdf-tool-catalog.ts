@@ -32,9 +32,34 @@ export const pdfTools: PdfToolCatalogItem[] = [
   },
   {
     title: "Organise pages",
-    description: "Reorder, rotate, or remove pages with a visual preview.",
+    description: "Reorder, rotate, flip, or remove pages with a visual preview.",
     href: "/pdf-tools/organise",
     category: "Assemble",
+  },
+  {
+    title: "Rotate PDF",
+    description: "Rotate all or selected pages by 90° steps.",
+    href: "/pdf-tools/rotate",
+    category: "Assemble",
+  },
+  {
+    title: "Flip PDF",
+    description: "Mirror pages horizontally or vertically.",
+    href: "/pdf-tools/flip",
+    category: "Assemble",
+  },
+  {
+    title: "Multiple pages per sheet",
+    description: "2/4/6/9/16-up handouts with vector page embeds.",
+    href: "/pdf-tools/n-up",
+    category: "Assemble",
+  },
+  {
+    title: "Bates numbering",
+    description: "Continuous Bates stamps across multiple files with a CSV log.",
+    href: "/pdf-tools/bates",
+    category: "Assemble",
+    popular: true,
   },
   {
     title: "Images to PDF",
@@ -105,6 +130,19 @@ export const pdfTools: PdfToolCatalogItem[] = [
     href: "/pdf-tools/ai-summary",
     category: "Convert",
     popular: true,
+  },
+  {
+    title: "Scan to PDF",
+    description: "Camera or gallery → crop → enhance → multi-page PDF.",
+    href: "/pdf-tools/scan-to-pdf",
+    category: "Convert",
+    popular: true,
+  },
+  {
+    title: "PDF to handwriting",
+    description: "Notebook-style handwritten notes from PDF text on this device.",
+    href: "/pdf-tools/pdf-to-handwriting",
+    category: "Convert",
   },
   {
     title: "Grayscale PDF",

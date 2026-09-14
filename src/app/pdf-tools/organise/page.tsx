@@ -13,6 +13,8 @@ type PageItem = {
   id: number;
   originalIndex: number;
   rotation: number;
+  flipHorizontal: boolean;
+  flipVertical: boolean;
   thumbnail: string;
 };
 
@@ -100,6 +102,8 @@ async function renderPageThumbnails(
         id: pageNumber - 1,
         originalIndex: pageNumber - 1,
         rotation: 0,
+        flipHorizontal: false,
+        flipVertical: false,
         thumbnail: canvas.toDataURL("image/jpeg", 0.78),
       };
       thumbnails.push(item);
@@ -143,6 +147,8 @@ export default function OrganisePdfPage() {
         id: index,
         originalIndex: index,
         rotation: 0,
+        flipHorizontal: false,
+        flipVertical: false,
         thumbnail: "",
       }));
       setSelected({ file, bytes, pageCount });
@@ -191,6 +197,15 @@ export default function OrganisePdfPage() {
     ));
   }
 
+  function flipPage(id: number, axis: "horizontal" | "vertical") {
+    setPages((current) => current.map((page) => {
+      if (page.id !== id) return page;
+      return axis === "horizontal"
+        ? { ...page, flipHorizontal: !page.flipHorizontal }
+        : { ...page, flipVertical: !page.flipVertical };
+    }));
+  }
+
   function duplicatePage(id: number) {
     setPages((current) => {
       const index = current.findIndex((page) => page.id === id);
@@ -208,6 +223,8 @@ export default function OrganisePdfPage() {
       id: nextPageId.current,
       originalIndex: BLANK_PDF_PAGE_INDEX,
       rotation: 0,
+      flipHorizontal: false,
+      flipVertical: false,
       thumbnail: blankPageThumbnail(),
     };
     nextPageId.current += 1;
@@ -222,7 +239,7 @@ export default function OrganisePdfPage() {
   }
 
   function resetPages() {
-    setPages(originalPages.map((page) => ({ ...page, rotation: 0 })));
+    setPages(originalPages.map((page) => ({ ...page, rotation: 0, flipHorizontal: false, flipVertical: false })));
   }
 
   async function downloadOrganisedPdf() {
@@ -232,7 +249,12 @@ export default function OrganisePdfPage() {
     try {
       const output = await organisePdfPages(
         selected.bytes,
-        pages.map((page) => ({ pageIndex: page.originalIndex, rotation: page.rotation })),
+        pages.map((page) => ({
+          pageIndex: page.originalIndex,
+          rotation: page.rotation,
+          flipHorizontal: page.flipHorizontal,
+          flipVertical: page.flipVertical,
+        })),
       );
       downloadPdf(output, organiseDownloadName(outputName, `${safeBaseName(selected.file.name)}-organised.pdf`));
       trackToolEvent("organise", "success");
@@ -255,13 +277,13 @@ export default function OrganisePdfPage() {
   ].filter(Boolean);
   const changed = Boolean(selected) && (
     pages.length !== (selected?.pageCount ?? 0) ||
-    pages.some((page, index) => page.originalIndex !== index || page.rotation !== 0)
+    pages.some((page, index) => page.originalIndex !== index || page.rotation !== 0 || page.flipHorizontal || page.flipVertical)
   );
 
   return (
     <StitchToolShell
       title="Organise PDF"
-      subtitle="Reorder, rotate, and remove pages visually."
+      subtitle="Reorder, rotate, flip, and remove pages visually."
       className={`organise-page${selected ? " has-file" : ""}`}
     >
       <section className="organise-workspace" aria-labelledby="organise-workspace-title">
@@ -310,14 +332,17 @@ export default function OrganisePdfPage() {
                   pageIndex: page.originalIndex,
                   thumbnail: page.thumbnail,
                   rotation: page.rotation,
+                  flipHorizontal: page.flipHorizontal,
+                  flipVertical: page.flipVertical,
                 }))}
                 onReorder={(orderedIds) => setPages(orderedIds.map((id) => pages.find((page) => page.id === Number(id))!).filter(Boolean))}
                 onRotate={(id, amount) => rotatePage(Number(id), amount)}
+                onFlip={(id, axis) => flipPage(Number(id), axis)}
                 onDuplicate={(id) => duplicatePage(Number(id))}
                 onInsertBlankAfter={(id) => insertBlankAfter(Number(id))}
                 onRemove={(id) => setPages((current) => current.filter((page) => page.id !== Number(id)))}
                 disabled={busy}
-                title="Drag, preview, rotate, duplicate, or remove pages"
+                title="Drag, preview, rotate, flip, duplicate, or remove pages"
               />
             ) : (
               <div className="organise-empty">

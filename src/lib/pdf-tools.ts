@@ -22,6 +22,10 @@ export type PdfInspection = {
 export type PdfPageOperation = {
   pageIndex: number;
   rotation: number;
+  /** Mirror left-right when embedding the page (vector flip). */
+  flipHorizontal?: boolean;
+  /** Mirror top-bottom when embedding the page (vector flip). */
+  flipVertical?: boolean;
 };
 
 export type PdfImageInput = {
@@ -444,11 +448,33 @@ export async function organisePdfPages(
       if (addedRotation) blank.setRotation(degrees(addedRotation));
       continue;
     }
-    const [page] = await output.copyPages(source, [operation.pageIndex]);
-    const currentRotation = page.getRotation().angle;
-    const addedRotation = operation.rotation;
-    page.setRotation(degrees(((currentRotation + addedRotation) % 360 + 360) % 360));
-    output.addPage(page);
+
+    const flipH = Boolean(operation.flipHorizontal);
+    const flipV = Boolean(operation.flipVertical);
+    const addedRotation = ((operation.rotation % 360) + 360) % 360;
+
+    if (!flipH && !flipV) {
+      const [page] = await output.copyPages(source, [operation.pageIndex]);
+      const currentRotation = page.getRotation().angle;
+      page.setRotation(degrees(((currentRotation + addedRotation) % 360 + 360) % 360));
+      output.addPage(page);
+      continue;
+    }
+
+    // Flips need an embed + draw with negative scale (copyPages cannot mirror).
+    const sourcePage = source.getPage(operation.pageIndex);
+    const [embedded] = await output.embedPages([sourcePage]);
+    const { width, height } = embedded;
+    const page = output.addPage([width, height]);
+    const xScale = flipH ? -1 : 1;
+    const yScale = flipV ? -1 : 1;
+    page.drawPage(embedded, {
+      x: flipH ? width : 0,
+      y: flipV ? height : 0,
+      xScale,
+      yScale,
+    });
+    if (addedRotation) page.setRotation(degrees(addedRotation));
   }
 
   return output.save({ addDefaultPage: false, useObjectStreams: true });
