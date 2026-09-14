@@ -6596,13 +6596,21 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 
+
+/* Page Numbers: don't clip the left sticky preview */
+.stitch-tool-shell.page-numbers-page .compress-workspace {
+  overflow: visible;
+}
+
 /* ===== Page Numbers workspace (ported + calmed for DearPDF) ===== */
 .page-numbers-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 340px);
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 360px);
   gap: 18px;
   align-items: start;
   padding: 12px 16px 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .page-numbers-preview {
   display: grid;
@@ -6816,14 +6824,45 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   font-size: 12px;
   line-height: 1.4;
 }
-@media (max-width: 900px) {
+@media (max-width: 860px) {
   .page-numbers-shell { grid-template-columns: 1fr; }
 }
 
 /* DearPDF polish on top of ported page-numbers rules */
 .stitch-tool-shell .page-numbers-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(300px, 360px);
   gap: 20px;
-  padding: 8px 4px 16px;
+  align-items: start;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.stitch-tool-shell .page-numbers-preview {
+  min-width: 0;
+  position: sticky;
+  top: 5.5rem;
+}
+.stitch-tool-shell .page-numbers-panel {
+  min-width: 0;
+}
+.stitch-tool-shell .page-number-live {
+  min-height: 420px;
+}
+.stitch-tool-shell .page-number-live-empty {
+  min-height: 420px;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+}
+@media (max-width: 860px) {
+  .stitch-tool-shell .page-numbers-shell {
+    grid-template-columns: 1fr;
+  }
+  .stitch-tool-shell .page-numbers-preview {
+    position: static;
+  }
 }
 .stitch-tool-shell .page-number-live {
   border-radius: 12px;
@@ -6879,7 +6918,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   letter-spacing: 0.01em;
   text-transform: none;
 }
-@media (max-width: 900px) {
+@media (max-width: 860px) {
   .page-numbers-shell {
     grid-template-columns: 1fr;
   }

@@ -66,6 +66,7 @@ export default function PageNumbersPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [selected, setSelected] = useState<SelectedPdf | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [previewError, setPreviewError] = useState("");
   const [previewIndex, setPreviewIndex] = useState(0);
   const [work, setWork] = useState<WorkState>({ kind: "idle" });
   const [format, setFormat] = useState<PageNumberFormat>("page-number-of-total");
@@ -129,6 +130,7 @@ export default function PageNumbersPage() {
   function clearFile() {
     setSelected(null);
     setPreviewUrl("");
+    setPreviewError("");
     setOutputName("numbered.pdf");
     setSavedNotice("");
     setWork({ kind: "idle" });
@@ -137,19 +139,36 @@ export default function PageNumbersPage() {
   useEffect(() => {
     if (!selected) {
       setPreviewUrl("");
+      setPreviewError("");
       return;
     }
     let cancelled = false;
+    setPreviewUrl("");
+    setPreviewError("");
     void (async () => {
-      const pages = await renderPdfPageThumbnails(
-        selected.bytes,
-        "page-numbers",
-        undefined,
-        undefined,
-        720,
-        [previewIndex],
-      );
-      if (!cancelled) setPreviewUrl(pages[0]?.thumbnail ?? "");
+      try {
+        const pages = await renderPdfPageThumbnails(
+          selected.bytes,
+          "page-numbers",
+          undefined,
+          undefined,
+          900,
+          [previewIndex],
+        );
+        const url = pages[0]?.thumbnail ?? "";
+        if (cancelled) return;
+        if (!url) {
+          setPreviewError("Could not render this page preview.");
+          setPreviewUrl("");
+          return;
+        }
+        setPreviewUrl(url);
+      } catch (error) {
+        if (!cancelled) {
+          setPreviewError(error instanceof Error ? error.message : "Preview failed.");
+          setPreviewUrl("");
+        }
+      }
     })();
     return () => {
       cancelled = true;
@@ -213,7 +232,13 @@ export default function PageNumbersPage() {
                 <span>Showing {previewIndex + 1} of {selected.pageCount} · {numberedPages.length} will be numbered</span>
               </div>
               <div className="page-number-live">
-                {previewUrl ? <img src={previewUrl} alt={`Page ${previewIndex + 1}`} /> : <div className="page-number-live-empty">Preparing preview…</div>}
+                {previewUrl ? (
+                  <img src={previewUrl} alt={`Page ${previewIndex + 1}`} />
+                ) : (
+                  <div className="page-number-live-empty">
+                    {previewError || "Preparing preview…"}
+                  </div>
+                )}
                 {previewLabel ? (
                   <b className={`page-number-live-mark ${position}`} style={{ color, fontSize: `${Math.max(11, fontSize)}px`, fontWeight: bold ? 700 : 500 }}>
                     {previewLabel}
