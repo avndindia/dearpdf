@@ -37,11 +37,11 @@ function LogoLink() {
     >
       {/* User-provided SVG lockup — crisp on retina; cache-bust when file changes */}
       <img
-        src="/logo-dearpdf-lockup.svg?v=user1"
+        src="/logo-dearpdf-lockup.svg?v=user2"
         alt="DearPDF.in"
-        width={280}
-        height={88}
-        className="h-9 w-auto max-w-[min(12.5rem,58vw)] object-contain object-left sm:h-10 sm:max-w-[14rem]"
+        width={268}
+        height={82}
+        className="h-11 w-auto max-w-[min(15.5rem,72vw)] object-contain object-left sm:h-12 sm:max-w-[17rem]"
         decoding="async"
       />
     </Link>
