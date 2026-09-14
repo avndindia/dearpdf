@@ -820,24 +820,33 @@ export default function CompressPdfPage() {
               </section>
             ) : result ? (
               <section className={`compression-result${result.usedOriginal ? " no-saving" : ""}`} aria-live="polite">
-                <div><span>Original</span><strong>{formatBytes(selected.file.size)}</strong></div>
-                <span className="compression-result-arrow" aria-hidden="true">→</span>
-                <div><span>{result.usedOriginal ? "Final file" : "Compressed"}</span><strong>{formatBytes(result.bytes.length)}</strong></div>
+                <div className="compression-result-sizes">
+                  <div><span>Original</span><strong>{formatBytes(selected.file.size)}</strong></div>
+                  <span className="compression-result-arrow" aria-hidden="true">→</span>
+                  <div><span>{result.usedOriginal ? "Final file" : "Compressed"}</span><strong>{formatBytes(result.bytes.length)}</strong></div>
+                </div>
                 <div className="compression-saving">
-                  <span>{result.usedOriginal ? "Original kept" : result.targetAchieved ? "Target reached" : "Compressed"}</span>
-                  <strong>
+                  <p className="compression-saving-status">
+                    {result.usedOriginal ? "Original kept" : result.targetAchieved ? "Target reached" : "Compressed"}
+                  </p>
+                  <p className="compression-saving-primary">
                     {result.usedOriginal
                       ? (result.note ? "Size not possible" : "No size increase")
                       : result.targetAchieved
                         ? `${formatBytes(Math.max(0, targetDifference))} under target`
                         : `${reduction.toFixed(1)}% smaller`}
-                  </strong>
-                  <small>
+                  </p>
+                  <p className="compression-saving-meta">
                     {result.note
                       || (result.usedOriginal
                         ? "Compression did not produce a smaller file"
-                        : `${formatBytes(difference)} saved${result.dpi ? ` · ${result.dpi} DPI` : ""}`)}
-                  </small>
+                        : (
+                          <>
+                            <span>{formatBytes(difference)} saved</span>
+                            {result.dpi ? <span className="compression-saving-dpi">{result.dpi} DPI</span> : null}
+                          </>
+                        ))}
+                  </p>
                 </div>
                 <button className="merge-button" type="button" onClick={() => downloadPdf(result.bytes, compressDownloadName(outputName, compressedPdfName(selected.file.name, result.usedOriginal)))}>
                   {result.usedOriginal

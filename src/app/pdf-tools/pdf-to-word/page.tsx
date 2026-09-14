@@ -16,6 +16,7 @@ import {
   type EditableDocxPage,
 } from "../../../lib/docx";
 import { inspectPdf, parsePageSelection } from "../../../lib/pdf-tools";
+import { getPageTextContent, getPdfjs, loadPdfDocument } from "../../../lib/pdfjs";
 import {
   blocksFromPlainLines,
   extractFormattedPage,
@@ -191,13 +192,11 @@ export default function PdfToWordPage() {
     trackToolEvent("pdf-to-word", "start");
 
     let worker: Tesseract.Worker | null = null;
-    let task: ReturnType<(typeof import("pdfjs-dist/legacy/build/pdf.mjs"))["getDocument"]> | null = null;
+    let pdf: Awaited<ReturnType<typeof loadPdfDocument>> | null = null;
     try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-      pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
       const processingBytes = await selected.file.arrayBuffer();
-      task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(processingBytes)) });
-      const pdf = await task.promise;
+      const pdfjs = await getPdfjs();
+      pdf = await loadPdfDocument(processingBytes);
       const pages: EditableDocxPage[] = [];
       let ocrPages = 0;
       let textPages = 0;
@@ -211,7 +210,7 @@ export default function PdfToWordPage() {
             setProgress({
               page: activePageRef.current,
               total: orderedSelection.length,
-              phase: message.status.replace(/_/g, " "),
+              phase: String(message.status ?? "recognising").replace(/_/g, " "),
               percent: Math.round((message.progress || 0) * 100),
             });
           },
@@ -234,7 +233,7 @@ export default function PdfToWordPage() {
 
         const page = await pdf.getPage(pageIndex + 1);
         const original = page.getViewport({ scale: 1 });
-        const content = await page.getTextContent({ includeMarkedContent: true });
+        const content = await getPageTextContent(page, { includeMarkedContent: true });
         let horizontalRules: Array<{ x1: number; x2: number; y: number }> = [];
         let verticalRules: Array<{ x: number; y1: number; y2: number }> = [];
         try {
@@ -355,7 +354,9 @@ export default function PdfToWordPage() {
           // A cancelled worker may already be terminated.
         }
       }
-      if (task) await task.destroy();
+      if (pdf) {
+        try { pdf.cleanup(); } catch { /* ignore */ }
+      }
     }
   }
 

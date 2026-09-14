@@ -6080,3 +6080,227 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 .stitch-tool-heading h1 {
   letter-spacing: -0.02em;
 }
+
+
+/* ===== DearPDF calm blue chrome + ruby CTAs (2026-09-14) ===== */
+.stitch-tool-shell {
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: #dbeafe;
+  --cta: #e11d48;
+  --cta-hover: #be123c;
+}
+
+.stitch-tool-shell .pdf-drop-zone {
+  border-color: #93c5fd;
+  background: linear-gradient(180deg, #eff6ffaa 0%, #ffffff 55%);
+}
+.stitch-tool-shell .pdf-drop-zone:hover,
+.stitch-tool-shell .pdf-drop-zone.is-dragging {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  background: #eff6ff;
+}
+
+/* Primary solid CTAs stay ruby */
+.stitch-tool-shell .primary-button,
+.stitch-tool-shell .merge-button,
+.stitch-tool-shell button.primary-button,
+.stitch-tool-shell .pdf-action.primary,
+.stitch-tool-shell .compress-run,
+.stitch-tool-shell .split-run {
+  background: linear-gradient(90deg, #e11d48 0%, #be123c 100%);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28);
+}
+.stitch-tool-shell .primary-button:hover:not(:disabled),
+.stitch-tool-shell .merge-button:hover:not(:disabled),
+.stitch-tool-shell .compress-run:hover:not(:disabled),
+.stitch-tool-shell .split-run:hover:not(:disabled) {
+  background: linear-gradient(90deg, #ff2647 0%, #e11d48 100%);
+}
+
+.stitch-tool-back:hover,
+.stitch-tool-trust-link:hover,
+.stitch-tool-related a:hover {
+  color: #2563eb;
+}
+
+/* PDF ready completion — white/slate card, ruby download */
+.pdf-suite-result {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  color: #0b1c30 !important;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14) !important;
+  padding: 16px 18px !important;
+}
+.pdf-suite-result-heading > span {
+  background: #eff6ff !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+}
+.pdf-suite-result-heading strong {
+  color: #0b1c30;
+  font-weight: 700;
+}
+.pdf-suite-result-heading small {
+  color: #64748b !important;
+}
+.pdf-suite-result-heading > button {
+  color: #64748b !important;
+}
+.pdf-suite-result-heading > button:hover {
+  background: #f1f5f9 !important;
+  color: #0b1c30 !important;
+}
+.pdf-suite-result-actions button,
+.pdf-suite-continue summary {
+  border-radius: 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  font-weight: 650 !important;
+}
+.pdf-suite-download {
+  background: linear-gradient(90deg, #e11d48 0%, #be123c 100%) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28);
+}
+.pdf-suite-download:hover {
+  background: linear-gradient(90deg, #ff2647 0%, #e11d48 100%) !important;
+}
+.pdf-suite-continue summary {
+  background: #f8fafc !important;
+  color: #0b1c30 !important;
+}
+.pdf-suite-tool-choices {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14) !important;
+}
+.pdf-suite-tool-choices button {
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+.pdf-suite-tool-choices button:hover:not(:disabled) {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+.pdf-suite-result-error {
+  color: #ba1a1a !important;
+  font-size: 12px !important;
+}
+
+/* Compress result hierarchy */
+.compression-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  gap: 14px 18px;
+  align-items: center;
+  border-top: 1px solid #e2e8f0;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 70%);
+  padding: 16px 18px;
+}
+.compression-result-sizes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+.compression-result-sizes > div,
+.compression-result > div:not(.compression-saving) {
+  display: grid;
+  gap: 4px;
+}
+.compression-result span,
+.compression-result-sizes span:not(.compression-result-arrow) {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.compression-result strong,
+.compression-result-sizes strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0b1c30;
+}
+.compression-result-arrow {
+  color: #94a3b8 !important;
+  font-size: 18px !important;
+  text-transform: none !important;
+}
+.compression-saving {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+.compression-saving-status {
+  margin: 0;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.compression-saving-primary {
+  margin: 0;
+  color: #0b1c30;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.compression-saving-meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.compression-saving-dpi {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 650;
+}
+.compression-result .merge-button {
+  justify-self: end;
+}
+.compression-result.no-saving .compression-saving-status {
+  color: #64748b;
+}
+.stitch-tool-shell .compression-result {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 70%);
+  border-top: 1px solid #e2e8f0;
+}
+.stitch-tool-shell .compression-keep-note {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .compression-result,
+  .stitch-tool-shell .compression-result {
+    grid-template-columns: 1fr;
+  }
+  .compression-result .merge-button,
+  .compression-result .compression-saving,
+  .stitch-tool-shell .compression-result .merge-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+}

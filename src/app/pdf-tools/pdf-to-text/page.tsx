@@ -17,6 +17,11 @@ import {
   mergePdfDocuments,
   parsePageSelection,
 } from "../../../lib/pdf-tools";
+import {
+  bytesFromUnknown,
+  getPageTextContent,
+  loadPdfDocument,
+} from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
@@ -60,11 +65,11 @@ function downloadBlob(blob: Blob, fileName: string) {
   downloadGeneratedFile(blob, fileName);
 }
 
-function extractLines(items: ArrayLike<unknown>) {
+function extractLines(items: ArrayLike<unknown> | null | undefined) {
   const lines: string[] = [];
   let currentY: number | null = null;
   let line = "";
-  for (const item of Array.from(items)) {
+  for (const item of Array.from(items ?? [])) {
     if (!item || typeof item !== "object" || !("str" in item) || !("transform" in item)) continue;
     const textItem = item as { str: string; transform: number[] };
     const y = textItem.transform[5];
@@ -77,6 +82,18 @@ function extractLines(items: ArrayLike<unknown>) {
   }
   if (line.trim()) lines.push(line.trim());
   return lines.join("\n");
+}
+
+function readableOcrError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error || "");
+  if (/undefined is not a function/i.test(message) || /near '\.\.\.[te] of [te]/i.test(message)) {
+    return "This browser could not read the PDF text layer. Try the latest Safari/Chrome, or switch to “OCR every page”.";
+  }
+  if (/Canvas processing is not supported/i.test(message)) {
+    return "This browser cannot render PDF pages for OCR. Try another browser or update Safari.";
+  }
+  if (message && message !== "OCR_CANCELLED") return message;
+  return "Text could not be extracted from this PDF.";
 }
 
 export default function PdfToTextPage() {
@@ -158,13 +175,10 @@ export default function PdfToTextPage() {
     trackToolEvent("pdf-to-text", "start");
 
     let worker: Tesseract.Worker | null = null;
-    let task: ReturnType<(typeof import("pdfjs-dist/legacy/build/pdf.mjs"))["getDocument"]> | null = null;
+    let pdf: Awaited<ReturnType<typeof loadPdfDocument>> | null = null;
 
     try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-      pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-      task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(selected.bytes)) });
-      const pdf = await task.promise;
+      pdf = await loadPdfDocument(selected.bytes);
       const sections: string[] = [];
       const searchablePages: Array<{ name: string; bytes: Uint8Array }> = [];
       const confidences: number[] = [];
@@ -181,7 +195,7 @@ export default function PdfToTextPage() {
             setProgress({
               page: activePageRef.current,
               total: orderedSelection.length,
-              phase: message.status.replace(/_/g, " "),
+              phase: String(message.status ?? "recognising").replace(/_/g, " "),
               percent,
             });
           },
@@ -212,7 +226,7 @@ export default function PdfToTextPage() {
         setWork({ kind: "working", message: `Reading page ${pageIndex + 1} of the PDF…` });
 
         const page = await pdf.getPage(pageIndex + 1);
-        const content = await page.getTextContent();
+        const content = await getPageTextContent(page);
         const selectableText = extractLines(content.items);
         const hasUsefulText = selectableText.replace(/\s/g, "").length >= 20;
         const shouldOcr = mode === "ocr" || (mode === "auto" && !hasUsefulText);
@@ -249,10 +263,11 @@ export default function PdfToTextPage() {
           confidences.push(recognition.data.confidence);
           ocrPages += 1;
 
-          if (recognition.data.pdf?.length) {
+          const ocrPdf = bytesFromUnknown(recognition.data.pdf);
+          if (ocrPdf?.byteLength) {
             searchablePages.push({
               name: `page-${pageIndex + 1}.pdf`,
-              bytes: Uint8Array.from(recognition.data.pdf),
+              bytes: ocrPdf,
             });
           }
           canvas.width = 1;
@@ -303,7 +318,7 @@ export default function PdfToTextPage() {
         trackToolEvent("pdf-to-text", "error");
         setWork({
           kind: "error",
-          message: error instanceof Error ? error.message : "Text could not be extracted.",
+          message: readableOcrError(error),
         });
       }
     } finally {
@@ -316,7 +331,13 @@ export default function PdfToTextPage() {
           // A cancelled worker may already be terminated.
         }
       }
-      if (task) await task.destroy();
+      if (pdf) {
+        try {
+          pdf.cleanup();
+        } catch {
+          // ignore
+        }
+      }
     }
   }
 

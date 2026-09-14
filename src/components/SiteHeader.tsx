@@ -102,7 +102,7 @@ export default function SiteHeader() {
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-container to-ruby-deep px-3 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:from-crimson-vivid hover:to-primary-container hover:shadow-[0_4px_14px_rgba(225,29,72,0.45)] focus:outline-none focus:ring-2 focus:ring-primary-container/40 sm:px-4"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cta to-ruby-deep px-3 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:from-crimson-vivid hover:to-cta hover:shadow-[0_4px_14px_rgba(225,29,72,0.45)] focus:outline-none focus:ring-2 focus:ring-cta/40 sm:px-4"
           >
             <MaterialIcon name="upload_file" className="text-[18px]" />
             <span className="hidden sm:inline">Open File</span>

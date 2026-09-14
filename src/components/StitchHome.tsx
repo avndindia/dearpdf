@@ -170,7 +170,7 @@ export default function StitchHome() {
             }}
             className={`group relative w-full max-w-4xl cursor-pointer rounded-3xl border-2 border-dashed p-6 shadow-lg transition-all duration-300 hover:shadow-2xl sm:p-8 ${
               dragging
-                ? "border-crimson-vivid bg-rose-subtle shadow-[0_0_0_4px_rgba(225,29,72,0.12)]"
+                ? "border-brand-500 bg-rose-subtle shadow-[0_0_0_4px_rgba(37,99,235,0.14)]"
                 : "border-brand-300 bg-white"
             }`}
             style={dragging ? undefined : { borderColor: "#fda4af" }}
@@ -431,7 +431,7 @@ export default function StitchHome() {
             <div className="rounded-xl border border-slate-800 bg-tech-black p-3.5 font-mono text-slate-100 shadow-md lg:col-span-6">
               <div className="mb-2 flex items-center justify-between border-b border-slate-800 pb-2 text-[11px]">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-brand-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                   <span className="ml-1 text-slate-400">What happens to your file</span>

@@ -38,7 +38,7 @@ import {
   grayscalePdf,
   unlockByRaster,
 } from "@/lib/raster";
-import { canvasToBlob, loadPdfDocument, renderPageToCanvas } from "@/lib/pdfjs";
+import { canvasToBlob, getPageTextContent, loadPdfDocument, renderPageToCanvas } from "@/lib/pdfjs";
 
 type Work =
   | { kind: "idle" }
@@ -357,9 +357,9 @@ export default function ToolClient({ tool }: { tool: PdfTool }) {
         for (let i = 1; i <= pdf.numPages; i++) {
           setWork({ kind: "busy", message: `Reading page ${i}/${pdf.numPages}…` });
           const page = await pdf.getPage(i);
-          const text = await page.getTextContent();
+          const text = await getPageTextContent(page);
           const lines = text.items
-            .map((item) => ("str" in item ? item.str : ""))
+            .map((item) => ("str" in item ? String((item as { str: string }).str) : ""))
             .join(" ")
             .replace(/\s+/g, " ")
             .trim();
@@ -380,9 +380,9 @@ export default function ToolClient({ tool }: { tool: PdfTool }) {
           for (let i = 1; i <= pdf.numPages; i++) {
             setWork({ kind: "busy", message: `OCR page ${i}/${pdf.numPages}…` });
             const page = await pdf.getPage(i);
-            const embedded = await page.getTextContent();
+            const embedded = await getPageTextContent(page);
             const embeddedText = embedded.items
-              .map((item) => ("str" in item ? item.str : ""))
+              .map((item) => ("str" in item ? String((item as { str: string }).str) : ""))
               .join(" ")
               .replace(/\s+/g, " ")
               .trim();
