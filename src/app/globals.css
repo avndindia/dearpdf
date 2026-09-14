@@ -443,3 +443,31 @@ a {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px -10px rgba(2, 132, 199, 0.25);
 }
+
+/* ===== Floating tool chip bar — clear CTAs + stack PDF-ready above ===== */
+html.has-tool-chip-bar main {
+  padding-bottom: calc(var(--tool-chip-bar-offset, 3.5rem) + 1rem);
+}
+
+html.has-tool-chip-bar .pdf-suite-result {
+  bottom: calc(18px + var(--tool-chip-bar-offset, 0px)) !important;
+}
+
+@media (max-width: 720px) {
+  html.has-tool-chip-bar .pdf-suite-result {
+    bottom: calc(8px + var(--tool-chip-bar-offset, 0px)) !important;
+  }
+
+  /* Lift sticky tool action rows above the chip bar (offset already includes safe-area) */
+  html.has-tool-chip-bar .merge-page.has-files .merge-action-row,
+  html.has-tool-chip-bar .pdf-page.has-file .utility-action-row,
+  html.has-tool-chip-bar .pdf-page.has-file .organise-action-row,
+  html.has-tool-chip-bar .pdf-page.has-file .compression-action-row,
+  html.has-tool-chip-bar .stitch-tool-shell.merge-page.has-files .merge-action-row,
+  html.has-tool-chip-bar .stitch-tool-shell.has-file .utility-action-row,
+  html.has-tool-chip-bar .stitch-tool-shell.has-file .organise-action-row,
+  html.has-tool-chip-bar .stitch-tool-shell.has-file .compression-action-row {
+    bottom: var(--tool-chip-bar-offset, 0px);
+    padding-bottom: 10px;
+  }
+}

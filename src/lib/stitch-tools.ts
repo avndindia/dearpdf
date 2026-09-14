@@ -416,3 +416,6 @@ export const stitchTools: StitchTool[] = [
 ];
 
 export const STITCH_TOOL_COUNT = stitchTools.length;
+
+/** Alias used by chip bar / catalog consumers. */
+export const STITCH_TOOLS = stitchTools;

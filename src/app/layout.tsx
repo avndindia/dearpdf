@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import PdfToolsOfflineRoot from "@/components/pdf-tools-offline-root";
 import PdfToolCompletion from "@/components/pdf-tool-completion";
 import OpenFilePicker from "@/components/OpenFilePicker";
+import ToolChipBar from "@/components/ToolChipBar";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -53,6 +54,7 @@ export default function RootLayout({
         </div>
         <PdfToolsOfflineRoot />
         <PdfToolCompletion />
+        <ToolChipBar />
         <OpenFilePicker />
       </body>
     </html>
