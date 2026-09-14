@@ -206,11 +206,11 @@ export default function StitchHome() {
                 PDF, JPG, or PNG · up to 500MB · stays on this device
               </p>
 
-              <div className="flex w-full flex-col items-stretch justify-between gap-2 overflow-x-auto rounded-2xl border border-slate-200/70 bg-slate-50/90 px-3.5 py-2.5 sm:flex-row sm:items-center">
+              <div className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-slate-50/90 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-3.5">
                 <span className="hidden whitespace-nowrap pl-1 text-left font-mono text-[11px] font-semibold uppercase text-secondary sm:inline">
                   Fast Actions:
                 </span>
-                <div className="grid flex-1 grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:items-center sm:justify-end">
+                <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-1 sm:justify-end">
                   {FAST_ACTIONS.map((action) =>
                     action.href ? (
                       <Link
