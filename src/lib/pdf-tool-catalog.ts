@@ -133,7 +133,7 @@ export const pdfTools: PdfToolCatalogItem[] = [
   },
   {
     title: "Scan to PDF",
-    description: "Scan pages with your camera, then download a PDF.",
+    description: "Live edges, auto-crop, Document or Book (2-page), continuous Save PDF.",
     href: "/pdf-tools/scan-to-pdf",
     category: "Convert",
     popular: true,

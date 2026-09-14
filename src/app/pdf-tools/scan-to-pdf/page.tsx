@@ -4,19 +4,30 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import {
-  documentFrameToJpeg,
-  imagesJpegToPdf,
-  warpQuadToJpeg,
-} from "../../../lib/pdf-extra-tools";
+  defaultCorners,
+  detectDocumentQuad,
+  mildCurveFlattenJpeg,
+  quadDrift,
+  splitQuadVertical,
+  type Quad,
+} from "../../../lib/document-edge-detect";
+import { imagesJpegToPdf, warpQuadToJpeg } from "../../../lib/pdf-extra-tools";
 import { trackToolEvent } from "../../../lib/stats";
 
-type Point = { x: number; y: number };
+type ScanMode = "document" | "book";
+type PageOrder = "ltr" | "rtl";
+
 type ScanPage = {
   id: string;
   preview: string;
   bytes: Uint8Array;
   width: number;
   height: number;
+  /** Original capture (pre-warp) for retake / edge adjust */
+  sourceBytes?: Uint8Array;
+  sourceWidth?: number;
+  sourceHeight?: number;
+  corners?: Quad;
 };
 
 type WorkState = { kind: "idle" } | { kind: "working" | "error"; message: string };
@@ -26,27 +37,20 @@ type AdjustDraft = {
   imageUrl: string;
   naturalWidth: number;
   naturalHeight: number;
-  corners: [Point, Point, Point, Point];
+  corners: Quad;
   enhance: boolean;
 };
+
+const AUTO_STABLE_MS = 800;
+const AUTO_COOLDOWN_MS = 2200;
+const DETECT_MIN_CONFIDENCE = 0.42;
+const STABLE_DRIFT = 0.028;
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function defaultCorners(w: number, h: number): [Point, Point, Point, Point] {
-  const insetX = w * 0.06;
-  const insetY = h * 0.06;
-  return [
-    { x: insetX, y: insetY },
-    { x: w - insetX, y: insetY },
-    { x: w - insetX, y: h - insetY },
-    { x: insetX, y: h - insetY },
-  ];
-}
-
 function jpegBytesToBlob(bytes: Uint8Array) {
-  // Copy so Blob gets a clean ArrayBuffer (views into larger buffers break some browsers).
   const copy = Uint8Array.from(bytes);
   return new Blob([copy], { type: "image/jpeg" });
 }
@@ -63,6 +67,21 @@ async function previewFromJpeg(bytes: Uint8Array, width: number, height: number)
   ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
   bmp.close();
   return canvas.toDataURL("image/jpeg", 0.72);
+}
+
+async function encodeSourceJpeg(source: CanvasImageSource, w: number, h: number, maxSide = 1600) {
+  const scale = Math.min(1, maxSide / Math.max(w, h));
+  const width = Math.max(32, Math.round(w * scale));
+  const height = Math.max(32, Math.round(h * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas unavailable.");
+  ctx.drawImage(source, 0, 0, width, height);
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.9));
+  if (!blob) throw new Error("Could not encode frame.");
+  return { bytes: new Uint8Array(await blob.arrayBuffer()), width, height, scale };
 }
 
 async function loadImageFromFile(file: File) {
@@ -86,16 +105,34 @@ function isSecureCameraContext() {
   return window.isSecureContext || location.hostname === "localhost" || location.hostname === "127.0.0.1";
 }
 
+function scaleCorners(corners: Quad, scale: number): Quad {
+  return corners.map((c) => ({ x: c.x * scale, y: c.y * scale })) as Quad;
+}
+
 export default function ScanToPdfPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const overlayRef = useRef<SVGSVGElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const processingRef = useRef(false);
+  const liveCornersRef = useRef<Quad | null>(null);
+  const liveConfRef = useRef(0);
+  const stableSinceRef = useRef<number | null>(null);
+  const lastAutoAtRef = useRef(0);
+  const detectBusyRef = useRef(false);
+  const rafRef = useRef(0);
 
   const [cameraOn, setCameraOn] = useState(false);
   const [pages, setPages] = useState<ScanPage[]>([]);
+  const [mode, setMode] = useState<ScanMode>("document");
+  const [pageOrder, setPageOrder] = useState<PageOrder>("ltr");
   const [autoEnhance, setAutoEnhance] = useState(true);
-  const [mildInset, setMildInset] = useState(false);
+  const [colorBoost, setColorBoost] = useState(false);
+  const [autoScan, setAutoScan] = useState(false);
+  const [mildFlatten, setMildFlatten] = useState(false);
+  const [liveCorners, setLiveCorners] = useState<Quad | null>(null);
+  const [liveConfidence, setLiveConfidence] = useState(0);
+  const [videoSize, setVideoSize] = useState({ w: 1, h: 1 });
   const [outputName, setOutputName] = useState("scan.pdf");
   const [work, setWork] = useState<WorkState>({ kind: "idle" });
   const [flash, setFlash] = useState(false);
@@ -104,19 +141,26 @@ export default function ScanToPdfPage() {
   const [secureOk] = useState(() => isSecureCameraContext());
 
   const busy = work.kind === "working";
+  const modeRef = useRef(mode);
+  const autoScanRef = useRef(autoScan);
+  const autoEnhanceRef = useRef(autoEnhance);
+  const colorBoostRef = useRef(colorBoost);
+  const mildFlattenRef = useRef(mildFlatten);
+  const pageOrderRef = useRef(pageOrder);
+  modeRef.current = mode;
+  autoScanRef.current = autoScan;
+  autoEnhanceRef.current = autoEnhance;
+  colorBoostRef.current = colorBoost;
+  mildFlattenRef.current = mildFlatten;
+  pageOrderRef.current = pageOrder;
 
-  // Bind stream after <video> mounts (fixes cameraOn race).
   useEffect(() => {
     const video = videoRef.current;
     const stream = streamRef.current;
     if (!cameraOn || !video || !stream) return;
-    if (video.srcObject !== stream) {
-      video.srcObject = stream;
-    }
+    if (video.srcObject !== stream) video.srcObject = stream;
     const play = () => {
-      void video.play().catch(() => {
-        /* autoplay policies — muted + playsInline usually enough */
-      });
+      void video.play().catch(() => {});
     };
     play();
     video.addEventListener("loadedmetadata", play);
@@ -127,28 +171,155 @@ export default function ScanToPdfPage() {
     () => () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     },
     [],
   );
 
-  const addProcessedPage = useCallback(async (source: CanvasImageSource, w: number, h: number) => {
-    const encoded = await documentFrameToJpeg(source, w, h, {
-      maxWidth: 1600,
-      enhance: autoEnhance,
-      inset: mildInset ? 0.04 : 0,
-      quality: 0.88,
-    });
-    const preview = await previewFromJpeg(encoded.bytes, encoded.width, encoded.height);
-    const page: ScanPage = {
-      id: uid(),
-      preview,
-      bytes: encoded.bytes,
-      width: encoded.width,
-      height: encoded.height,
+  const processQuadPage = useCallback(
+    async (
+      source: CanvasImageSource,
+      srcW: number,
+      srcH: number,
+      corners: Quad,
+      sourceMeta?: { bytes: Uint8Array; width: number; height: number; corners: Quad },
+    ) => {
+      const enhance = autoEnhanceRef.current;
+      // Color boost = slightly higher contrast stretch via enhance path + wider output.
+      const maxW = colorBoostRef.current ? 1700 : 1600;
+      let warped = await warpQuadToJpeg(source, srcW, srcH, corners, Math.min(maxW, srcW), enhance, 0.88);
+      if (mildFlattenRef.current && modeRef.current === "book") {
+        warped = await mildCurveFlattenJpeg(warped.bytes, warped.width, warped.height, 0.14, 0.88);
+      }
+      const preview = await previewFromJpeg(warped.bytes, warped.width, warped.height);
+      const page: ScanPage = {
+        id: uid(),
+        preview,
+        bytes: warped.bytes,
+        width: warped.width,
+        height: warped.height,
+        sourceBytes: sourceMeta?.bytes,
+        sourceWidth: sourceMeta?.width,
+        sourceHeight: sourceMeta?.height,
+        corners: sourceMeta?.corners,
+      };
+      setPages((current) => [...current, page]);
+      return page;
+    },
+    [],
+  );
+
+  const captureFromSource = useCallback(
+    async (source: CanvasImageSource, w: number, h: number, forcedCorners?: Quad | null) => {
+      const detected = forcedCorners
+        ? { corners: forcedCorners, confidence: 1 }
+        : detectDocumentQuad(source, w, h);
+      const corners = detected?.corners ?? defaultCorners(w, h);
+      const encoded = await encodeSourceJpeg(source, w, h, 1600);
+      const scaledCorners = scaleCorners(corners, encoded.scale);
+
+      // Build a canvas of the encoded size for warp.
+      const bmp = await createImageBitmap(jpegBytesToBlob(encoded.bytes));
+      const canvas = document.createElement("canvas");
+      canvas.width = encoded.width;
+      canvas.height = encoded.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        bmp.close();
+        throw new Error("Canvas unavailable.");
+      }
+      ctx.drawImage(bmp, 0, 0);
+      bmp.close();
+
+      if (modeRef.current === "book") {
+        const { left, right } = splitQuadVertical(scaledCorners);
+        const first = pageOrderRef.current === "ltr" ? left : right;
+        const second = pageOrderRef.current === "ltr" ? right : left;
+        await processQuadPage(canvas, encoded.width, encoded.height, first, {
+          bytes: encoded.bytes,
+          width: encoded.width,
+          height: encoded.height,
+          corners: first,
+        });
+        await processQuadPage(canvas, encoded.width, encoded.height, second, {
+          bytes: encoded.bytes,
+          width: encoded.width,
+          height: encoded.height,
+          corners: second,
+        });
+      } else {
+        await processQuadPage(canvas, encoded.width, encoded.height, scaledCorners, {
+          bytes: encoded.bytes,
+          width: encoded.width,
+          height: encoded.height,
+          corners: scaledCorners,
+        });
+      }
+    },
+    [processQuadPage],
+  );
+
+  // Live edge detection loop while camera is on.
+  useEffect(() => {
+    if (!cameraOn) {
+      setLiveCorners(null);
+      setLiveConfidence(0);
+      liveCornersRef.current = null;
+      stableSinceRef.current = null;
+      return;
+    }
+
+    let lastDetect = 0;
+    const tick = (now: number) => {
+      rafRef.current = requestAnimationFrame(tick);
+      const video = videoRef.current;
+      if (!video || !video.videoWidth || detectBusyRef.current) return;
+      if (now - lastDetect < 110) return; // ~9 fps detect
+      lastDetect = now;
+      detectBusyRef.current = true;
+      try {
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+        setVideoSize((s) => (s.w === vw && s.h === vh ? s : { w: vw, h: vh }));
+        const result = detectDocumentQuad(video, vw, vh);
+        if (result) {
+          setLiveCorners(result.corners);
+          setLiveConfidence(result.confidence);
+          const prev = liveCornersRef.current;
+          liveCornersRef.current = result.corners;
+          liveConfRef.current = result.confidence;
+
+          if (
+            autoScanRef.current &&
+            !processingRef.current &&
+            result.confidence >= DETECT_MIN_CONFIDENCE &&
+            prev &&
+            quadDrift(prev, result.corners, vw, vh) < STABLE_DRIFT
+          ) {
+            if (stableSinceRef.current == null) stableSinceRef.current = now;
+            else if (
+              now - stableSinceRef.current >= AUTO_STABLE_MS &&
+              now - lastAutoAtRef.current >= AUTO_COOLDOWN_MS
+            ) {
+              lastAutoAtRef.current = now;
+              stableSinceRef.current = null;
+              void captureFrameRef.current?.();
+            }
+          } else {
+            stableSinceRef.current = null;
+          }
+        }
+      } finally {
+        detectBusyRef.current = false;
+      }
     };
-    setPages((current) => [...current, page]);
-    return page;
-  }, [autoEnhance, mildInset]);
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [cameraOn]);
+
+  const captureFrameRef = useRef<(() => Promise<void>) | null>(null);
 
   async function startCamera() {
     setWork({ kind: "idle" });
@@ -176,7 +347,7 @@ export default function ScanToPdfPage() {
         },
       });
       streamRef.current = stream;
-      setCameraOn(true); // video mounts; effect attaches stream
+      setCameraOn(true);
     } catch {
       setWork({
         kind: "error",
@@ -199,7 +370,9 @@ export default function ScanToPdfPage() {
     setFlash(true);
     window.setTimeout(() => setFlash(false), 120);
     try {
-      await addProcessedPage(video, video.videoWidth, video.videoHeight);
+      const corners =
+        liveConfRef.current >= DETECT_MIN_CONFIDENCE ? liveCornersRef.current : null;
+      await captureFromSource(video, video.videoWidth, video.videoHeight, corners);
       setWork({ kind: "idle" });
     } catch (error) {
       setWork({
@@ -210,6 +383,7 @@ export default function ScanToPdfPage() {
       processingRef.current = false;
     }
   }
+  captureFrameRef.current = captureFrame;
 
   async function addGalleryFiles(files: FileList | File[]) {
     const list = Array.from(files).filter((f) => f.type.startsWith("image/"));
@@ -217,12 +391,12 @@ export default function ScanToPdfPage() {
       setWork({ kind: "error", message: "Pick one or more photos (JPEG or PNG)." });
       return;
     }
-    setWork({ kind: "working", message: `Adding ${list.length} photo${list.length === 1 ? "" : "s"}…` });
+    setWork({ kind: "working", message: `Scanning ${list.length} photo${list.length === 1 ? "" : "s"}…` });
     try {
       for (const file of list) {
         const loaded = await loadImageFromFile(file);
         try {
-          await addProcessedPage(loaded.element, loaded.width, loaded.height);
+          await captureFromSource(loaded.element, loaded.width, loaded.height, null);
         } finally {
           URL.revokeObjectURL(loaded.url);
         }
@@ -255,7 +429,8 @@ export default function ScanToPdfPage() {
 
   async function openAdjust(page: ScanPage) {
     try {
-      const blob = jpegBytesToBlob(page.bytes);
+      const bytes = page.sourceBytes ?? page.bytes;
+      const blob = jpegBytesToBlob(bytes);
       const url = URL.createObjectURL(blob);
       const img = await new Promise<HTMLImageElement>((resolve, reject) => {
         const el = new Image();
@@ -263,12 +438,18 @@ export default function ScanToPdfPage() {
         el.onerror = () => reject(new Error("Could not open page for adjust."));
         el.src = url;
       });
+      const nw = page.sourceWidth ?? img.naturalWidth;
+      const nh = page.sourceHeight ?? img.naturalHeight;
+      const corners =
+        page.corners ??
+        detectDocumentQuad(img, img.naturalWidth, img.naturalHeight)?.corners ??
+        defaultCorners(nw, nh);
       setAdjust({
         pageId: page.id,
         imageUrl: url,
-        naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight,
-        corners: defaultCorners(img.naturalWidth, img.naturalHeight),
+        naturalWidth: nw,
+        naturalHeight: nh,
+        corners,
         enhance: autoEnhance,
       });
     } catch (error) {
@@ -295,7 +476,6 @@ export default function ScanToPdfPage() {
         el.onerror = () => reject(new Error("Adjust source missing."));
         el.src = adjust.imageUrl;
       });
-      // Downsample before warp so phones stay responsive.
       const maxSrc = 1200;
       const scale = Math.min(1, maxSrc / Math.max(adjust.naturalWidth, adjust.naturalHeight));
       const srcW = Math.max(32, Math.round(adjust.naturalWidth * scale));
@@ -309,8 +489,8 @@ export default function ScanToPdfPage() {
       const corners = adjust.corners.map((c) => ({
         x: c.x * scale,
         y: c.y * scale,
-      })) as [Point, Point, Point, Point];
-      const warped = await warpQuadToJpeg(
+      })) as Quad;
+      let warped = await warpQuadToJpeg(
         scaled,
         srcW,
         srcH,
@@ -319,11 +499,21 @@ export default function ScanToPdfPage() {
         adjust.enhance,
         0.88,
       );
+      if (mildFlatten && mode === "book") {
+        warped = await mildCurveFlattenJpeg(warped.bytes, warped.width, warped.height, 0.14, 0.88);
+      }
       const preview = await previewFromJpeg(warped.bytes, warped.width, warped.height);
       setPages((current) =>
         current.map((p) =>
           p.id === adjust.pageId
-            ? { ...p, bytes: warped.bytes, width: warped.width, height: warped.height, preview }
+            ? {
+                ...p,
+                bytes: warped.bytes,
+                width: warped.width,
+                height: warped.height,
+                preview,
+                corners: adjust.corners,
+              }
             : p,
         ),
       );
@@ -343,7 +533,7 @@ export default function ScanToPdfPage() {
     const y = ((clientY - rect.top) / rect.height) * adjust.naturalHeight;
     setAdjust((current) => {
       if (!current) return current;
-      const corners = [...current.corners] as [Point, Point, Point, Point];
+      const corners = [...current.corners] as Quad;
       corners[index] = {
         x: Math.max(0, Math.min(current.naturalWidth, x)),
         y: Math.max(0, Math.min(current.naturalHeight, y)),
@@ -372,35 +562,77 @@ export default function ScanToPdfPage() {
     }
   }
 
+  const outlinePoints = liveCorners
+    ? liveCorners.map((c) => `${c.x},${c.y}`).join(" ")
+    : "";
+  const edgeLocked = liveConfidence >= DETECT_MIN_CONFIDENCE;
+
   return (
     <StitchToolShell
       title="Scan to PDF"
-      subtitle="Scan pages with your camera, then download a PDF. Everything stays on this device."
+      subtitle="Live edge detect, auto-crop, and continuous pages — like a phone document scanner. Everything stays on this device."
       className={`compress-page scan-to-pdf-page${pages.length ? " has-file" : ""}`}
       related={[
         { href: "/pdf-tools/images-to-pdf", label: "Images to PDF" },
-        { href: "/pdf-tools/grayscale", label: "Grayscale PDF" },
+        { href: "/pdf-tools/pdf-to-text", label: "PDF to Text (OCR)" },
+        { href: "/pdf-tools/ai-summary", label: "AI Summary" },
       ]}
-      note="Range scan: capture page after page, then Save PDF. Works best on a phone over HTTPS."
+      note="Document or Book (2 pages). Auto Scan when edges are steady. OCR later via PDF to Text / AI Summary — not rebuilt here."
     >
       <section className="scan-range-workspace">
+        <div className="scan-mode-row" role="group" aria-label="Scan mode">
+          <button
+            type="button"
+            className={`scan-mode-btn${mode === "document" ? " is-active" : ""}`}
+            onClick={() => setMode("document")}
+          >
+            Document
+          </button>
+          <button
+            type="button"
+            className={`scan-mode-btn${mode === "book" ? " is-active" : ""}`}
+            onClick={() => setMode("book")}
+          >
+            Book (2 pages)
+          </button>
+        </div>
+
         <div className="scan-range-toolbar">
           <label className="scan-toggle">
-            <input
-              type="checkbox"
-              checked={autoEnhance}
-              onChange={(e) => setAutoEnhance(e.target.checked)}
-            />
-            <span>Enhance all (document look)</span>
+            <input type="checkbox" checked={autoEnhance} onChange={(e) => setAutoEnhance(e.target.checked)} />
+            <span>Enhance (document look)</span>
           </label>
           <label className="scan-toggle">
-            <input
-              type="checkbox"
-              checked={mildInset}
-              onChange={(e) => setMildInset(e.target.checked)}
-            />
-            <span>Slight edge trim</span>
+            <input type="checkbox" checked={colorBoost} onChange={(e) => setColorBoost(e.target.checked)} />
+            <span>Color boost</span>
           </label>
+          <label className="scan-toggle">
+            <input type="checkbox" checked={autoScan} onChange={(e) => setAutoScan(e.target.checked)} />
+            <span>Auto Scan</span>
+          </label>
+          {mode === "book" ? (
+            <>
+              <label className="scan-toggle">
+                <span>Order</span>
+                <select
+                  value={pageOrder}
+                  onChange={(e) => setPageOrder(e.target.value as PageOrder)}
+                  aria-label="Book page order"
+                >
+                  <option value="ltr">LTR (left → right)</option>
+                  <option value="rtl">RTL (right → left)</option>
+                </select>
+              </label>
+              <label className="scan-toggle">
+                <input
+                  type="checkbox"
+                  checked={mildFlatten}
+                  onChange={(e) => setMildFlatten(e.target.checked)}
+                />
+                <span>Mild curve flatten</span>
+              </label>
+            </>
+          ) : null}
         </div>
 
         {!cameraOn ? (
@@ -422,7 +654,8 @@ export default function ScanToPdfPage() {
               Add photos
             </button>
             <p className="organise-tip">
-              Point at a page, tap Capture, flip to the next page, keep going — then Save PDF.
+              Point at a page — edges outline live. Tap the shutter (or turn on Auto Scan). In Book mode one shot
+              becomes two pages.
               {!secureOk ? " Camera needs HTTPS; gallery still works." : null}
             </p>
           </div>
@@ -430,8 +663,36 @@ export default function ScanToPdfPage() {
           <div className="scan-camera-stage">
             <div className="scan-video-wrap">
               <video ref={videoRef} playsInline muted autoPlay className="scan-video" />
+              <svg
+                ref={overlayRef}
+                className="scan-edge-overlay"
+                viewBox={`0 0 ${videoSize.w} ${videoSize.h}`}
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                {outlinePoints ? (
+                  <>
+                    <polygon
+                      points={outlinePoints}
+                      className={edgeLocked ? "scan-edge-poly is-locked" : "scan-edge-poly"}
+                    />
+                    {mode === "book" && liveCorners ? (
+                      <line
+                        x1={(liveCorners[0].x + liveCorners[1].x) / 2}
+                        y1={(liveCorners[0].y + liveCorners[1].y) / 2}
+                        x2={(liveCorners[3].x + liveCorners[2].x) / 2}
+                        y2={(liveCorners[3].y + liveCorners[2].y) / 2}
+                        className="scan-spine-line"
+                      />
+                    ) : null}
+                  </>
+                ) : null}
+              </svg>
               {flash ? <div className="scan-flash" aria-hidden /> : null}
-              <div className="scan-camera-hint">Page {pages.length + 1}</div>
+              <div className="scan-camera-hint">
+                {mode === "book" ? "Book" : "Document"} · Page {pages.length + 1}
+                {autoScan ? (edgeLocked ? " · Auto ready" : " · Hold steady…") : null}
+              </div>
             </div>
             <div className="scan-shutter-row">
               <button
@@ -476,7 +737,7 @@ export default function ScanToPdfPage() {
               <strong>
                 {pages.length} page{pages.length === 1 ? "" : "s"}
               </strong>
-              <span>Tap a page to adjust edges · reorder or delete below</span>
+              <span>Tap a page to adjust edges · reorder or delete · keep scanning until Save PDF</span>
             </div>
             <ol className="scan-page-strip">
               {pages.map((page, index) => (
@@ -516,7 +777,7 @@ export default function ScanToPdfPage() {
             <div className="organise-action-row scan-save-row">
               <div>
                 <strong>Ready to save</strong>
-                <span>One PDF from this range scan — built here, not uploaded</span>
+                <span>Multi-page PDF on this device — then open OCR / AI Summary if you need text</span>
               </div>
               <div className="merge-action-controls">
                 <label className="merge-output-name">
@@ -537,7 +798,7 @@ export default function ScanToPdfPage() {
           </>
         ) : (
           <p className="organise-tip scan-empty-tip">
-            No pages yet. Start scanning or add photos — each shot becomes a page right away.
+            No pages yet. Start scanning or add photos — edges auto-crop on capture.
           </p>
         )}
 
@@ -577,7 +838,7 @@ export default function ScanToPdfPage() {
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-              <strong>Drag corners to the document edges (optional)</strong>
+              <strong>Drag corners to the document edges</strong>
               <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <input
                   type="checkbox"

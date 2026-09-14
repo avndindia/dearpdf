@@ -337,7 +337,7 @@ export const stitchTools: StitchTool[] = [
   {
     id: "scan-to-pdf",
     name: "Scan to PDF",
-    description: "Range-scan pages with your camera, enhance, and save one multi-page PDF.",
+    description: "Live edge detect, auto-crop, Document or Book mode, Auto Scan, Save PDF.",
     href: "/pdf-tools/scan-to-pdf",
     category: "convert",
     icon: "photo_camera",
@@ -345,7 +345,7 @@ export const stitchTools: StitchTool[] = [
     badgeTone: "popular",
     footer: "No app install",
     tag: "Document scan",
-    searchText: "scan to pdf camera gallery document capture crop enhance",
+    searchText: "scan to pdf camera gallery document book dual page edge detect auto crop enhance vflat",
     iconTone: "amber",
   },
   {

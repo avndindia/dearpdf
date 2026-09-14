@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { GENERATED_FILE_EVENT, type GeneratedFileEventDetail } from "../lib/browser-download";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "../lib/pdf-tool-handoff";
 import { PDF_NEXT_STEPS } from "./pdf-next-step-selector";
 
 type CompletedPdf = { bytes: Uint8Array; name: string };
+
+const AUTO_DISMISS_MS = 18_000;
 
 function formatBytes(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
@@ -23,18 +26,32 @@ function downloadAgain(result: CompletedPdf) {
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
+function clearGeneratedGlobal() {
+  window.__dearPdfGeneratedFile = undefined;
+}
+
 export default function PdfToolCompletion() {
+  const pathname = usePathname();
   const [result, setResult] = useState<CompletedPdf | null>(null);
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState("");
   const seenBlob = useRef<Blob | null>(null);
+  const pathnameRef = useRef(pathname);
+
+  function dismiss() {
+    clearGeneratedGlobal();
+    seenBlob.current = null;
+    setResult(null);
+    setOpening(false);
+    setError("");
+  }
 
   async function passToTool(pdf: CompletedPdf, path: string) {
     setOpening(true);
     setError("");
     try {
       const id = await savePdfToolHandoff(pdf.bytes, pdf.name);
-      window.__dearPdfGeneratedFile = undefined;
+      clearGeneratedGlobal();
       window.__dearPdfNextStep = "download";
       window.location.assign(pdfToolHandoffUrl(path, id));
     } catch {
@@ -44,11 +61,17 @@ export default function PdfToolCompletion() {
     }
   }
 
+  // Must-have: client navigations keep root layout mounted — clear sticky panel on route change.
   useEffect(() => {
-    const receive = (event?: Event) => {
-      const detail = event
-        ? (event as CustomEvent<GeneratedFileEventDetail>).detail
-        : window.__dearPdfGeneratedFile;
+    if (pathnameRef.current === pathname) return;
+    pathnameRef.current = pathname;
+    dismiss();
+  }, [pathname]);
+
+  // Only accept new files from GENERATED_FILE_EVENT (not focus/pageshow resurrect).
+  // One mount revive from global covers hard reloads / late mount after download on same tool.
+  useEffect(() => {
+    const applyDetail = (detail: GeneratedFileEventDetail | undefined) => {
       if (!detail || seenBlob.current === detail.blob) return;
       const { blob, fileName, nextStep = "download" } = detail;
       if (!fileName.toLowerCase().endsWith(".pdf")) return;
@@ -64,16 +87,24 @@ export default function PdfToolCompletion() {
         setError("");
       });
     };
-    window.addEventListener(GENERATED_FILE_EVENT, receive);
-    window.addEventListener("focus", receive);
-    window.addEventListener("pageshow", receive);
-    receive();
+
+    const onGenerated = (event: Event) => {
+      applyDetail((event as CustomEvent<GeneratedFileEventDetail>).detail);
+    };
+
+    window.addEventListener(GENERATED_FILE_EVENT, onGenerated);
+    applyDetail(window.__dearPdfGeneratedFile);
     return () => {
-      window.removeEventListener(GENERATED_FILE_EVENT, receive);
-      window.removeEventListener("focus", receive);
-      window.removeEventListener("pageshow", receive);
+      window.removeEventListener(GENERATED_FILE_EVENT, onGenerated);
     };
   }, []);
+
+  // Soft auto-dismiss so the panel does not linger forever on the same page.
+  useEffect(() => {
+    if (!result) return;
+    const timer = window.setTimeout(() => dismiss(), AUTO_DISMISS_MS);
+    return () => window.clearTimeout(timer);
+  }, [result]);
 
   const tools = typeof window === "undefined"
     ? PDF_NEXT_STEPS
@@ -86,7 +117,7 @@ export default function PdfToolCompletion() {
       <div className="pdf-suite-result-heading">
         <span aria-hidden="true">✓</span>
         <div><strong>PDF ready</strong><small>{result.name} · {formatBytes(result.bytes.byteLength)}</small></div>
-        <button type="button" aria-label="Close completed PDF actions" onClick={() => { window.__dearPdfGeneratedFile = undefined; setResult(null); }}>×</button>
+        <button type="button" aria-label="Close completed PDF actions" onClick={dismiss}>×</button>
       </div>
       <div className="pdf-suite-result-actions">
         <button className="pdf-suite-download" type="button" onClick={() => downloadAgain(result)}>Download PDF</button>
