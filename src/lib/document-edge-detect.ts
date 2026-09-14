@@ -382,6 +382,16 @@ export function isSaneDocumentQuad(corners: Quad, frameW: number, frameH: number
     const insetY = Math.min(p.y - minY, maxY - p.y) / bh;
     if (insetX > 0.22 && insetY > 0.22) return false;
   }
+  // Incomplete crop: spans most of the width and kisses the top, but leaves a
+  // large empty band at the bottom (common low-contrast desk miss).
+  const spansWidth = bw > frameW * 0.72;
+  const kissesTop = minY < frameH * 0.08;
+  const bottomGap = (frameH - maxY) / frameH;
+  if (spansWidth && kissesTop && bottomGap > 0.18) return false;
+  // Same for a large top gap with bottom-kissing wide crop.
+  const kissesBottom = maxY > frameH * 0.92;
+  const topGap = minY / frameH;
+  if (spansWidth && kissesBottom && topGap > 0.18) return false;
   return true;
 }
 
@@ -1013,7 +1023,10 @@ export function detectDocumentQuad(
     };
   }
 
-  if (bright) return bright;
+  // Prefer a sane bright bbox over a blank guide when paper/edges failed.
+  if (bright && isSaneDocumentQuad(bright.corners, sourceWidth, sourceHeight)) {
+    return bright;
+  }
 
   return {
     corners: defaultGuideQuad(sourceWidth, sourceHeight),
