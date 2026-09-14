@@ -4,21 +4,19 @@
 
 :root {
   --ink: #0b1c30;
-  --muted: #475569;
+  --muted: #5c3f40;
   --meta: #565e74;
-  --line: #cbd5e1;
+  --line: #e5bdbe;
   --light-line: #e2e8f0;
   --paper: #fbfcfd;
   --wash: #f8fafc;
-  --soft-wash: #eff6ff;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #dbeafe;
-  --cta: #e11d48;
-  --cta-hover: #be123c;
+  --soft-wash: #fff1f2;
+  --accent: #e11d48;
+  --accent-hover: #be123c;
+  --accent-soft: #ffe4e6;
   --site-shell-width: 1280px;
-  --discuss-navy: #2563eb;
-  --discuss-navy-2: #1d4ed8;
+  --discuss-navy: #e11d48;
+  --discuss-navy-2: #be123c;
   --font-sans: var(--font-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-ui: var(--font-sans);
@@ -40,27 +38,27 @@
   --font-label-md: var(--font-sans);
   --font-label-sm: var(--font-sans);
 
-  /* Brand — calm blue / slate chrome */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  /* Brand — Ruby & Slate */
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #f43f5e;
+  --color-brand-600: #e11d48;
+  --color-brand-700: #be123c;
+  --color-brand-800: #9f1239;
+  --color-brand-900: #881337;
 
-  /* Material / Stitch blue & slate tokens (CTAs stay ruby via --color-cta) */
-  --color-primary: #2563eb;
-  --color-primary-container: #2563eb;
+  /* Material / Stitch Ruby & Slate tokens */
+  --color-primary: #b80035;
+  --color-primary-container: #e11d48;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #f8fafc;
-  --color-primary-fixed: #dbeafe;
-  --color-primary-fixed-dim: #bfdbfe;
-  --color-on-primary-fixed: #0b1c30;
-  --color-on-primary-fixed-variant: #1e40af;
+  --color-on-primary-container: #fffaf9;
+  --color-primary-fixed: #ffdada;
+  --color-primary-fixed-dim: #ffb3b6;
+  --color-on-primary-fixed: #40000c;
+  --color-on-primary-fixed-variant: #920028;
   --color-surface: #fbfcfd;
   --color-surface-bright: #f8f9ff;
   --color-surface-dim: #cbdbf5;
@@ -71,9 +69,9 @@
   --color-surface-container-high: #dce9ff;
   --color-surface-container-highest: #d3e4fe;
   --color-on-surface: #0b1c30;
-  --color-on-surface-variant: #475569;
-  --color-outline: #64748b;
-  --color-outline-variant: #cbd5e1;
+  --color-on-surface-variant: #5c3f40;
+  --color-outline: #906f70;
+  --color-outline-variant: #e5bdbe;
   --color-secondary: #565e74;
   --color-secondary-container: #dae2fd;
   --color-on-secondary: #ffffff;
@@ -92,8 +90,8 @@
   --color-on-tertiary-fixed-variant: #005137;
   --color-inverse-surface: #213145;
   --color-inverse-on-surface: #eaf1ff;
-  --color-inverse-primary: #93c5fd;
-  --color-surface-tint: #2563eb;
+  --color-inverse-primary: #ffb3b6;
+  --color-surface-tint: #be0037;
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;
@@ -101,13 +99,11 @@
   --color-background-md: #f8f9ff;
   --color-on-background: #0b1c30;
 
-  /* CTA ruby (primary action buttons only) + calm soft surfaces */
-  --color-cta: #e11d48;
-  --color-cta-hover: #be123c;
+  /* Explicit Ruby & Slate extras */
   --color-ruby-deep: #be123c;
   --color-crimson-vivid: #ff2647;
-  --color-rose-subtle: #eff6ff;
-  --color-rose-tint: #dbeafe;
+  --color-rose-subtle: #fff1f2;
+  --color-rose-tint: #ffe4e6;
   --color-canvas-bg: #fbfcfd;
   --color-surface-slate: #f8fafc;
   --color-border-subtle: #e2e8f0;

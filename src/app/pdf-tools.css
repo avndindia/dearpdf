@@ -6098,50 +6098,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 
 
-/* ===== DearPDF calm blue chrome + ruby CTAs (2026-09-14) ===== */
-.stitch-tool-shell {
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #dbeafe;
-  --cta: #e11d48;
-  --cta-hover: #be123c;
-}
-
-.stitch-tool-shell .pdf-drop-zone {
-  border-color: #93c5fd;
-  background: linear-gradient(180deg, #eff6ffaa 0%, #ffffff 55%);
-}
-.stitch-tool-shell .pdf-drop-zone:hover,
-.stitch-tool-shell .pdf-drop-zone.is-dragging {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-  background: #eff6ff;
-}
-
-/* Primary solid CTAs stay ruby */
-.stitch-tool-shell .primary-button,
-.stitch-tool-shell .merge-button,
-.stitch-tool-shell button.primary-button,
-.stitch-tool-shell .pdf-action.primary,
-.stitch-tool-shell .compress-run,
-.stitch-tool-shell .split-run {
-  background: linear-gradient(90deg, #e11d48 0%, #be123c 100%);
-  border-color: transparent;
-  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.28);
-}
-.stitch-tool-shell .primary-button:hover:not(:disabled),
-.stitch-tool-shell .merge-button:hover:not(:disabled),
-.stitch-tool-shell .compress-run:hover:not(:disabled),
-.stitch-tool-shell .split-run:hover:not(:disabled) {
-  background: linear-gradient(90deg, #ff2647 0%, #e11d48 100%);
-}
-
-.stitch-tool-back:hover,
-.stitch-tool-trust-link:hover,
-.stitch-tool-related a:hover {
-  color: #2563eb;
-}
-
+/* ===== DearPDF PDF Ready + compress polish (ruby accents) ===== */
 /* PDF ready completion — white/slate card, ruby download */
 .pdf-suite-result {
   border: 1px solid #e2e8f0 !important;
@@ -6152,9 +6109,9 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   padding: 16px 18px !important;
 }
 .pdf-suite-result-heading > span {
-  background: #eff6ff !important;
-  color: #2563eb !important;
-  border: 1px solid #bfdbfe;
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1px solid #fecdd3;
   border-radius: 999px;
 }
 .pdf-suite-result-heading strong {
@@ -6201,8 +6158,8 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   background: #fff !important;
 }
 .pdf-suite-tool-choices button:hover:not(:disabled) {
-  background: #eff6ff !important;
-  color: #1d4ed8 !important;
+  background: #fff1f2 !important;
+  color: #be123c !important;
 }
 .pdf-suite-result-error {
   color: #ba1a1a !important;
@@ -6260,7 +6217,7 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 .compression-saving-status {
   margin: 0;
-  color: #2563eb;
+  color: #e11d48;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -6286,8 +6243,8 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  background: #fff1f2;
+  color: #be123c;
   padding: 1px 8px;
   font-size: 11px;
   font-weight: 650;

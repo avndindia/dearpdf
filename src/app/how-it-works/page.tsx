@@ -162,7 +162,7 @@ export default function HowItWorksPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/pdf-tools/merge"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-cta to-ruby-deep px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)]"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-container to-ruby-deep px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(225,29,72,0.35)]"
             >
               <MaterialIcon name="call_merge" className="text-[16px]" />
               Merge PDF
