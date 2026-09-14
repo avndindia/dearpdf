@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import PdfToolsOfflineRoot from "@/components/pdf-tools-offline-root";
 import PdfToolCompletion from "@/components/pdf-tool-completion";
 import OpenFilePicker from "@/components/OpenFilePicker";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -36,7 +37,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="en"
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+      </head>
       <body className="bg-canvas-bg font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
         <div className="flex min-h-screen flex-col">
           <SiteHeader />

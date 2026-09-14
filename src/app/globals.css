@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import "./pdf-tools.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --ink: #0b1c30;
   --muted: #475569;
@@ -177,8 +179,8 @@ main {
 }
 
 body {
-  background: #f8f9ff;
-  color: #0f172a;
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--font-sans);
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
@@ -229,5 +231,111 @@ a {
 .pdf-page .utility-workspace,
 .pdf-page .lock-workspace,
 .pdf-page .sign-workspace {
-  background: #fff;
+  background: var(--surface-card, #fff);
+}
+
+/* ===== DearPDF dark mode (class="dark" on <html>) ===== */
+.dark {
+  color-scheme: dark;
+
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --meta: #94a3b8;
+  --line: #334155;
+  --light-line: #1e293b;
+  --paper: #0b1220;
+  --wash: #0b1220;
+  --soft-wash: #111827;
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --accent-soft: #0c4a6e;
+  --surface-card: #111827;
+  --discuss-navy: #38bdf8;
+  --discuss-navy-2: #7dd3fc;
+
+  /* Remap Tailwind @theme color tokens used across the site */
+  --color-background: #0b1220;
+  --color-foreground: #e2e8f0;
+  --color-surface: #0f172a;
+  --color-surface-bright: #1e293b;
+  --color-surface-dim: #020617;
+  --color-surface-variant: #1e293b;
+  --color-surface-container: #1e293b;
+  --color-surface-container-low: #111827;
+  --color-surface-container-lowest: #0f172a;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-on-surface: #e2e8f0;
+  --color-on-surface-variant: #94a3b8;
+  --color-outline: #94a3b8;
+  --color-outline-variant: #475569;
+  --color-canvas-bg: #0b1220;
+  --color-surface-slate: #111827;
+  --color-border-subtle: #334155;
+  --color-border-strong: #475569;
+  --color-background-md: #0b1220;
+  --color-on-background: #e2e8f0;
+  --color-secondary: #7dd3fc;
+  --color-secondary-container: #0c4a6e;
+  --color-on-secondary-container: #e0f2fe;
+  --color-on-secondary-fixed: #e0f2fe;
+  --color-security-bg: rgba(6, 78, 59, 0.35);
+  --color-rose-subtle: #0c4a6e;
+  --color-rose-tint: #075985;
+  --color-inverse-surface: #e2e8f0;
+  --color-inverse-on-surface: #0f172a;
+
+  /* Keep brand sky blues readable on dark */
+  --color-primary: #38bdf8;
+  --color-primary-container: #0369a1;
+  --color-on-primary: #082f49;
+  --color-on-primary-container: #e0f2fe;
+  --color-surface-tint: #38bdf8;
+}
+
+.dark ::selection {
+  background: #075985;
+  color: #e0f2fe;
+}
+
+/* Soften common light-only Tailwind surfaces site-wide */
+.dark .bg-white {
+  background-color: #0f172a;
+}
+.dark .bg-white\/95 {
+  background-color: rgb(2 6 23 / 0.9);
+}
+.dark .hover\:bg-white:hover {
+  background-color: #1e293b;
+}
+.dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+.dark .hover\:bg-sky-50:hover,
+.dark .hover\:bg-sky-50\/50:hover,
+.dark .focus\:bg-sky-50\/50:focus {
+  background-color: rgb(7 89 133 / 0.35);
+}
+.dark .text-slate-500 {
+  color: #94a3b8;
+}
+.dark .text-slate-400 {
+  color: #94a3b8;
+}
+.dark .border-slate-200,
+.dark .border-slate-200\/60,
+.dark .border-slate-200\/80 {
+  border-color: #334155;
+}
+.dark .border-brand-300 {
+  border-color: rgb(56 189 248 / 0.45);
+}
+.dark .border-emerald-200,
+.dark .border-emerald-200\/60 {
+  border-color: rgb(16 185 129 / 0.35);
+}
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-xl {
+  --tw-shadow-color: rgb(0 0 0 / 0.45);
 }
