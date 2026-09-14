@@ -2290,7 +2290,8 @@ html[data-color-scheme="dark"] .rich-editor-source-results li > button.is-active
 }
 
 @media (max-width: 760px) {
-  main { width: min(100% - 20px, 1120px); }
+  /* DearPDF: full-bleed main; page gutters come from Tailwind px-* shells */
+  main { width: 100%; max-width: none; }
   .hub-header { align-items: center; flex-direction: row; flex-wrap: wrap; gap: 10px; padding: 14px 0 12px; }
   .hub-brand { flex: 1 1 220px; }
   .hub-header h1 { font-size: 27px; }

@@ -170,6 +170,12 @@ body {
   overflow-x: hidden;
 }
 
+/* Override legacy pdf-tools.css main shrink (was 100% - 20px on mobile) */
+main {
+  width: 100%;
+  max-width: none;
+}
+
 body {
   background: #f8f9ff;
   color: #0f172a;
