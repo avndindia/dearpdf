@@ -113,9 +113,9 @@ export default function StitchHome() {
   return (
     <div className="relative w-full overflow-hidden bg-canvas-bg">
       <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-[360px] w-[820px] -translate-x-1/2 bg-gradient-to-b from-sky-100/50 via-sky-50/30 to-transparent blur-3xl" />
-      <div className="pointer-events-none absolute top-20 right-10 -z-10 h-96 w-96 rounded-full bg-sky-50/70 blur-3xl" />
+      <div className="pointer-events-none absolute top-20 left-1/2 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-50/70 blur-3xl" />
 
-      <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+      <div className="mx-auto max-w-7xl pb-16 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
         {/* Hero + dropzone */}
         <section className="mx-auto flex max-w-4xl flex-col items-center pb-10 pt-8 text-center">
           <div className="mb-6 inline-flex flex-wrap items-center justify-center gap-2 rounded-full border border-brand-300 bg-white px-3.5 py-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider shadow-sm">

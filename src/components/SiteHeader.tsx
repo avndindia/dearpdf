@@ -33,11 +33,11 @@ function LogoLink() {
   return (
     <Link href="/" onClick={() => dismissPdfToolCompletion()} className="flex select-none items-center py-1 transition-transform hover:scale-[1.02]">
       <Image
-        src="/logo-dearpdf-lockup.png?v=sky3"
+        src="/logo-dearpdf-lockup.png?v=sky4"
         alt="DearPDF.in"
-        width={200}
-        height={40}
-        className="h-10 w-auto object-contain drop-shadow-sm sm:h-11"
+        width={328}
+        height={80}
+        className="h-9 w-auto max-w-[min(11.5rem,52vw)] object-contain object-left drop-shadow-sm sm:h-10 sm:max-w-[13rem]"
         priority
       />
     </Link>
@@ -51,7 +51,7 @@ export default function SiteHeader() {
   if (pathname.startsWith("/admin")) {
     return (
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border-subtle bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-4 sm:h-20 sm:px-6">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:h-20 sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
           <LogoLink />
           <span className="rounded-full border border-border-subtle bg-surface-slate px-3 py-1 font-mono text-[11px] text-secondary">
             /admin
@@ -63,7 +63,7 @@ export default function SiteHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border-subtle bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-6">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:h-20 sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
         <div className="flex min-w-0 items-center gap-3">
           <LogoLink />
           <div className="hidden items-center gap-1.5 rounded-full border border-emerald-200/60 bg-security-bg px-2.5 py-1 text-[11px] font-semibold text-security-emerald sm:inline-flex">
