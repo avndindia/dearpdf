@@ -216,13 +216,13 @@ export const tools: PdfTool[] = [
   {
     slug: "ai-summary",
     title: "AI Summary of PDF",
-    job: "Private on-device summary of PDF text.",
-    description: "Extractive summary that runs in your browser. Nothing leaves this device.",
+    job: "Private on-device summary — text layer, OCR when needed.",
+    description: "Extractive summary in your browser. Thin or scanned pages are OCR’d automatically on-device.",
     category: "convert",
     accept: "application/pdf",
     limit: "partial",
-    limitNote: "Uses the PDF text layer. Scanned pages need OCR first. Picks key sentences — not a cloud LLM rewrite.",
-    keywords: ["summary", "summarise", "summarize", "ai", "on-device", "private"],
+    limitNote: "Uses the PDF text layer by default; auto-OCR (Tesseract) for thin/scanned pages. Picks key sentences — not a cloud LLM rewrite.",
+    keywords: ["summary", "summarise", "summarize", "ai", "on-device", "private", "ocr", "tesseract"],
   },
   {
     slug: "ocr",

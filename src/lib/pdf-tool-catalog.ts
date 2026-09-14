@@ -101,7 +101,7 @@ export const pdfTools: PdfToolCatalogItem[] = [
   },
   {
     title: "AI Summary of PDF",
-    description: "Private on-device summary of your PDF — nothing leaves this device.",
+    description: "Private on-device summary — text layer first, OCR only when a page needs it.",
     href: "/pdf-tools/ai-summary",
     category: "Convert",
     popular: true,

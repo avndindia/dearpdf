@@ -232,7 +232,7 @@ export const stitchTools: StitchTool[] = [
   {
     id: "ai-summary",
     name: "AI Summary of PDF",
-    description: "Private on-device summary of your PDF — nothing leaves this device.",
+    description: "Private on-device summary — text layer first, auto-OCR for scans.",
     href: "/pdf-tools/ai-summary",
     category: "convert",
     icon: "auto_awesome",
@@ -240,7 +240,7 @@ export const stitchTools: StitchTool[] = [
     badgeTone: "popular",
     footer: "Runs in your browser",
     tag: "Private summary",
-    searchText: "ai summary summarise summarize pdf private on-device extractive textrank",
+    searchText: "ai summary summarise summarize pdf private on-device extractive textrank ocr tesseract scan",
     iconTone: "amber",
   },
   {

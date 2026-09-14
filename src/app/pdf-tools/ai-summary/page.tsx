@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import type Tesseract from "tesseract.js";
 import PdfPageWorkspace from "../../../components/pdf-page-workspace";
 import {
   PdfLazyPreviewControls,
@@ -12,6 +13,7 @@ import { downloadGeneratedFile } from "../../../lib/browser-download";
 import {
   extractLinesFromTextItems,
   summarizeExtractive,
+  textLayerDensity,
   type ExtractiveSummary,
   type SummaryLength,
 } from "../../../lib/on-device-summary";
@@ -22,12 +24,22 @@ import { trackToolEvent } from "../../../lib/stats";
 
 type SelectedPdf = { file: File; bytes: ArrayBuffer; pageCount: number };
 type WorkState = { kind: "idle" } | { kind: "reading" | "working" | "error"; message: string };
+type ProgressState = {
+  page: number;
+  total: number;
+  phase: string;
+  percent: number;
+};
 
 const LENGTH_OPTIONS: Array<{ value: SummaryLength; label: string; hint: string }> = [
   { value: "short", label: "Short", hint: "A few key points" },
   { value: "medium", label: "Medium", hint: "Balanced overview" },
   { value: "long", label: "Long", hint: "More detail" },
 ];
+
+/** Pages with fewer than this many non-whitespace chars get OCR automatically. */
+const THIN_TEXT_CHARS = 40;
+const OCR_DPI = 180;
 
 function safeBaseName(name: string) {
   return name.replace(/\.pdf$/i, "").replace(/[^\p{L}\p{N}._-]+/gu, "-") || "document";
@@ -48,13 +60,18 @@ function readableSummaryError(error: unknown) {
   if (/undefined is not a function/i.test(message) || /near '\.\.\.[te] of [te]/i.test(message)) {
     return "This browser could not read the PDF text layer. Try the latest Safari or Chrome.";
   }
-  if (message) return message;
+  if (/Canvas processing is not supported/i.test(message)) {
+    return "This browser cannot render PDF pages for OCR. Try another browser or update Safari.";
+  }
+  if (message && message !== "SUMMARY_CANCELLED") return message;
   return "This PDF could not be summarised.";
 }
 
 export default function AiSummaryPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const cancelledRef = useRef(false);
+  const ocrWorkerRef = useRef<Tesseract.Worker | null>(null);
+  const activePageRef = useRef(1);
   const [selected, setSelected] = useState<SelectedPdf | null>(null);
   const {
     pages: visualPages,
@@ -72,7 +89,9 @@ export default function AiSummaryPage() {
   const [savedNotice, setSavedNotice] = useState("");
   const [result, setResult] = useState<ExtractiveSummary | null>(null);
   const [pagesRead, setPagesRead] = useState(0);
+  const [ocrPagesUsed, setOcrPagesUsed] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [progress, setProgress] = useState<ProgressState | null>(null);
   const [work, setWork] = useState<WorkState>({ kind: "idle" });
   const busy = work.kind === "reading" || work.kind === "working";
   useIncomingPdfHandoff(chooseFile);
@@ -112,7 +131,9 @@ export default function AiSummaryPage() {
       setSavedNotice("");
       setResult(null);
       setPagesRead(0);
+      setOcrPagesUsed(0);
       setCopied(false);
+      setProgress(null);
       setWork({ kind: "idle" });
     } catch {
       resetPreviews();
@@ -125,6 +146,9 @@ export default function AiSummaryPage() {
   function cancelSummary() {
     cancelledRef.current = true;
     setWork({ kind: "working", message: "Stopping…" });
+    const worker = ocrWorkerRef.current;
+    ocrWorkerRef.current = null;
+    if (worker) void worker.terminate();
   }
 
   async function runSummary() {
@@ -133,6 +157,13 @@ export default function AiSummaryPage() {
     setResult(null);
     setCopied(false);
     setSavedNotice("");
+    setOcrPagesUsed(0);
+    setProgress({
+      page: 1,
+      total: orderedSelection.length,
+      phase: "Reading text layer",
+      percent: 0,
+    });
     setWork({
       kind: "working",
       message: `Reading text from ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"}…`,
@@ -140,6 +171,40 @@ export default function AiSummaryPage() {
     trackToolEvent("ai-summary", "start");
 
     let pdf: Awaited<ReturnType<typeof loadPdfDocument>> | null = null;
+    let worker: Tesseract.Worker | null = null;
+    let ocrPages = 0;
+    let textPages = 0;
+
+    async function getWorker() {
+      if (worker) return worker;
+      setWork({
+        kind: "working",
+        message: "Loading on-device OCR (Tesseract) for scanned pages…",
+      });
+      const { createWorker } = await import("tesseract.js");
+      worker = await createWorker("eng", undefined, {
+        logger(message) {
+          const percent = Math.round((message.progress || 0) * 100);
+          setProgress({
+            page: activePageRef.current,
+            total: orderedSelection.length,
+            phase: String(message.status ?? "recognising").replace(/_/g, " "),
+            percent,
+          });
+        },
+      });
+      ocrWorkerRef.current = worker;
+      if (cancelledRef.current) {
+        await worker.terminate();
+        ocrWorkerRef.current = null;
+        throw new Error("SUMMARY_CANCELLED");
+      }
+      await worker.setParameters({
+        preserve_interword_spaces: "1",
+        user_defined_dpi: String(OCR_DPI),
+      });
+      return worker;
+    }
 
     try {
       pdf = await loadPdfDocument(selected.bytes);
@@ -148,43 +213,91 @@ export default function AiSummaryPage() {
       for (let selectionIndex = 0; selectionIndex < orderedSelection.length; selectionIndex += 1) {
         if (cancelledRef.current) throw new Error("SUMMARY_CANCELLED");
         const pageIndex = orderedSelection[selectionIndex];
+        activePageRef.current = selectionIndex + 1;
+        setProgress({
+          page: selectionIndex + 1,
+          total: orderedSelection.length,
+          phase: "Reading text layer",
+          percent: 0,
+        });
         setWork({
           kind: "working",
           message: `Reading page ${pageIndex + 1} (${selectionIndex + 1} of ${orderedSelection.length})…`,
         });
+
         const page = await pdf.getPage(pageIndex + 1);
         const content = await getPageTextContent(page);
-        const pageText = extractLinesFromTextItems(content.items).trim();
+        const layerText = extractLinesFromTextItems(content.items).trim();
+        const hasUsefulText = textLayerDensity(layerText) >= THIN_TEXT_CHARS;
+        let pageText = layerText;
+
+        if (!hasUsefulText) {
+          const ocrWorker = await getWorker();
+          if (cancelledRef.current) throw new Error("SUMMARY_CANCELLED");
+          setWork({
+            kind: "working",
+            message: `OCR on page ${pageIndex + 1} (${selectionIndex + 1} of ${orderedSelection.length})…`,
+          });
+          const original = page.getViewport({ scale: 1 });
+          const requestedScale = OCR_DPI / 72;
+          const safeScale = Math.min(
+            requestedScale,
+            5000 / original.width,
+            5000 / original.height,
+            Math.sqrt(20_000_000 / (original.width * original.height)),
+          );
+          const viewport = page.getViewport({ scale: safeScale });
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.ceil(viewport.width));
+          canvas.height = Math.max(1, Math.ceil(viewport.height));
+          const context = canvas.getContext("2d", { alpha: false });
+          if (!context) throw new Error("Canvas processing is not supported in this browser.");
+          await page.render({ canvas, canvasContext: context, viewport, background: "#ffffff" }).promise;
+          const recognition = await ocrWorker.recognize(canvas, {}, { text: true });
+          pageText = recognition.data.text.trim();
+          ocrPages += 1;
+          canvas.width = 1;
+          canvas.height = 1;
+        } else {
+          textPages += 1;
+        }
+
         if (pageText) sections.push(pageText);
       }
 
       if (cancelledRef.current) throw new Error("SUMMARY_CANCELLED");
 
       const combined = sections.join("\n\n").trim();
-      if (!combined || combined.replace(/\s/g, "").length < 40) {
+      if (!combined || textLayerDensity(combined) < 40) {
         throw new Error(
-          "No usable text was found. Scanned or image-only PDFs need OCR first — try PDF OCR, then summarise.",
+          "No usable text was found even after on-device OCR. Try clearer scans, or use PDF OCR to export text separately.",
         );
       }
 
+      setProgress(null);
       setWork({ kind: "working", message: "Building a private summary on this device…" });
-      // Yield so the status line paints before CPU-heavy scoring on large docs.
       await new Promise((resolve) => window.setTimeout(resolve, 16));
       if (cancelledRef.current) throw new Error("SUMMARY_CANCELLED");
 
       const summary = summarizeExtractive(combined, length);
       if (!summary.bullets.length) {
-        throw new Error("Not enough sentences to summarise. Try more pages or a different PDF.");
+        throw new Error("Not enough complete sentences to summarise. Try more pages or a different PDF.");
       }
 
       setResult(summary);
       setPagesRead(orderedSelection.length);
+      setOcrPagesUsed(ocrPages);
+      const ocrNote =
+        ocrPages > 0
+          ? ` · ${ocrPages} ${ocrPages === 1 ? "page" : "pages"} OCR’d on this device`
+          : ` · text layer only (${textPages} ${textPages === 1 ? "page" : "pages"})`;
       setSavedNotice(
-        `Summarised ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"} · ${summary.selectedCount} key points from ${summary.sentenceCount} sentences. Nothing left this device.`,
+        `Summarised ${orderedSelection.length} ${orderedSelection.length === 1 ? "page" : "pages"} · ${summary.selectedCount} key points from ${summary.sentenceCount} sentences${ocrNote}. Nothing left this device.`,
       );
       trackToolEvent("ai-summary", "success");
       setWork({ kind: "idle" });
     } catch (error) {
+      setProgress(null);
       if (cancelledRef.current || (error instanceof Error && error.message === "SUMMARY_CANCELLED")) {
         trackToolEvent("ai-summary", "cancel");
         setWork({ kind: "idle" });
@@ -193,6 +306,15 @@ export default function AiSummaryPage() {
         setWork({ kind: "error", message: readableSummaryError(error) });
       }
     } finally {
+      const activeWorker = ocrWorkerRef.current;
+      ocrWorkerRef.current = null;
+      if (activeWorker) {
+        try {
+          await activeWorker.terminate();
+        } catch {
+          // cancelled worker may already be terminated
+        }
+      }
       if (pdf) {
         try {
           pdf.cleanup();
@@ -226,9 +348,9 @@ export default function AiSummaryPage() {
   return (
     <StitchToolShell
       title="AI Summary of PDF"
-      subtitle="Private summary that runs in your browser — nothing leaves this device."
+      subtitle="Private summary in your browser — text layer first, OCR only when a page needs it."
       className={`utility-pdf-page${selected ? " has-file" : ""}`}
-      note="On-device summary picks the most important sentences from your PDF text. Scanned PDFs need OCR first."
+      note="Uses the PDF text layer by default. Scanned or thin pages are OCR’d automatically with Tesseract on this device — no need to visit PDF OCR first."
       related={[
         { href: "/pdf-tools/pdf-to-text", label: "PDF OCR" },
         { href: "/pdf-tools/pdf-to-word", label: "PDF to Word" },
@@ -264,6 +386,7 @@ export default function AiSummaryPage() {
                   setSelected(null);
                   setResult(null);
                   setSavedNotice("");
+                  setProgress(null);
                 }}
                 type="button"
               >
@@ -377,9 +500,26 @@ export default function AiSummaryPage() {
             </fieldset>
 
             <p className="ocr-language-note">
-              On-device summary — private summary that runs in your browser. Uses the PDF’s own text
-              layer; no cloud AI and no model download.
+              Summary uses the PDF’s text layer by default. If a page has little or no text (scans),
+              Tesseract OCR runs automatically on this device, then key sentences are scored — no
+              cloud AI and no visit to PDF OCR required.
             </p>
+
+            {progress ? (
+              <div className="ocr-progress" role="status">
+                <div>
+                  <strong>
+                    Page {progress.page} of {progress.total}
+                  </strong>
+                  <span>
+                    {progress.phase} · {progress.percent}%
+                  </span>
+                </div>
+                <span className="ocr-progress-track">
+                  <span style={{ width: `${progress.percent}%` }} />
+                </span>
+              </div>
+            ) : null}
 
             <div className="utility-action-row">
               <label className="merge-output-name">
@@ -432,6 +572,9 @@ export default function AiSummaryPage() {
                   <h3>
                     {result.selectedCount} key points · {pagesRead}{" "}
                     {pagesRead === 1 ? "page" : "pages"}
+                    {ocrPagesUsed > 0
+                      ? ` · ${ocrPagesUsed} OCR`
+                      : ""}
                   </h3>
                   <p>
                     Private summary (runs in your browser) · {result.wordCount.toLocaleString()} words

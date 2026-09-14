@@ -6,7 +6,12 @@ import { PDFDocument, StandardFonts } from "pdf-lib";
 import { strFromU8 } from "fflate";
 import { createEditableDocx } from "../src/lib/docx.ts";
 import { downloadGeneratedFile } from "../src/lib/browser-download.ts";
-import { summarizeExtractive, splitSentences } from "../src/lib/on-device-summary.ts";
+import {
+  summarizeExtractive,
+  splitSentences,
+  repairPdfText,
+  isUsableSummarySentence,
+} from "../src/lib/on-device-summary.ts";
 import { applyPdfEdits, pageIndexesNeedingRedaction, replacePdfPagesWithImages } from "../src/lib/pdf-editor.ts";
 import {
   addPageNumbersPdf,
@@ -1047,7 +1052,7 @@ test("on-device extractive summary picks key sentences offline", () => {
     "Cloud converters upload files to remote servers for processing.",
     "An on-device summary scores sentences without leaving the browser.",
     "Users can download the result as a plain text file.",
-    "Scanned image PDFs should be run through OCR first.",
+    "Scanned image PDFs are OCR’d automatically inside the summary tool when the text layer is thin.",
     "Short, medium, and long lengths change how many points are kept.",
     "Privacy is the product, not an afterthought.",
     "Nothing about the PDF content is sent to a language model API.",
@@ -1059,4 +1064,36 @@ test("on-device extractive summary picks key sentences offline", () => {
   assert.ok(summary.paragraph.length > 20);
   assert.match(summary.fullText, /On-device summary/);
   assert.match(summary.fullText, /Private summary/);
+});
+
+test("summary repairs hyphenation and rejects mid-phrase fragments", () => {
+  const broken = [
+    "A Government servant may apply for leave.",
+    "Govern-",
+    "ment servant OR Government servant's spouse, by blood or",
+    "adoption, is eligible for the concession under these rules.",
+    "The competent authority shall sanction leave according to the rules.",
+  ].join("\n");
+  const repaired = repairPdfText(broken);
+  assert.match(repaired, /Government servant/);
+  assert.doesNotMatch(repaired, /Govern-\s*ment/);
+
+  assert.equal(
+    isUsableSummarySentence("servant OR Government servant's spouse, by blood or"),
+    false,
+  );
+  assert.equal(
+    isUsableSummarySentence(
+      "A Government servant may apply for leave on medical certificate under these rules.",
+    ),
+    true,
+  );
+
+  const summary = summarizeExtractive(broken, "medium");
+  for (const bullet of summary.bullets) {
+    assert.doesNotMatch(bullet, /by blood or\s*$/i);
+    assert.doesNotMatch(bullet, /^servant OR/i);
+  }
+  assert.ok(summary.bullets.length >= 1);
+  assert.ok(summary.paragraph.length > 30);
 });
