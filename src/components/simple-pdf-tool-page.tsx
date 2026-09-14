@@ -429,7 +429,7 @@ export default function SimplePdfToolPage({ mode }: { mode: SimplePdfToolMode })
                   disabled={busy}
                 />
               ) : null}
-              <button className="text-button" type="button" onClick={() => { resetPreviews(); setSelected(null); setSavedNotice(""); setFieldCount(0); }} disabled={busy}>Remove file</button>
+              <button className="text-button" type="button" onClick={() => { resetPreviews(); setSelected(null); setSavedNotice(""); }} disabled={busy}>Remove file</button>
             </div>
           ) : null}
         </div>
