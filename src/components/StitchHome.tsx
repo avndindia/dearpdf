@@ -348,15 +348,15 @@ export default function StitchHome() {
                     {group.tools.length} utilit{group.tools.length === 1 ? "y" : "ies"}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                   {group.tools.map((tool) => (
                     <Link
                       key={tool.id}
                       href={tool.href}
-                      className="group flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl"
+                      className="group flex flex-col justify-between rounded-2xl border border-border-subtle bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand-300 hover:bg-white hover:shadow-xl sm:p-5"
                     >
                       <div>
-                        <div className="mb-4 flex items-center justify-between">
+                        <div className="mb-3 flex items-center justify-between sm:mb-4">
                           <div
                             className={
                               tool.iconTone === "amber"
@@ -374,10 +374,10 @@ export default function StitchHome() {
                             {tool.badge}
                           </span>
                         </div>
-                        <h3 className="mb-1 text-base font-semibold text-on-surface transition-colors group-hover:text-primary-container">
+                        <h3 className="mb-1 text-[15px] font-semibold leading-snug text-on-surface transition-colors group-hover:text-primary-container sm:text-base">
                           {tool.name}
                         </h3>
-                        <p className="line-clamp-2 text-[13px] text-slate-500">
+                        <p className="line-clamp-2 text-[12px] text-slate-500 sm:text-[13px]">
                           {tool.description}
                         </p>
                       </div>
