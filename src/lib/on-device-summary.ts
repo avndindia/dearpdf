@@ -37,6 +37,22 @@ const DANGLING_END =
 const WEAK_START =
   /^(or|and|but|by|of|to|for|with|the|a|an|in|on|as|at|from|under|between|such|which|who|whom|that|whose|into|onto|upon|via|per|nor|including|namely)\b/i;
 
+/** Legal / schedule openers that read as abrupt PDF excerpts, not summary points. */
+const LEGAL_PREAMBLE_START =
+  /^(AND\s+WHEREAS|WHEREAS|NOW\s+THEREFORE|NOW\s+THIS|FURTHER\s+RESOLVED|RESOLVED\s+FURTHER|BE\s+IT\s+(?:FURTHER\s+)?RESOLVED|IN\s+WITNESS\s+WHEREOF|NOW\s+KNOW\s+YE|KNOW\s+ALL\s+MEN)\b/i;
+
+/** Bare date fragments without a clear actor doing something. */
+const BARE_DATE_FRAGMENT =
+  /^(Dated|Date|Dt\.?|As\s+on|w\.?e\.?f\.?)\s*[:.]?\s*\d/i;
+
+const SCHEDULE_BOILERPLATE =
+  /^(SCHEDULE\s*[IVXLC0-9.-]*|ANNEXURE\s*[IVXLC0-9A.-]*|APPENDIX\s*[IVXLC0-9A.-]*|FORM\s*[IVXLC0-9A.-]*|see\s+(?:rule|section|clause|para)\b)/i;
+
+const ACTION_VERBS =
+  /\b(shall|should|must|may|will|directs?|directed|orders?|ordered|provides?|provided|requires?|required|states?|stated|notifies?|notified|appoints?|appointed|sanctions?|sanctioned|approves?|approved|authori[sz]es?|authori[sz]ed|empowers?|empowered|imposes?|imposed|grants?|granted|permits?|permitted|prohibits?|prohibited|declares?|declared|establishes?|established|constitutes?|constituted|amends?|amended|repeals?|repealed|supersedes?|superseded|instructs?|instructed|requests?|requested|informs?|informed|clarifies?|clarified|specifies?|specified|lays?\s+down|laid\s+down|comes?\s+into\s+force|came\s+into\s+force|is|are|was|were|has|have|had)\b/i;
+
+const MAX_BULLET_CHARS = 220;
+
 /** Repair PDF line-break hyphenation and soft-wraps into readable prose. */
 export function repairPdfText(text: string): string {
   let s = text.replace(/\u00a0/g, " ").replace(/\r\n?/g, "\n");
@@ -123,6 +139,18 @@ function looksLikeHeading(sentence: string): boolean {
   return false;
 }
 
+/** True when the sentence is mostly legal recital / schedule boilerplate. */
+export function isLegalPreambleOrBoilerplate(sentence: string): boolean {
+  const t = sentence.replace(/\s+/g, " ").trim();
+  if (!t) return true;
+  if (LEGAL_PREAMBLE_START.test(t)) return true;
+  if (BARE_DATE_FRAGMENT.test(t) && !ACTION_VERBS.test(t.slice(0, 80))) return true;
+  if (SCHEDULE_BOILERPLATE.test(t) && t.length < 140) return true;
+  // Recital-heavy: starts with "that" after a colon-ish legal feel, or is mostly "whereas" body
+  if (/^that\s+(?:the|a|an|said|aforesaid)\b/i.test(t) && t.length < 90) return true;
+  return false;
+}
+
 /** Prefer complete, coherent sentences; reject mid-phrase fragments. */
 export function isUsableSummarySentence(sentence: string): boolean {
   const t = sentence.replace(/\s+/g, " ").trim();
@@ -136,6 +164,13 @@ export function isUsableSummarySentence(sentence: string): boolean {
   // Truncated mid-word / mid-phrase markers
   if (/[—–-]\s*$/.test(t)) return false;
   if (/\b(spouse|servant|employee|member),?\s+by\s+blood\s+or\s*$/i.test(t)) return false;
+
+  // Reject abrupt legal openers unless they contain a clear action clause we can salvage later
+  if (isLegalPreambleOrBoilerplate(t)) {
+    // Keep only if stripping the preamble leaves a usable factual clause
+    const cleaned = shapeBulletText(t);
+    if (cleaned === t || cleaned.length < 28 || !ACTION_VERBS.test(cleaned)) return false;
+  }
 
   const endsWell = /[.!?…।؟۔]["')\]]*$/.test(t) || /;[\"')\]]*$/.test(t);
   const words = t.split(/\s+/).filter(Boolean);
@@ -159,12 +194,65 @@ function sentenceQualityBonus(sentence: string, tokenCount: number): number {
   if (DANGLING_END.test(t)) bonus *= 0.2;
   if (/^[a-z]/.test(t)) bonus *= 0.25;
 
+  // Heavily demote legal recital / bare date openers (even if salvageable)
+  if (LEGAL_PREAMBLE_START.test(t)) bonus *= 0.12;
+  else if (BARE_DATE_FRAGMENT.test(t)) bonus *= 0.18;
+  else if (SCHEDULE_BOILERPLATE.test(t)) bonus *= 0.25;
+
+  // Prefer complete factual / action sentences
+  if (ACTION_VERBS.test(t)) bonus *= 1.35;
+  // Subject-ish capitalised noun phrase near the start + verb is a good summary candidate
+  if (/^[A-Z][\w'’-]*(?:\s+[A-Z][\w'’-]*){0,4}\s+\b(shall|directs?|orders?|provides?|requires?|states?|notifies?|appoints?|sanctions?|approves?|authori[sz]es?)/i.test(t)) {
+    bonus *= 1.2;
+  }
+
   // Prefer longer coherent sentences for legal/rules docs
   if (tokenCount >= 10 && tokenCount <= 45) bonus *= 1.15;
   else if (tokenCount < 6) bonus *= 0.45;
   else if (tokenCount > 55) bonus *= 0.85;
 
   return bonus;
+}
+
+/**
+ * Strip legal recital openers / leading "that" when the remainder is a complete clause.
+ * Soft-trim over-long bullets at a clause boundary (~220 chars).
+ */
+export function shapeBulletText(sentence: string): string {
+  let t = sentence.replace(/\s+/g, " ").trim();
+
+  // Strip leading recital openers
+  t = t.replace(
+    /^(?:AND\s+WHEREAS|WHEREAS|NOW\s+THEREFORE|NOW\s+THIS|FURTHER\s+RESOLVED|RESOLVED\s+FURTHER|BE\s+IT\s+(?:FURTHER\s+)?RESOLVED)[,:\s]+/i,
+    "",
+  );
+  // Leading "that" after a recital (often capitalised as "That the …")
+  t = t.replace(/^that\s+/i, "");
+
+  // Capitalise first letter if we stripped a prefix
+  if (t && /^[a-zà-öø-ÿ]/.test(t)) {
+    t = t.charAt(0).toUpperCase() + t.slice(1);
+  }
+
+  // Soft-trim at a clause boundary when over-long
+  if (t.length > MAX_BULLET_CHARS) {
+    const window = t.slice(0, MAX_BULLET_CHARS + 1);
+    const boundaries = ["; ", ", and ", ", which ", ", wherein ", " — ", " – ", ". "];
+    let cut = -1;
+    for (const sep of boundaries) {
+      const idx = window.lastIndexOf(sep);
+      if (idx >= 80 && idx > cut) cut = idx + (sep === ". " ? 1 : 0);
+    }
+    if (cut < 80) {
+      // Fall back to last space before limit
+      const space = window.lastIndexOf(" ");
+      cut = space >= 80 ? space : MAX_BULLET_CHARS;
+    }
+    t = t.slice(0, cut).replace(/[,:;–—\-\s]+$/, "").trim();
+    if (t && !/[.!?…।؟۔]$/.test(t)) t = `${t}…`;
+  }
+
+  return t;
 }
 
 export function splitSentences(text: string): string[] {
@@ -230,6 +318,123 @@ function targetSentenceCount(length: SummaryLength, available: number): number {
   return Math.max(1, Math.min(available, Math.max(floor, Math.min(ceil, Math.round(available * ratio)))));
 }
 
+/** Significant content tokens for diversity / entity gist (skip stopwords + legal filler). */
+const LEGAL_FILLER = new Set([
+  "whereas",
+  "therefore",
+  "further",
+  "resolved",
+  "herein",
+  "hereof",
+  "thereof",
+  "aforesaid",
+  "said",
+  "such",
+  "pursuant",
+  "accordance",
+  "hereinafter",
+  "aforementioned",
+]);
+
+function contentTokens(sentence: string): string[] {
+  return tokenize(sentence).filter((t) => !LEGAL_FILLER.has(t));
+}
+
+function jaccardOverlap(a: Set<string>, b: Set<string>): number {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter += 1;
+  return inter / Math.min(a.size, b.size);
+}
+
+/** Pull likely title / org / date cues for a one-line document gist. */
+function extractDocumentGist(allSentences: string[], topBullets: string[]): string | null {
+  const pool = [...allSentences.slice(0, 8), ...topBullets];
+  const titleCandidate = allSentences.find((s) => {
+    const t = s.trim();
+    return (
+      t.length >= 20 &&
+      t.length <= 140 &&
+      /[A-Za-z]/.test(t) &&
+      !LEGAL_PREAMBLE_START.test(t) &&
+      !BARE_DATE_FRAGMENT.test(t) &&
+      (looksLikeHeading(t) ||
+        /\b(Act|Rules?|Order|Notification|Circular|Memorandum|Agreement|Contract|Policy|Guidelines?|Institute|University|Corporation|Ministry|Department)\b/i.test(
+          t,
+        ))
+    );
+  });
+
+  const entities = new Map<string, number>();
+  const dateHits: string[] = [];
+  const entityRe =
+    /\b((?:[A-Z][a-z]+|[A-Z]{2,})(?:\s+(?:of|for|and|the|&))?(?:\s+[A-Z][a-zA-Z0-9&'-]+){1,5})\b/g;
+  const dateRe =
+    /\b(?:\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{2,4}|\d{1,2}\.\d{2}\.\d{4})\b/gi;
+
+  for (const s of pool) {
+    let m: RegExpExecArray | null;
+    const local = entityRe;
+    local.lastIndex = 0;
+    while ((m = local.exec(s)) !== null) {
+      const name = m[1].replace(/\s+/g, " ").trim();
+      if (name.length < 6 || name.length > 60) continue;
+      if (/^(AND WHEREAS|WHEREAS|NOW THEREFORE|The|This|That)\b/i.test(name)) continue;
+      entities.set(name, (entities.get(name) || 0) + 1);
+    }
+    const dates = s.match(dateRe);
+    if (dates) {
+      for (const d of dates) {
+        if (!dateHits.includes(d)) dateHits.push(d);
+      }
+    }
+  }
+
+  const topEntities = [...entities.entries()]
+    .sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)
+    .slice(0, 3)
+    .map(([name]) => name);
+
+  if (titleCandidate) {
+    let gist = titleCandidate.replace(/\s+/g, " ").trim().replace(/[.]+$/, "");
+    if (topEntities.length && !topEntities.some((e) => gist.includes(e))) {
+      gist = `${gist} (${topEntities.slice(0, 2).join("; ")})`;
+    }
+    if (dateHits[0] && !gist.includes(dateHits[0])) {
+      gist = `${gist}, dated ${dateHits[0]}`;
+    }
+    return gist.length > 28 ? `${gist}.` : null;
+  }
+
+  if (topEntities.length >= 1 && topBullets[0]) {
+    const lead = shapeBulletText(topBullets[0]);
+    const who = topEntities.slice(0, 2).join(" and ");
+    if (lead.length >= 40) {
+      return `This document concerns ${who}${dateHits[0] ? ` (${dateHits[0]})` : ""}.`;
+    }
+  }
+
+  return null;
+}
+
+function buildOverviewParagraph(bullets: string[], allSentences: string[]): string {
+  const cleaned = bullets.map(shapeBulletText).filter((b) => b.length >= 20);
+  const gist = extractDocumentGist(allSentences, cleaned);
+  const bodyCount = gist ? Math.min(4, Math.max(2, cleaned.length)) : Math.min(4, cleaned.length);
+  const body = cleaned.slice(0, bodyCount);
+
+  const parts: string[] = [];
+  if (gist) parts.push(gist);
+  for (const s of body) {
+    // Avoid repeating the gist nearly verbatim
+    if (gist && jaccardOverlap(new Set(contentTokens(gist)), new Set(contentTokens(s))) > 0.7) {
+      continue;
+    }
+    parts.push(s.endsWith(".") || /[.!?…।؟۔]$/.test(s) ? s : `${s}.`);
+  }
+  return parts.join(" ").replace(/\s+/g, " ").trim();
+}
+
 /**
  * Score sentences with TF-IDF cosine similarity (TextRank-lite) plus
  * mild position and length bonuses. Always offline.
@@ -246,7 +451,20 @@ export function summarizeExtractive(
   if (sentences.length < 3 && allSentences.length >= 3) {
     sentences = allSentences.filter((s) => {
       const t = s.trim();
-      return t.length >= 24 && !DANGLING_END.test(t) && !/^[a-z]/.test(t);
+      return (
+        t.length >= 24 &&
+        !DANGLING_END.test(t) &&
+        !/^[a-z]/.test(t) &&
+        !LEGAL_PREAMBLE_START.test(t) &&
+        !BARE_DATE_FRAGMENT.test(t)
+      );
+    });
+  }
+  if (!sentences.length) {
+    // Last resort: allow preamble sentences that become usable after shaping
+    sentences = allSentences.filter((s) => {
+      const shaped = shapeBulletText(s);
+      return shaped.length >= 28 && ACTION_VERBS.test(shaped) && !DANGLING_END.test(shaped);
     });
   }
   if (!sentences.length) sentences = allSentences;
@@ -263,7 +481,7 @@ export function summarizeExtractive(
   }
 
   if (sentences.length === 1) {
-    const only = sentences[0];
+    const only = shapeBulletText(sentences[0]);
     return {
       bullets: [only],
       paragraph: only,
@@ -331,32 +549,43 @@ export function summarizeExtractive(
     .sort((a, b) => b.score - a.score || a.index - b.index);
 
   const picked: number[] = [];
+  const pickedTokenSets: Array<Set<string>> = [];
   for (const candidate of ranked) {
     if (picked.length >= k) break;
     if (candidate.score <= 0 && picked.length >= Math.min(2, k)) continue;
-    const candTokens = new Set(tokens[candidate.index]);
-    const tooSimilar = picked.some((idx) => {
-      const other = tokens[idx];
-      if (!other.length || !candTokens.size) return false;
-      let overlap = 0;
-      for (const t of other) if (candTokens.has(t)) overlap += 1;
-      const denom = Math.min(other.length, candTokens.size);
-      return denom > 0 && overlap / denom > 0.65;
+    const candContent = new Set(contentTokens(sentences[candidate.index]));
+    const tooSimilar = pickedTokenSets.some((other) => jaccardOverlap(candContent, other) > 0.55);
+    if (tooSimilar) continue;
+    // Extra diversity: avoid multiple WHEREAS-shaped near-duplicates even after scoring
+    const shaped = shapeBulletText(sentences[candidate.index]);
+    const shapedKey = shaped
+      .toLowerCase()
+      .replace(/[^a-z0-9\u0900-\u097f]+/gi, " ")
+      .slice(0, 40);
+    const nearDupShaped = picked.some((idx) => {
+      const prev = shapeBulletText(sentences[idx])
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0900-\u097f]+/gi, " ")
+        .slice(0, 40);
+      return prev === shapedKey;
     });
-    if (!tooSimilar) picked.push(candidate.index);
+    if (nearDupShaped) continue;
+    picked.push(candidate.index);
+    pickedTokenSets.push(candContent);
   }
 
-  // Keep reading order for bullets and paragraph (coherent legal narrative).
+  // Keep reading order for bullets (coherent legal narrative), then shape for display.
   const inOrder = [...picked].sort((a, b) => a - b);
-  const bullets = inOrder.map((i) => sentences[i]);
-  const paragraph = bullets.join(" ");
+  const rawSelected = inOrder.map((i) => sentences[i]);
+  const bullets = rawSelected.map(shapeBulletText).filter((b) => b.length >= 20);
+  const paragraph = buildOverviewParagraph(bullets.length ? bullets : rawSelected, allSentences);
 
   return {
-    bullets,
+    bullets: bullets.length ? bullets : rawSelected,
     paragraph,
-    fullText: formatSummaryOutput(bullets, paragraph),
+    fullText: formatSummaryOutput(bullets.length ? bullets : rawSelected, paragraph),
     sentenceCount: n,
-    selectedCount: bullets.length,
+    selectedCount: (bullets.length ? bullets : rawSelected).length,
     wordCount,
   };
 }
@@ -364,7 +593,7 @@ export function summarizeExtractive(
 function formatSummaryOutput(bullets: string[], paragraph: string) {
   const lines = [
     "On-device summary",
-    "Private summary (runs in your browser)",
+    "Private summary — scores important sentences on this device (not a cloud AI rewrite)",
     "",
     "Key points",
     ...bullets.map((b) => `• ${b}`),

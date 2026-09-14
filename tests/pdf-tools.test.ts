@@ -11,6 +11,8 @@ import {
   splitSentences,
   repairPdfText,
   isUsableSummarySentence,
+  isLegalPreambleOrBoilerplate,
+  shapeBulletText,
 } from "../src/lib/on-device-summary.ts";
 import { applyPdfEdits, pageIndexesNeedingRedaction, replacePdfPagesWithImages } from "../src/lib/pdf-editor.ts";
 import {
@@ -1063,7 +1065,7 @@ test("on-device extractive summary picks key sentences offline", () => {
   assert.ok(summary.bullets.length >= 2);
   assert.ok(summary.paragraph.length > 20);
   assert.match(summary.fullText, /On-device summary/);
-  assert.match(summary.fullText, /Private summary/);
+  assert.match(summary.fullText, /scores important sentences on this device/i);
 });
 
 test("summary repairs hyphenation and rejects mid-phrase fragments", () => {
@@ -1097,3 +1099,49 @@ test("summary repairs hyphenation and rejects mid-phrase fragments", () => {
   assert.ok(summary.bullets.length >= 1);
   assert.ok(summary.paragraph.length > 30);
 });
+
+test("summary demotes WHEREAS / bare Dated openers and shapes bullets", () => {
+  assert.equal(isLegalPreambleOrBoilerplate("AND WHEREAS several workers were engaged through the agency."), true);
+  assert.equal(isLegalPreambleOrBoilerplate("Dated 30.03.2026 directing the agency."), true);
+  assert.equal(
+    isLegalPreambleOrBoilerplate(
+      "The Institute shall engage workers only through an approved agency under these rules.",
+    ),
+    false,
+  );
+
+  const shaped = shapeBulletText(
+    "AND WHEREAS several workers were engaged through the agency for campus maintenance.",
+  );
+  assert.doesNotMatch(shaped, /^AND WHEREAS/i);
+  assert.match(shaped, /^Several workers/i);
+
+  const legalDoc = [
+    "NOTIFICATION",
+    "National Institute of Technology Order on Outsourcing.",
+    "AND WHEREAS several workers were engaged through the agency for sanitation duties.",
+    "AND WHEREAS several workers were engaged through the agency for horticulture duties.",
+    "Dated 30.03.2026 directing the agency.",
+    "NOW THEREFORE the Director hereby orders as follows.",
+    "The Institute shall engage contract workers only through an approved agency.",
+    "The agency shall ensure minimum wages and statutory benefits for all deployed workers.",
+    "The competent authority may terminate the contract for repeated non-compliance.",
+    "This order comes into force with immediate effect and supersedes earlier circulars.",
+  ].join(" ");
+
+  const summary = summarizeExtractive(legalDoc, "medium");
+  assert.ok(summary.bullets.length >= 2);
+  for (const bullet of summary.bullets) {
+    assert.doesNotMatch(bullet, /^AND WHEREAS/i);
+    assert.doesNotMatch(bullet, /^WHEREAS/i);
+    assert.doesNotMatch(bullet, /^NOW THEREFORE/i);
+    assert.doesNotMatch(bullet, /^Dated\s+\d/i);
+  }
+  // Prefer action sentences over recital collage
+  const joined = summary.bullets.join(" ");
+  assert.match(joined, /shall|may|comes into force|ensure/i);
+  // Overview should not lead with abrupt legal openers
+  assert.doesNotMatch(summary.paragraph, /^(AND WHEREAS|WHEREAS|Dated)\b/i);
+  assert.ok(summary.paragraph.length > 40);
+});
+

@@ -358,9 +358,9 @@ export default function AiSummaryPage() {
   return (
     <StitchToolShell
       title="AI Summary of PDF"
-      subtitle="Private summary in your browser — text layer first, OCR only when a page needs it."
+      subtitle="Scores important sentences on this device (not a cloud AI rewrite) — text layer first, OCR only when needed."
       className={`utility-pdf-page${selected ? " has-file" : ""}`}
-      note="Uses the PDF text layer by default. Scanned or thin pages are OCR’d automatically with Tesseract on this device — no need to visit PDF OCR first."
+      note="Extractive on-device summary: ranks complete sentences in your browser (not a cloud rewrite). Text layer first; Tesseract OCR only for scanned/thin pages."
       related={[
         { href: "/pdf-tools/pdf-to-text", label: "PDF OCR" },
         { href: "/pdf-tools/pdf-to-word", label: "PDF to Word" },
@@ -513,9 +513,9 @@ export default function AiSummaryPage() {
             </fieldset>
 
             <p className="ocr-language-note">
-              Summary uses the PDF’s text layer by default. If a page has little or no text (scans),
-              Tesseract OCR runs automatically on this device, then key sentences are scored — no
-              cloud AI and no visit to PDF OCR required.
+              Key points are scored on this device from important sentences (not a cloud AI rewrite).
+              Uses the PDF’s text layer by default; if a page has little or no text (scans), Tesseract
+              OCR runs automatically here — nothing is uploaded.
             </p>
 
             {progress ? (
@@ -590,8 +590,8 @@ export default function AiSummaryPage() {
                       : ""}
                   </h3>
                   <p>
-                    Private summary (runs in your browser) · {result.wordCount.toLocaleString()} words
-                    read · {result.sentenceCount} sentences scored
+                    Scored on this device (not a cloud rewrite) · {result.wordCount.toLocaleString()}{" "}
+                    words read · {result.sentenceCount} sentences scored
                   </p>
                 </div>
                 <div className="ocr-result-actions">
