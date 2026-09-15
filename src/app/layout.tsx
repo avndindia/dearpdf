@@ -47,7 +47,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
       <body className="bg-canvas-bg font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed-variant">
-        <div className="flex min-h-screen flex-col">
+        <div className="site-shell flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1 pt-16 sm:pt-20">{children}</main>
           <SiteFooter />

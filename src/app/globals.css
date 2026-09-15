@@ -452,8 +452,8 @@ a {
 }
 
 /* ===== Floating tool chip bar — clear CTAs + stack PDF-ready above ===== */
-html.has-tool-chip-bar main {
-  padding-bottom: calc(var(--tool-chip-bar-offset, 3.5rem) + 1rem);
+html.has-tool-chip-bar .site-shell {
+  padding-bottom: calc(var(--tool-chip-bar-offset, 4.5rem) + 0.5rem);
 }
 
 html.has-tool-chip-bar .pdf-suite-result {
