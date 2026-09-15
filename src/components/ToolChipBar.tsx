@@ -93,12 +93,13 @@ function ToolChip({
 }
 
 /**
- * Site-wide floating tool chips (DearColleague-style pills, docked at the bottom).
- * Hidden on /admin. Sets --tool-chip-bar-offset so PDF-ready + sticky CTAs stack above it.
+ * Floating tool chips on inner pages (DearColleague-style pills, docked at the bottom).
+ * Hidden on home (the directory already lists every tool) and /admin.
+ * Sets --tool-chip-bar-offset so PDF-ready + sticky CTAs stack above it.
  */
 export default function ToolChipBar() {
   const pathname = usePathname() || "/";
-  const hide = pathname.startsWith("/admin");
+  const hide = pathname === "/" || pathname.startsWith("/admin");
   const [level, setLevel] = useState<0 | 1 | 2>(0);
   const barRef = useRef<HTMLElement>(null);
 
