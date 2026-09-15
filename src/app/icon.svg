@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" fill="none">
+  <defs>
+    <linearGradient id="dpdf_fav_doc" x1="12" y1="6" x2="62" y2="68" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0369A1"/>
+      <stop offset="1" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="dpdf_fav_fold" x1="40" y1="6" x2="62" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DD3FC"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M14 8 C14 5.239 16.239 3 19 3 H40 L62 25 V60 C62 62.761 59.761 65 57 65 H19 C16.239 65 14 62.761 14 60 V8 Z"
+    fill="url(#dpdf_fav_doc)"
+  />
+  <path d="M40 3 L62 25 H48 C44.686 25 42 22.314 42 19 V3 Z" fill="url(#dpdf_fav_fold)"/>
+  <path d="M42 19 L62 25 H42 Z" fill="#0C4A6E" opacity="0.28"/>
+  <rect x="20" y="31" width="36" height="17" rx="4.5" fill="#FFFFFF"/>
+  <text
+    x="38"
+    y="43.5"
+    text-anchor="middle"
+    fill="#0369A1"
+    font-family="ui-sans-serif, system-ui, 'Segoe UI', sans-serif"
+    font-weight="800"
+    font-size="12"
+    letter-spacing="0.06em"
+  >PDF</text>
+  <rect x="20" y="53" width="20" height="2.75" rx="1.375" fill="#BAE6FD"/>
+  <rect x="43" y="53" width="13" height="2.75" rx="1.375" fill="#38BDF8"/>
+</svg>
