@@ -7066,6 +7066,59 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 
 
 /* ===== Handwriting notebook live preview ===== */
+@font-face {
+  font-family: "Caveat";
+  src: url("/fonts/Caveat-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+.handwriting-drop-zone {
+  position: relative;
+  overflow: hidden;
+}
+.handwriting-drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  clip: auto;
+  overflow: hidden;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 2;
+}
+.handwriting-text-field {
+  display: grid;
+  gap: 6px;
+}
+.handwriting-text-field > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+.handwriting-text-field textarea {
+  width: 100%;
+  min-height: 120px;
+  box-sizing: border-box;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  border: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  border-radius: 10px;
+  background: var(--surface-card, #fff);
+  resize: vertical;
+}
+.handwriting-workspace.is-empty {
+  grid-template-columns: 1fr;
+}
+.handwriting-workspace.is-empty .page-numbers-preview {
+  display: none;
+}
 .handwriting-notebook-live {
   position: relative;
   min-height: 420px;
@@ -7102,6 +7155,46 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 .stitch-tool-shell.handwriting-page .compress-workspace {
   overflow: visible;
+}
+.handwriting-action-row {
+  display: grid;
+}
+@media (max-width: 860px) {
+  .stitch-tool-shell.handwriting-page .handwriting-workspace:not(.is-empty) {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 16px;
+  }
+  .stitch-tool-shell.handwriting-page .page-numbers-preview {
+    position: static;
+  }
+  .handwriting-notebook-live {
+    min-height: 220px;
+    max-height: min(42vh, 340px);
+    overflow: auto;
+    padding: 36px 16px 24px 48px;
+    background-position: 0 36px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .handwriting-notebook-live.paper-plain {
+    padding: 24px 16px;
+  }
+  .page-number-live-empty {
+    min-height: 180px;
+  }
+}
+@media (max-width: 720px) {
+  html.has-tool-chip-bar .handwriting-page.has-file .handwriting-action-row {
+    position: sticky;
+    bottom: var(--tool-chip-bar-offset, 4.5rem);
+    z-index: 8;
+    margin: 0 -4px;
+    padding: 10px 4px calc(10px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid color-mix(in srgb, var(--line) 45%, transparent);
+    background: color-mix(in srgb, var(--surface-card, #fff) 92%, var(--wash));
+    box-shadow: 0 -4px 16px rgb(15 23 42 / 6%);
+    backdrop-filter: blur(8px);
+  }
 }
 
 

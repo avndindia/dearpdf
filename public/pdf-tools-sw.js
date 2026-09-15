@@ -1,4 +1,4 @@
-const CACHE = "dearpdf-pdf-tools-v3";
+const CACHE = "dearpdf-pdf-tools-v4";
 const MAX_CRAWL = 120;
 
 function cacheable(url) {
@@ -10,6 +10,7 @@ function cacheable(url) {
       url.pathname.startsWith("/assets/") ||
       url.pathname.startsWith("/_next/") ||
       url.pathname.startsWith("/pdfjs/") ||
+      url.pathname.startsWith("/fonts/") ||
       url.pathname === "/pdf.worker.min.mjs" ||
       url.pathname.startsWith("/icons/") ||
       url.pathname === "/favicon.svg" ||
@@ -99,7 +100,9 @@ self.addEventListener("fetch", (event) => {
   const asset = url.pathname.startsWith("/assets/") ||
       url.pathname.startsWith("/_next/") ||
       url.pathname.startsWith("/pdfjs/") ||
-      url.pathname === "/pdf.worker.min.mjs" || url.hostname === "fonts.gstatic.com";
+      url.pathname === "/pdf.worker.min.mjs" ||
+      url.pathname.startsWith("/fonts/") ||
+      url.hostname === "fonts.gstatic.com";
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     if (asset) {
