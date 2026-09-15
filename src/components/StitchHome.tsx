@@ -111,7 +111,7 @@ export default function StitchHome() {
   };
 
   return (
-    <div className="relative w-full overflow-x-hidden bg-canvas-bg">
+    <div className="relative w-full overflow-x-clip bg-canvas-bg">
       <div className="pointer-events-none absolute -top-32 left-1/2 -z-10 h-[360px] w-[820px] -translate-x-1/2 bg-gradient-to-b from-sky-100/50 via-sky-50/30 to-transparent blur-3xl" />
       <div className="pointer-events-none absolute top-20 left-1/2 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-50/70 blur-3xl" />
 

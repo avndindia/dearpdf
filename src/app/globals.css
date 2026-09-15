@@ -169,11 +169,18 @@
 }
 
 
-html,
+html {
+  min-height: 100%;
+  max-width: 100%;
+  /* clip does not create a scroll container; overflow-x: hidden on html+body
+     computes overflow-y to auto and can swallow mouse-wheel / trackpad scroll. */
+  overflow-x: clip;
+}
+
 body {
   min-height: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Override legacy pdf-tools.css main shrink (was 100% - 20px on mobile) */
