@@ -170,9 +170,9 @@ export default function ToolChipBar() {
     <nav
       ref={barRef}
       aria-label="Quick PDF tools"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[40] flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1"
     >
-      <div className="pointer-events-auto w-full max-w-3xl rounded-2xl border border-border-subtle bg-white/95 shadow-[0_8px_28px_rgba(15,23,42,0.12)] backdrop-blur-md dark:border-[#1f2a3f]/80 dark:bg-[#0a0e17]/92 dark:shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
+      <div className="pointer-events-auto w-full max-w-xl rounded-2xl border border-border-subtle bg-white/95 shadow-[0_8px_28px_rgba(15,23,42,0.12)] backdrop-blur-md dark:border-[#1f2a3f]/80 dark:bg-[#0a0e17]/92 dark:shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
         <div className="flex flex-wrap items-center gap-1.5 px-2.5 py-2">
           {primary.map((tool) => (
             <ToolChip key={tool.id} tool={tool} pathname={pathname} />
@@ -198,7 +198,7 @@ export default function ToolChipBar() {
         {level === 2 && groupedRest.length > 0 ? (
           <div
             id="tool-chip-more"
-            className="max-h-[min(42vh,360px)] space-y-3 overflow-y-auto border-t border-border-subtle px-2.5 py-2.5 dark:border-[#1f2a3f]/80"
+            className="max-h-[min(32vh,260px)] space-y-2.5 overflow-y-auto border-t border-border-subtle px-2.5 py-2.5 dark:border-[#1f2a3f]/80"
           >
             {groupedRest.map((group) => (
               <section key={group.id} aria-label={group.title}>
