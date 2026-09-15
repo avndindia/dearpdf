@@ -30,6 +30,13 @@ export const metadata: Metadata = {
   description:
     "Drop a file. Get it back fixed. Nothing uploaded. Merge, compress, OCR, and more — private PDF tools that stay on your device.",
   metadataBase: new URL("https://dearpdf.in"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 export default function RootLayout({

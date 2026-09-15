@@ -7,7 +7,7 @@
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0b7a75",
+  "theme_color": "#0369A1",
   "related_applications": [
     {
       "platform": "webapp",
