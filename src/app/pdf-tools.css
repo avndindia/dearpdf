@@ -7184,6 +7184,9 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
   }
 }
 @media (max-width: 720px) {
+  .stitch-tool-shell.handwriting-page .compress-workspace {
+    padding-bottom: calc(var(--tool-chip-bar-offset, 4.5rem) + 12px);
+  }
   html.has-tool-chip-bar .handwriting-page.has-file .handwriting-action-row {
     position: sticky;
     bottom: var(--tool-chip-bar-offset, 4.5rem);
