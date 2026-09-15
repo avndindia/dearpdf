@@ -84,21 +84,39 @@ async function consumePdfToolHandoff(id: string) {
   return new File([bytes.slice().buffer], record.name, { type: "application/pdf" });
 }
 
-export function useIncomingPdfHandoff(onFile: (file: File) => void | Promise<void>) {
+export function useIncomingPdfHandoff(
+  onFile: (file: File) => void | Promise<void>,
+  onFiles?: (files: File[]) => void | Promise<void>,
+) {
   const onFileRef = useRef(onFile);
+  const onFilesRef = useRef(onFiles);
   useEffect(() => {
     onFileRef.current = onFile;
-  }, [onFile]);
+    onFilesRef.current = onFiles;
+  }, [onFile, onFiles]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    const id = url.searchParams.get(PARAMETER_NAME);
-    if (!id) return;
+    const idParam = url.searchParams.get(PARAMETER_NAME);
+    if (!idParam) return;
     url.searchParams.delete(PARAMETER_NAME);
     window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
-    void consumePdfToolHandoff(id).then((file) => {
-      if (file) return onFileRef.current(file);
-    });
+    const ids = idParam.split(",").map((id) => id.trim()).filter(Boolean);
+    void (async () => {
+      const incoming: File[] = [];
+      for (const id of ids) {
+        const file = await consumePdfToolHandoff(id);
+        if (file) incoming.push(file);
+      }
+      if (!incoming.length) return;
+      if (incoming.length > 1 && onFilesRef.current) {
+        await onFilesRef.current(incoming);
+        return;
+      }
+      for (const file of incoming) {
+        await onFileRef.current(file);
+      }
+    })();
   }, []);
 }
 

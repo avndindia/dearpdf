@@ -7,7 +7,7 @@ import DearPdfLogo from "@/components/DearPdfLogo";
 import MaterialIcon from "@/components/MaterialIcon";
 import ThemeToggle from "@/components/ThemeToggle";
 import { dismissPdfToolCompletion } from "@/lib/browser-download";
-import { openFileIntoDearPdf } from "@/lib/open-file-handoff";
+import { openFilesIntoDearPdf } from "@/lib/open-file-handoff";
 
 const NAV = [
   { href: "/", label: "Home", match: (p: string) => p === "/" },
@@ -120,11 +120,12 @@ export default function SiteHeader() {
             ref={inputRef}
             className="hidden"
             type="file"
+            multiple
             accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp"
             onChange={(e) => {
-              const file = e.target.files?.[0];
+              const files = e.target.files ? Array.from(e.target.files) : [];
               e.target.value = "";
-              if (file) void openFileIntoDearPdf(file);
+              if (files.length) void openFilesIntoDearPdf(files);
             }}
           />
         </div>

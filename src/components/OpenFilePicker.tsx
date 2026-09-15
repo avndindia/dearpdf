@@ -17,6 +17,12 @@ type ToolChoice = {
   group: "fast" | "more";
 };
 
+const MULTI_PDF_TOOLS: ToolChoice[] = [
+  { label: "Merge", icon: "call_merge", path: "/pdf-tools/merge", group: "fast" },
+  { label: "Flatten", icon: "layers_clear", path: "/pdf-tools/flatten", group: "fast" },
+  { label: "Bates", icon: "pin", path: "/pdf-tools/bates", group: "fast" },
+];
+
 const PDF_TOOLS: ToolChoice[] = [
   { label: "Merge", icon: "call_merge", path: "/pdf-tools/merge", group: "fast" },
   { label: "Compress", icon: "compress", path: "/pdf-tools/compress", group: "fast" },
@@ -71,8 +77,17 @@ export default function OpenFilePicker() {
   if (!pending) return null;
 
   const isImage = pending.kind === "image";
-  const fast = PDF_TOOLS.filter((t) => t.group === "fast");
-  const more = PDF_TOOLS.filter((t) => t.group === "more");
+  const isManyPdfs = pending.kind === "pdfs";
+  const fileLabel =
+    pending.kind === "pdfs"
+      ? pending.names.length <= 3
+        ? pending.names.join(", ")
+        : `${pending.names.slice(0, 2).join(", ")} +${pending.names.length - 2} more`
+      : pending.name;
+  const fileCountLabel =
+    pending.kind === "pdfs" ? `${pending.names.length} PDFs` : pending.name;
+  const fast = (isManyPdfs ? MULTI_PDF_TOOLS : PDF_TOOLS).filter((t) => t.group === "fast");
+  const more = isManyPdfs ? [] : PDF_TOOLS.filter((t) => t.group === "more");
 
   return (
     <div
@@ -99,8 +114,8 @@ export default function OpenFilePicker() {
             <h2 id={titleId} className="text-lg font-bold tracking-tight text-on-surface">
               What do you want to do?
             </h2>
-            <p className="mt-1 truncate text-sm text-slate-500" title={pending.name}>
-              {pending.name}
+            <p className="mt-1 truncate text-sm text-slate-500" title={fileLabel}>
+              {pending.kind === "pdfs" ? fileCountLabel : pending.name}
             </p>
           </div>
           <button
@@ -136,9 +151,14 @@ export default function OpenFilePicker() {
             </div>
           ) : (
             <div className="space-y-5">
+              {isManyPdfs ? (
+                <p className="text-sm text-slate-600">
+                  These look like several PDFs. Merge them, or flatten / Bates-stamp the set.
+                </p>
+              ) : null}
               <div>
                 <p className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-secondary">
-                  Fast Actions
+                  {isManyPdfs ? "Works with several files" : "Fast Actions"}
                 </p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {fast.map((tool) => (
@@ -157,6 +177,7 @@ export default function OpenFilePicker() {
                   ))}
                 </div>
               </div>
+              {more.length > 0 ? (
               <div>
                 <p className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-wider text-secondary">
                   More tools
@@ -175,6 +196,7 @@ export default function OpenFilePicker() {
                   ))}
                 </div>
               </div>
+              ) : null}
             </div>
           )}
         </div>
@@ -185,7 +207,7 @@ export default function OpenFilePicker() {
             onClick={() => clearOpenFilePending()}
             className="w-full rounded-xl px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-on-surface"
           >
-            Cancel — keep file for later
+            {isManyPdfs ? "Cancel — keep files for later" : "Cancel — keep file for later"}
           </button>
         </div>
       </div>
