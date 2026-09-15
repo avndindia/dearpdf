@@ -489,13 +489,27 @@
 
 .text-button { border: 0; background: transparent; padding: 5px 0; font-size: 10px; font-weight: 700; text-decoration: underline; }
 
-.pdf-drop-zone { display: flex; min-height: 176px; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--ink); background: var(--wash); text-align: center; cursor: pointer; }
+.pdf-drop-zone { position: relative; display: flex; min-height: 176px; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid var(--ink); background: var(--wash); text-align: center; cursor: pointer; overflow: hidden; }
 
 .pdf-drop-zone:hover { background: #eee; }
 
 .pdf-drop-zone.disabled { cursor: wait; opacity: .55; }
 
-.pdf-drop-zone input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* Full-size overlay — iOS ignores 1px clipped file inputs and label clicks. */
+.pdf-drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  clip: auto;
+  overflow: hidden;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 2;
+}
 
 .pdf-drop-zone strong { font-size: 14px; }
 
@@ -6866,7 +6880,9 @@ body:has(> .site-wide-sidebar) #dc-page > main .site-header p {
 }
 @media (max-width: 860px) {
   .stitch-tool-shell .page-numbers-shell {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 16px;
   }
   .stitch-tool-shell .page-numbers-preview {
     position: static;

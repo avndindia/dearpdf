@@ -5,6 +5,7 @@ import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { imagesToPdf, type ImagesToPdfOptions } from "../../../lib/pdf-tools";
+import { decodeImageBitmap } from "../../../lib/decode-image-bitmap";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -109,7 +110,7 @@ async function prepareImage(file: File): Promise<ImageItem> {
   const accepted = ["image/jpeg", "image/png", "image/webp"];
   if (!accepted.includes(file.type)) throw new Error(`${file.name} is not a JPG, PNG, or WebP image.`);
 
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const bitmap = await decodeImageBitmap(file, { imageOrientation: "from-image" });
   try {
     const previewScale = Math.min(1, 280 / Math.max(bitmap.width, bitmap.height));
     const previewCanvas = document.createElement("canvas");

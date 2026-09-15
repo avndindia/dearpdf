@@ -53,8 +53,7 @@ export default function DropZone({
       }}
       onDragLeave={() => setOver(false)}
       onDrop={onDrop}
-      onClick={() => !disabled && inputRef.current?.click()}
-      className={`cursor-pointer rounded-2xl border-2 border-dashed px-6 py-14 text-center transition ${
+      className={`relative cursor-pointer rounded-2xl border-2 border-dashed px-6 py-14 text-center transition overflow-hidden ${
         over
           ? "border-[var(--accent)] bg-[var(--accent-soft)]"
           : "border-[var(--line)] bg-[var(--wash)] hover:border-[var(--accent)]/50"
@@ -67,7 +66,7 @@ export default function DropZone({
       <input
         ref={inputRef}
         type="file"
-        className="hidden"
+        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
         accept={accept}
         multiple={multiple}
         disabled={disabled}

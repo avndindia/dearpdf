@@ -64,18 +64,31 @@ export async function getPdfjs() {
   return pdfjs;
 }
 
-export async function loadPdfDocument(
+export async function openPdfLoadingTask(
   bytes: ArrayBuffer | Uint8Array,
-  password?: string,
-): Promise<PDFDocumentProxy> {
+  options?: {
+    password?: string;
+    disableFontFace?: boolean;
+    useSystemFonts?: boolean;
+  },
+) {
   const pdfjs = await getPdfjs();
   const data = bytes instanceof Uint8Array ? bytes.slice() : new Uint8Array(bytes);
   return pdfjs.getDocument({
     data,
-    password,
+    password: options?.password,
     wasmUrl: "/pdfjs/wasm/",
-    useSystemFonts: true,
-  }).promise;
+    useSystemFonts: options?.useSystemFonts ?? true,
+    disableFontFace: options?.disableFontFace,
+  });
+}
+
+export async function loadPdfDocument(
+  bytes: ArrayBuffer | Uint8Array,
+  password?: string,
+): Promise<PDFDocumentProxy> {
+  const task = await openPdfLoadingTask(bytes, { password });
+  return task.promise;
 }
 
 /** Safe page text extraction that works when Safari lacks stream async iteration. */

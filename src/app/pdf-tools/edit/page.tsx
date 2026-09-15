@@ -29,6 +29,7 @@ import {
   type RedactedPageImage,
 } from "../../../lib/pdf-editor";
 import { inspectPdf } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 
 type EditorTool = "select" | "text" | "draw" | "highlight" | "rectangle" | "redact" | "image";
@@ -75,9 +76,7 @@ async function canvasToJpeg(canvas: HTMLCanvasElement, quality: number) {
 }
 
 async function rasterizePdfPages(bytes: Uint8Array, pageIndexes: number[]): Promise<RedactedPageImage[]> {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(bytes) });
+  const task = await openPdfLoadingTask(bytes);
   const pdf = await task.promise;
   const pages: RedactedPageImage[] = [];
   try {

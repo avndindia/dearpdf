@@ -6,6 +6,7 @@ import {
   renderPdfPageThumbnails,
   type PdfVisualPage,
 } from "./pdf-page-workspace";
+import { openPdfLoadingTask } from "../lib/pdfjs";
 
 export type PdfPreviewState = "hidden" | "loading" | "ready";
 
@@ -67,13 +68,7 @@ export function usePdfLazyPreviews(idPrefix: string, options?: { maxWidth?: numb
       // Inspect page count quickly via pdf.js for skeletons when not provided.
       let pageCount = loadOptions?.pageCount ?? 0;
       if (!pageCount) {
-        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-        pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-        const task = pdfjs.getDocument({
-          data: Uint8Array.from(new Uint8Array(bytes)),
-          disableFontFace: true,
-          useSystemFonts: true,
-        });
+        const task = await openPdfLoadingTask(bytes, { disableFontFace: true });
         try {
           const pdf = await task.promise;
           pageCount = pdf.numPages;

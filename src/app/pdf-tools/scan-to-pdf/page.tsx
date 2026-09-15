@@ -803,9 +803,9 @@ export default function ScanToPdfPage() {
         <input
           ref={galleryRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic"
           multiple
-          hidden
+          className="visually-hidden-file-input"
           onChange={(e) => {
             const list = e.target.files;
             if (!list?.length) return;
