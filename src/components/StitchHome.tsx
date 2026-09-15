@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MaterialIcon from "@/components/MaterialIcon";
-import { openFileIntoDearPdf } from "@/lib/open-file-handoff";
+import { openFilesIntoDearPdf } from "@/lib/open-file-handoff";
 import {
   STITCH_TOOL_COUNT,
   stitchCategories,
@@ -100,8 +100,9 @@ export default function StitchHome() {
   );
 
   const handleFiles = useCallback((files: FileList | File[] | null) => {
-    const file = files && (files instanceof FileList ? files[0] : files[0]);
-    if (file) void openFileIntoDearPdf(file);
+    if (!files?.length) return;
+    const list = files instanceof FileList ? Array.from(files) : files;
+    void openFilesIntoDearPdf(list);
   }, []);
 
   const applyConvertFilter = () => {
@@ -182,9 +183,10 @@ export default function StitchHome() {
             <input
               ref={fileRef}
               type="file"
+              multiple
               className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
               accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp"
-              aria-label="Drop or upload file"
+              aria-label="Drop or upload PDF files"
               onClick={(e) => e.stopPropagation()}
               onChange={(e) => {
                 handleFiles(e.target.files);
@@ -196,13 +198,13 @@ export default function StitchHome() {
                 <MaterialIcon name="cloud_sync" className="text-[24px] transition-transform group-hover:scale-110" />
               </div>
               <div className="mb-1 flex flex-wrap items-center justify-center gap-1.5 text-base font-medium text-on-surface dark:text-slate-200 sm:text-lg">
-                <span>Drop your PDF here, or</span>
+                <span>Drop PDFs here, or</span>
                 <span className="font-semibold text-primary-container underline underline-offset-4 decoration-sky-400/50 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300">
                   browse files
                 </span>
               </div>
               <p className="mb-6 font-mono text-[12px] text-slate-500 dark:text-slate-400">
-                PDF, JPG, or PNG · up to 500MB · stays on this device
+                PDF, JPG, or PNG · one or many · stays on this device
               </p>
 
               <div className="flex w-full flex-col items-center justify-center gap-2 border-t border-slate-200/70 pt-4 sm:flex-row sm:items-center sm:gap-2 dark:border-slate-800/80">

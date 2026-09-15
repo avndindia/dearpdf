@@ -11,6 +11,7 @@ import {
   zipBatesResults,
   type BatesFileResult,
 } from "../../../lib/pdf-extra-tools";
+import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { trackToolEvent } from "../../../lib/stats";
 
 type FileItem = { id: string; file: File; bytes: ArrayBuffer; pageCount: number };
@@ -60,6 +61,7 @@ export default function BatesNumberingPage() {
   const [previewFileIndex, setPreviewFileIndex] = useState(0);
   const [previewPageIndex, setPreviewPageIndex] = useState(0);
   const busy = work.kind === "reading" || work.kind === "working";
+  useIncomingPdfHandoff((file) => addFiles([file]), addFiles);
 
   const totalPages = useMemo(() => files.reduce((sum, f) => sum + f.pageCount, 0), [files]);
   const endNumber = totalPages ? startNumber + totalPages - 1 : startNumber - 1;

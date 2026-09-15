@@ -97,7 +97,7 @@ export default function FlattenPdfPage() {
     if (inputRef.current) inputRef.current.value = "";
   }, []);
 
-  useIncomingPdfHandoff((file) => addFiles([file]));
+  useIncomingPdfHandoff((file) => addFiles([file]), addFiles);
 
   function removeFile(id: string) {
     setFiles((current) => current.filter((item) => item.id !== id));

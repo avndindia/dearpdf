@@ -172,7 +172,7 @@ export default function MergePdfPage() {
     [files],
   );
   const busy = work.kind === "reading" || work.kind === "merging";
-  useIncomingPdfHandoff((file) => addFiles([file]));
+  useIncomingPdfHandoff((file) => addFiles([file]), addFiles);
 
   useEffect(() => () => {
     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
