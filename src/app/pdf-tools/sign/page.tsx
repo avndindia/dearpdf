@@ -91,6 +91,7 @@ export default function SignPdfPage() {
   }
 
   function startDrawing(event: React.PointerEvent<HTMLCanvasElement>) {
+    event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     drawingRef.current = true;
     lastPointRef.current = canvasPoint(event);

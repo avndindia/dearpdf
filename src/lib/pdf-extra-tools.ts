@@ -4,13 +4,23 @@ import { zipSync } from "fflate";
 
 /** Webpack/Safari often nests the default export — always unwrap to a kit with `.create`. */
 function resolveFontkit(mod: unknown) {
-  const candidate = (mod as { default?: unknown } | null)?.default ?? mod;
-  if (!candidate || typeof (candidate as { create?: unknown }).create !== "function") {
-    throw new Error(
-      "Handwriting font engine failed to load in this browser. Try Chrome/Firefox, or refresh and try again.",
-    );
+  let candidate: unknown = mod;
+  for (let i = 0; i < 4; i += 1) {
+    if (candidate && typeof (candidate as { create?: unknown }).create === "function") {
+      return candidate as { create: (...args: never[]) => unknown };
+    }
+    candidate = (candidate as { default?: unknown } | null)?.default;
   }
-  return candidate as { create: (...args: never[]) => unknown };
+  throw new Error(
+    "Handwriting font engine failed to load in this browser. Try Chrome/Firefox, or refresh and try again.",
+  );
+}
+
+function yieldToUi() {
+  if (typeof window === "undefined") return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, 0);
+  });
 }
 
 export type PageNumberPosition =
@@ -341,23 +351,16 @@ export async function extractPdfPlainText(bytes: ArrayBuffer | Uint8Array): Prom
   pageTexts: string[];
   charCount: number;
 }> {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  // Worker is configured by callers in the browser; Node tests can skip worker.
-  try {
-    if (typeof window !== "undefined" && !(pdfjs as { GlobalWorkerOptions?: { workerSrc?: string } }).GlobalWorkerOptions?.workerSrc) {
-      (pdfjs as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-    }
-  } catch {
-    // ignore
-  }
+  // Use the shared pdf.js helpers so iOS Safari gets the ReadableStream
+  // async-iterator polyfill. Raw getTextContent() throws "undefined is not a function".
+  const { getPageTextContent, loadPdfDocument } = await import("./pdfjs");
   const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  const task = pdfjs.getDocument({ data: Uint8Array.from(data) });
-  const doc = await task.promise;
+  const doc = await loadPdfDocument(data);
   const pageTexts: string[] = [];
   try {
     for (let i = 1; i <= doc.numPages; i += 1) {
       const page = await doc.getPage(i);
-      const content = await page.getTextContent();
+      const content = await getPageTextContent(page);
       const parts: string[] = [];
       for (const item of content.items) {
         if (item && typeof item === "object" && "str" in item) {
@@ -369,7 +372,11 @@ export async function extractPdfPlainText(bytes: ArrayBuffer | Uint8Array): Prom
       page.cleanup();
     }
   } finally {
-    await task.destroy();
+    try {
+      doc.cleanup();
+    } catch {
+      // ignore
+    }
   }
   const text = pageTexts.filter(Boolean).join("\n\n").trim();
   return { text, pageTexts, charCount: text.length };
@@ -479,6 +486,7 @@ export async function pdfToHandwritingNotebook(
       }
     });
     lineIndex += linesPerPage;
+    await yieldToUi();
   }
 
   if (!output.getPageCount()) {

@@ -11,6 +11,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -49,9 +50,7 @@ async function canvasToJpeg(canvas: HTMLCanvasElement, quality: number) {
 }
 
 async function renderGrayPreview(bytes: ArrayBuffer, pageNumber: number) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   try {
     const page = await document.getPage(pageNumber);
@@ -122,9 +121,7 @@ export default function GrayscalePdfPage() {
     setWork({ kind: "working", message: `Converting ${selected.pageCount} pages to grayscale locally…` });
     trackToolEvent("grayscale", "start");
     try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-      pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-      const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(selected.bytes)) });
+      const task = await openPdfLoadingTask(selected.bytes);
       const pdf = await task.promise;
       const pages: RasterizedPdfPage[] = [];
       try {

@@ -15,6 +15,7 @@ import {
   parsePageSelection,
   type BinaryDownloadFile,
 } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -77,9 +78,7 @@ function canvasToBlob(canvas: HTMLCanvasElement, format: ExportFormat, quality: 
 }
 
 async function renderPdfPagePreview(bytes: ArrayBuffer, pageNumber: number) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   try {
     const page = await document.getPage(pageNumber);
@@ -112,9 +111,7 @@ async function exportPdfPages(
   baseName: string,
   onProgress: (current: number, total: number) => void,
 ) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   const files: BinaryDownloadFile[] = [];
 

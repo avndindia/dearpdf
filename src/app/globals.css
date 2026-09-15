@@ -226,6 +226,20 @@ a {
   display: none;
 }
 
+/* iOS: display:none file inputs often ignore programmatic .click() */
+.visually-hidden-file-input {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  border: 0;
+}
+
 /* iOS Safari: inputs <16px trigger focus zoom — keep form controls readable on small screens */
 @media (max-width: 767px) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="hidden"]),
@@ -473,7 +487,9 @@ html.has-tool-chip-bar .pdf-suite-result {
   html.has-tool-chip-bar .stitch-tool-shell.merge-page.has-files .merge-action-row,
   html.has-tool-chip-bar .stitch-tool-shell.has-file .utility-action-row,
   html.has-tool-chip-bar .stitch-tool-shell.has-file .organise-action-row,
-  html.has-tool-chip-bar .stitch-tool-shell.has-file .compression-action-row {
+  html.has-tool-chip-bar .stitch-tool-shell.has-file .compression-action-row,
+  html.has-tool-chip-bar .scan-save-row,
+  html.has-tool-chip-bar .unlock-action-row {
     bottom: var(--tool-chip-bar-offset, 0px);
     padding-bottom: 10px;
   }

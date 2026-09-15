@@ -1,4 +1,5 @@
 import { rasterizedPagesToPdf, type RasterizedPdfPage } from "./pdf-tools";
+import { openPdfLoadingTask } from "./pdfjs";
 
 async function canvasToJpeg(canvas: HTMLCanvasElement, quality: number) {
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
@@ -7,9 +8,7 @@ async function canvasToJpeg(canvas: HTMLCanvasElement, quality: number) {
 }
 
 async function rasterizePdf(bytes: ArrayBuffer, dpi: number, quality: number) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: new Uint8Array(bytes) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   const pages: RasterizedPdfPage[] = [];
 

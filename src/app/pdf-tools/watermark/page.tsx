@@ -19,6 +19,8 @@ import {
   watermarkPreviewInsetPercent,
   type WatermarkPosition,
 } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
+import { decodeImageBitmap } from "../../../lib/decode-image-bitmap";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -70,9 +72,7 @@ type PreviewRender = {
 };
 
 async function renderPdfPage(bytes: ArrayBuffer, pageNumber: number): Promise<PreviewRender> {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   try {
     const page = await document.getPage(pageNumber);
@@ -100,7 +100,7 @@ async function prepareWatermarkImage(file: File): Promise<WatermarkImage> {
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
     throw new Error("Choose a JPG, PNG, or WebP watermark image.");
   }
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const bitmap = await decodeImageBitmap(file, { imageOrientation: "from-image" });
   try {
     const canvas = document.createElement("canvas");
     canvas.width = bitmap.width;

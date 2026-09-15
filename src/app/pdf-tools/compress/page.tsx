@@ -14,6 +14,7 @@ import {
   splitPdfByMaximumBytes,
   type RasterizedPdfPage,
 } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 
 type SelectedPdf = {
@@ -168,9 +169,7 @@ async function rasterizePdf(
   quality: number,
   onProgress: (page: number, total: number) => void,
 ) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const task = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const task = await openPdfLoadingTask(bytes);
   const document = await task.promise;
   const pages: RasterizedPdfPage[] = [];
 

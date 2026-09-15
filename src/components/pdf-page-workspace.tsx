@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUp, Copy, Eye, FilePlus, FlipHorizontal2, FlipVertical2, Grid2X2, List, RotateCcw, RotateCw, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { openPdfLoadingTask } from "../lib/pdfjs";
 
 export type PdfVisualPage = {
   id: string;
@@ -120,10 +121,7 @@ export async function renderPdfPageThumbnails(
   pageIndexes?: number[],
   onPage?: (page: PdfVisualPage, done: number, total: number) => void,
 ): Promise<PdfVisualPage[]> {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const data = Uint8Array.from(new Uint8Array(bytes));
-  const task = pdfjs.getDocument({ data, disableFontFace: true, useSystemFonts: true });
+  const task = await openPdfLoadingTask(bytes, { disableFontFace: true });
   const pdf = await task.promise;
   const pages: PdfVisualPage[] = [];
   const pageNumbers = pageIndexes?.length

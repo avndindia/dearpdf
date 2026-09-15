@@ -9,6 +9,7 @@ import PdfPageWorkspace, {
 import { announceGeneratedPdf } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, imageToSinglePagePdf, mergePdfPageOrder } from "../../../lib/pdf-tools";
+import { decodeImageBitmap } from "../../../lib/decode-image-bitmap";
 import { pdfToolHandoffUrl, savePdfToolHandoff } from "../../../lib/pdf-tool-handoff";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
@@ -92,7 +93,7 @@ async function canvasToPng(canvas: HTMLCanvasElement) {
 }
 
 async function imageFileToPdf(file: File): Promise<{ bytes: ArrayBuffer; coverThumbnail: string }> {
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const bitmap = await decodeImageBitmap(file, { imageOrientation: "from-image" });
   try {
     const previewScale = Math.min(1, 150 / Math.max(bitmap.width, bitmap.height));
     const previewCanvas = document.createElement("canvas");

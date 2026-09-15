@@ -6,6 +6,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { inspectPdf, organisePdfPages } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -18,9 +19,7 @@ function safeBaseName(fileName: string) {
 }
 
 async function renderThumbs(bytes: ArrayBuffer, onPage?: (page: PageItem, index: number, total: number) => boolean | void) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-  const loadingTask = pdfjs.getDocument({ data: Uint8Array.from(new Uint8Array(bytes)) });
+  const loadingTask = await openPdfLoadingTask(bytes);
   const document = await loadingTask.promise;
   const thumbnails: PageItem[] = [];
   try {

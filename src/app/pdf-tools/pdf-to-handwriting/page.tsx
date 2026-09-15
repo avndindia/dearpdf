@@ -26,7 +26,9 @@ async function loadHandwritingFont(): Promise<Uint8Array> {
   }
   const response = await fetch("/fonts/Caveat-Regular.ttf");
   if (!response.ok) throw new Error("Handwriting font could not be loaded.");
-  cachedFont = new Uint8Array(await response.arrayBuffer());
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (bytes.byteLength < 1024) throw new Error("Handwriting font could not be loaded.");
+  cachedFont = bytes;
   return cachedFont.slice();
 }
 
@@ -53,6 +55,8 @@ export default function PdfToHandwritingPage() {
     return text.replace(/\r\n?/g, "\n").split(/\n+/).slice(0, 18);
   }, [extracted]);
 
+  const hasContent = Boolean(extracted.trim() || fileName);
+
   async function chooseFile(file?: File) {
     if (!file) return;
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -71,9 +75,21 @@ export default function PdfToHandwritingPage() {
       setWork({ kind: "idle" });
     } catch (error) {
       setExtracted("");
-      setWork({ kind: "error", message: error instanceof Error ? error.message : "Could not read the PDF text layer." });
+      setWork({
+        kind: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not read the PDF text layer. Try Chrome, or run OCR first.",
+      });
     }
     if (inputRef.current) inputRef.current.value = "";
+  }
+
+  function updateText(value: string) {
+    setExtracted(value);
+    setCharCount(value.length);
+    setThinText(value.trim().length < 40);
   }
 
   async function convert() {
@@ -111,7 +127,19 @@ export default function PdfToHandwritingPage() {
     }
   }
 
-  const hasContent = Boolean(extracted.trim() || fileName);
+  const textEditor = (
+    <label className="handwriting-text-field">
+      <span>{fileName ? "Text to handwrite" : "Or paste text to handwrite"}</span>
+      <textarea
+        value={extracted}
+        disabled={busy}
+        rows={fileName ? 8 : 6}
+        spellCheck={false}
+        onChange={(e) => updateText(e.target.value)}
+        placeholder={fileName ? "Paste or edit text here…" : "Paste text here to skip the PDF…"}
+      />
+    </label>
+  );
 
   return (
     <StitchToolShell
@@ -125,37 +153,30 @@ export default function PdfToHandwritingPage() {
       note="Keep-layout and draw-your-own-alphabet are planned for phase 2. This ships a solid notebook mode."
     >
       <section className="compress-workspace">
-        {!hasContent ? (
-          <>
-            <label
-              className={`pdf-drop-zone${busy ? " disabled" : ""}`}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => { e.preventDefault(); if (!busy) void chooseFile(e.dataTransfer.files[0]); }}
-            >
-              <input ref={inputRef} type="file" accept=".pdf,application/pdf" disabled={busy} onChange={(e) => void chooseFile(e.target.files?.[0])} />
-              <span className="drop-zone-mark" aria-hidden="true">＋</span>
-              <strong>Choose a PDF</strong>
-              <span>Text layer is extracted locally — or paste text after picking options</span>
-            </label>
-            <label style={{ display: "grid", gap: 6, padding: "0 16px 16px" }}>
-              <span>Or paste text to handwrite</span>
-              <textarea
-                value={extracted}
-                disabled={busy}
-                rows={6}
-                spellCheck={false}
-                onChange={(e) => {
-                  setExtracted(e.target.value);
-                  setCharCount(e.target.value.length);
-                  setThinText(e.target.value.trim().length < 40);
-                }}
-                placeholder="Paste text here to skip the PDF…"
-                style={{ width: "100%", minHeight: 120, fontFamily: "inherit", padding: 12 }}
-              />
-            </label>
-          </>
-        ) : (
-          <div className="page-numbers-shell">
+        {!fileName ? (
+          <label
+            className={`pdf-drop-zone handwriting-drop-zone${busy ? " disabled" : ""}`}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (!busy) void chooseFile(e.dataTransfer.files[0]);
+            }}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              accept="application/pdf,.pdf"
+              disabled={busy}
+              aria-label="Choose a PDF"
+              onChange={(e) => void chooseFile(e.target.files?.[0])}
+            />
+            <span className="drop-zone-mark" aria-hidden="true">＋</span>
+            <strong>Choose a PDF</strong>
+            <span>Text layer is extracted locally — or paste text after picking options</span>
+          </label>
+        ) : null}
+
+        <div className={`page-numbers-shell handwriting-workspace${hasContent ? "" : " is-empty"}`}>
             <section className="page-numbers-preview" aria-label="Notebook preview">
               <div className="page-numbers-preview-meta">
                 <span>Live notebook preview</span>
@@ -211,29 +232,14 @@ export default function PdfToHandwritingPage() {
                 </div>
               ) : null}
 
-              {thinText ? (
+              {thinText && fileName ? (
                 <div className="organise-tip" role="status">
                   Little or no selectable text was found. For scans, run{" "}
                   <Link href="/pdf-tools/pdf-to-text">OCR</Link> first, or paste text below.
                 </div>
               ) : null}
 
-              <label style={{ display: "grid", gap: 6 }}>
-                <span>Text to handwrite</span>
-                <textarea
-                  value={extracted}
-                  disabled={busy}
-                  rows={8}
-                  spellCheck={false}
-                  onChange={(e) => {
-                    setExtracted(e.target.value);
-                    setCharCount(e.target.value.length);
-                    setThinText(e.target.value.trim().length < 40);
-                  }}
-                  placeholder="Paste or edit text here…"
-                  style={{ width: "100%", minHeight: 140, fontFamily: "inherit", padding: 12 }}
-                />
-              </label>
+              {textEditor}
 
               <div className="tool-options-grid">
                 <label>
@@ -270,16 +276,17 @@ export default function PdfToHandwritingPage() {
                 <input type="text" value={outputName} spellCheck={false} disabled={busy} onChange={(e) => setOutputName(e.target.value)} />
               </label>
 
-              <button className="merge-button" type="button" onClick={() => void convert()} disabled={busy || !extracted.trim()}>
-                {work.kind === "working" ? "Writing…" : "Download handwritten PDF"}
-              </button>
+              <div className="handwriting-action-row">
+                <button className="merge-button" type="button" onClick={() => void convert()} disabled={busy || !extracted.trim()}>
+                  {work.kind === "working" ? "Writing…" : "Download handwritten PDF"}
+                </button>
+              </div>
 
               <p className="organise-tip" style={{ margin: 0 }}>
                 Caveat handwriting font · per-glyph baseline / rotation / scale variation
               </p>
             </aside>
-          </div>
-        )}
+        </div>
 
         {work.kind !== "idle" ? <p className={`pdf-work-message ${work.kind}`} role={work.kind === "error" ? "alert" : "status"}>{work.message}</p> : null}
       </section>

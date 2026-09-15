@@ -6,6 +6,7 @@ import PdfNextStepSelector from "../../../components/pdf-next-step-selector";
 import { downloadGeneratedFile } from "../../../lib/browser-download";
 import { useIncomingPdfHandoff } from "../../../lib/pdf-tool-handoff";
 import { rasterizedPagesToPdf, type RasterizedPdfPage } from "../../../lib/pdf-tools";
+import { openPdfLoadingTask } from "../../../lib/pdfjs";
 import StitchToolShell from "../../../components/StitchToolShell";
 import { trackToolEvent } from "../../../lib/stats";
 
@@ -75,12 +76,7 @@ export default function UnlockPdfPage() {
 
   async function unlockPdf() {
     if (!selected) return;
-    const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-    const task = pdfjs.getDocument({
-      data: Uint8Array.from(new Uint8Array(selected.bytes)),
-      password: password || undefined,
-    });
+    const task = await openPdfLoadingTask(selected.bytes, { password: password || undefined });
     const pages: RasterizedPdfPage[] = [];
 
     try {
